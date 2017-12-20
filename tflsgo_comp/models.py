@@ -2,6 +2,7 @@
 This functions contains all models from the database.
 """
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import joinedload
 db = SQLAlchemy()
 
 
@@ -35,28 +36,35 @@ class Benchmark(db.Model):
         return self.name
 
 
-class Milestone(db.Model):
-    """This models store for each benchmark the milestones allowed."""
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(10), nullable=False)
-    benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
-                             nullable=False)
-    benchmark = db.relationship("Benchmark", cascade='all,delete',
-                                backref=db.backref("milestones", uselist=True))
-
-    def __repr__(self):
-        return self.benchmark.name + ": " + self.name
-
-
 class Dimension(db.Model):
     """Number of dimensions possible for the relative benchmark."""
+    __tablename__ = "dimension"
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Integer, nullable=False, unique=True)
+    benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
+                             nullable=False)
+    benchmark = db.relationship("Benchmark", lazy="joined", cascade='all,delete',
+                                backref=db.backref("dimensions", uselist=True))
+
+    def __repr__(self):
+        return "{}: ({})".format(self.benchmark.name, self.value)
+
+    __table_args__ = (
+        db.CheckConstraint(value > 0, name='value_must_positive'),
+    )
+
+
+
+class Milestone(db.Model):
+    """Number of dimensions possible for the relative benchmark."""
+    __tablename__ = "milestone"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), nullable=False, unique=True)
     value = db.Column(db.Integer, nullable=False, unique=True)
     benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
                              nullable=False)
     benchmark = db.relationship("Benchmark", cascade='all,delete',
-                                backref=db.backref("dimensions", uselist=True))
+                                backref=db.backref("milestones", uselist=True))
 
     def __repr__(self):
         return "{}: ({})".format(self.benchmark.name, self.value)
@@ -119,9 +127,10 @@ class CEC2013Data(db.Model):
     F15 = db.Column(db.Float, nullable=False)
 
     # Add the constraint in a loop
-    __table_args__ = tuple([db.CheckConstraint('F{} > 0'.format(f), name='value_{}_must_be_positive'.format(f))
-                      for f in range(1, 16)] +
-                      [db.CheckConstraint(dimension > 0, name='dimension_must_be_positive')])
+    __table_args__ = tuple([db.CheckConstraint('F{} > 0'.format(f),
+                                               name='value_{}_must_be_positive'.format(f)) for f in
+                            range(1, 16)] + [db.CheckConstraint(dimension > 0,
+                                                                name='dimension_must_be_positive')])
 
     def __repr__(self):
         return self.name
@@ -138,12 +147,14 @@ def init_db(db):
 Benchmark for the Large Scale Global Optimization competitions.
         """, data_table="cec2013lsgo")
     db.session.add(bench)
+    db.session.add(Dimension(value=1000, benchmark=bench))
     milestones = ["1.2e5", "6e5", "3e6"]
 
     for mil_str in milestones:
         mil_value = int(round(float(mil_str)))
-        db.session.add(Dimension(name=mil_str, value=mil_value,
+        db.session.add(Milestone(name=mil_str, value=mil_value,
                                  benchmark=bench))
+
 
     db.session.commit()
 
@@ -167,9 +178,10 @@ def get_benchmarks():
     """
     Returns all benchmarks.
     """
-    benchs = {id: {'id': id, 'description': description, 'name': name} for name,
-              description, id in db.session.query(Benchmark.name, Benchmark.description,
-                                                  Benchmark.id)}
+    bench_data = db.session.query(Benchmark).options(joinedload("dimensions"), joinedload("milestones")).all()
+    benchs = {bench.id: {'id': bench.id, 'description': bench.description, 'name':
+                         bench.name, 'dimensions': [dim.value for dim in bench.dimensions],
+                         'milestones': [mil.name for mil in bench.milestones]} for bench in bench_data}
     return benchs
 
 
