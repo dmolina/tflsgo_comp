@@ -1,0 +1,29 @@
+.error {
+    color: red;
+}
+
+ul.checkbox  { 
+    margin: 0; 
+    padding: 0; 
+    margin-left: 20px; 
+    list-style: none; 
+} 
+
+
+ul.checkbox li input { 
+    margin-right: .25em; 
+}
+
+
+ul.checkbox li { 
+    border: 1px gray solid; 
+    width: 12em; 
+} 
+
+
+ul.checkbox li {
+    border: 1px transparent solid;
+    float: left;
+    min-width: 200px;
+}
+
