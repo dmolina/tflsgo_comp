@@ -1,7 +1,12 @@
 from flask import Flask
-from .models import db, init_db
+from flask_restful import Resource, Api
+from flask_cors import CORS
+from models import db, init_db, get_benchmarks
 
 def create_app(name, options={}):
+    """
+    Create the app with the database connection (using Flask-SQLAlchemy).
+    """
     app = Flask(name)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../bench_lsgo.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -15,6 +20,15 @@ def create_app(name, options={}):
     return app
 
 app = create_app(__name__)
+CORS(app)
+api = Api(app)
+
+class Benchmark(Resource):
+    def get(self):
+        return {'benchmarks': get_benchmarks()}
+
+api.add_resource(Benchmark, '/benchmarks')
+
 
 if __name__ == '__main__':
     init_db(db)

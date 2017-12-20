@@ -17,13 +17,14 @@
 <div id="benchmark">
 <h2>Select Benchmark</h2>
 <p>
+    <div id="app">
 Select the benchmark used for comparison:
-<select v-model="benchmarks" v-on:change="onChange">
-<option value="" selected="selected">------</option>
+<select v-model="selected">
+    <option value="" selected="selected">------</option>
+    <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>
 </select>
 </p>
-
+    </div>
         <script src="./run.js"></script>
-
     </body>
 </html>

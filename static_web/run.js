@@ -1,10 +1,12 @@
 var app = new Vue({
     el: '#app',
     data: {
-        benchmarks: {}
-    }
+        benchmarks: [],
+        selected: '',
+        message: 'hola'
+    },
     mounted: function() {
-        val self = this;
+        var self = this;
         $.ajax({
             url: 'http://localhost:5000/benchmarks',
             method: 'GET',

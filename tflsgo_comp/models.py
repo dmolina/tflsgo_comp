@@ -157,3 +157,13 @@ def get_class_by_tablename(tablename):
     for c in db.Model._decl_class_registry.values():
         if hasattr(c, '__tablename__') and c.__tablename__ == tablename:
             return c
+
+def get_results(query):
+    return [row.__dict__ for row in query.all()]
+
+def get_benchmarks():
+
+    benchs = [{'id': id, 'description': description, 'name': name} for name,
+              description, id in db.session.query(Benchmark.name, Benchmark.description,
+                                                  Benchmark.id)]
+    return benchs
