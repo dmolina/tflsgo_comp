@@ -163,7 +163,7 @@ def get_results(query):
 
 def get_benchmarks():
 
-    benchs = [{'id': id, 'description': description, 'name': name} for name,
+    benchs = {id: {'id': id, 'description': description, 'name': name} for name,
               description, id in db.session.query(Benchmark.name, Benchmark.description,
-                                                  Benchmark.id)]
+                                                  Benchmark.id)}
     return benchs
