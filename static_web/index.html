@@ -18,8 +18,9 @@
 <h2>Select Benchmark</h2>
 <p>
     <div id="app">
+        {{error}} 
 Select the benchmark used for comparison:
-<select v-model="selected">
+<select v-model="selected" v-on:change="onChangedBenchmark">
     <option value="" selected="selected">------</option>
     <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>
 </select>

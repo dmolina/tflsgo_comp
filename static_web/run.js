@@ -1,9 +1,11 @@
 var app = new Vue({
     el: '#app',
     data: {
-        benchmarks: [],
+        benchmarks: {},
         selected: '',
-        message: 'hola'
+        algs: {},
+        sel_algs: [],
+        error: ''
     },
     mounted: function() {
         var self = this;
@@ -14,5 +16,20 @@ var app = new Vue({
                 self.benchmarks = data['benchmarks'];
             }
         })
+    },
+    methods: {
+        onChangedBenchmark: function() {
+            var self = this;
+            $.ajax({
+                url: 'http://localhost:5000/algs/' +self.selected,
+                method: 'GET',
+                sucess: function(data) {
+                    self.algs = data['algs'];
+                    self.error = data['error'];
+                }
+            });
+        }
+
     }
+
 })
