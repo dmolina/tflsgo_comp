@@ -29,6 +29,21 @@ Select the benchmark used for comparison:
     <h2>{{benchmarks[selected].name}}</h2>
     <p>{{benchmarks[selected].description}}
     </p>
+<form name="form" action="localhost:5000/compare" method="post" enctype="multipart/form-data">
+    <template v-if="benchmarks[selected].dimensions.length > 1">
+    Select the dimension value:
+    <select name="dimension" v-model="dimension">
+        <option v-for="dim in benchmarks[selected].dimensions" v-bind:value="dim">[[dim]]</option>
+    </select>
+    </template>
+    <template v-else>
+        <p>
+        Dimension value: <strong>{{benchmarks[selected].dimensions[0]}}</strong>
+            <input type="hidden" v-bind:value="benchmarks[selected].dimensions[0]" name="dimension"/>
+        </p>
+    </template>
+</form>
+
 </template>
     </div>
         <script src="./run.js"></script>
