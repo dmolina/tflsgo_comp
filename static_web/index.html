@@ -42,6 +42,21 @@ Select the benchmark used for comparison:
             <input type="hidden" v-bind:value="benchmarks[selected].dimensions[0]" name="dimension"/>
         </p>
     </template>
+    <template v-if="available_algs.length > 0">
+        <h2>Select the algorithms to compare</h2>
+        <template v-for="alg in available_algs">
+            <p>
+            <ul class="checkbox">
+                <li><input type="checkbox" v-bind:value="alg" name="algs" v-model="algs" checked>{{alg}}</li>
+            </ul>
+            </p><br>
+        </template>
+    </template>
+    <template v-else>
+        <p>
+            There are not algorithms to compare.
+        </p>
+    </template>
 </form>
 
 </template>
