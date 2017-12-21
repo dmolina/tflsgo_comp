@@ -1,0 +1,35 @@
+* Links of interest
+
+** Development
+
+*** Ajax y form
+
+https://stackoverflow.com/questions/10899384/uploading-both-data-and-files-in-one-form-using-ajax#10899796
+
+https://github.com/Abban/jQueryFileUpload
+
+
+*** SQL-Alchemy
+
+http://flask-sqlalchemy.pocoo.org/2.3/quickstart/
+
+
+*** Vuex
+
+https://vuex.vuejs.org/en/intro.html
+
+*** Vue-router (pass parameters)
+
+https://router.vuejs.org/en/essentials/named-views.html
+https://router.vuejs.org/es/essentials/named-views.html
+
+https://stackoverflow.com/questions/35914069/vue-js-query-parameters#35916241
+
+
+** Production
+
+https://progblog.io/How-to-deploy-a-Flask-App-to-Heroku/
+
+https://coderwall.com/p/pstm1w/deploying-a-flask-app-at-heroku
+
+https://stackoverflow.com/questions/13714205/deploying-flask-app-to-heroku#13714363
