@@ -21,6 +21,8 @@ class Benchmark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # Name of the benchmark to use
     name = db.Column(db.String(20), unique=True, nullable=False)
+    # Title of the benchmark to use
+    title = db.Column(db.String(20), unique=True, nullable=False)
     # Description of the benchmark
     description = db.Column(db.Text, default="")
     # Num of Functions
@@ -143,7 +145,7 @@ def init_db(db):
     if Benchmark.query.all():
         return
 
-    bench = Benchmark(name="CEC2013LSGO", nfuns=15, description="""
+    bench = Benchmark(name="CEC2013LSGO", title="CEC'2013 Large Scale Global Optimization", nfuns=15, description="""
 Benchmark for the Large Scale Global Optimization competitions.
         """, data_table="cec2013lsgo")
     db.session.add(bench)
@@ -180,7 +182,7 @@ def get_benchmarks():
     """
     bench_data = db.session.query(Benchmark).options(joinedload("dimensions"), joinedload("milestones")).all()
     benchs = {bench.id: {'id': bench.id, 'description': bench.description, 'name':
-                         bench.name, 'dimensions': [dim.value for dim in bench.dimensions],
+                         bench.name, 'title': bench.title, 'dimensions': [dim.value for dim in bench.dimensions],
                          'milestones': [mil.name for mil in bench.milestones]} for bench in bench_data}
     return benchs
 

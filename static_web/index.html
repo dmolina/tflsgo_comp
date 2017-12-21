@@ -24,7 +24,7 @@ Select the benchmark used for comparison:
     <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>
 </select>
 <template v-if="[[selected]] != ''">
-    <h2>{{benchmarks[selected].name}}</h2>
+    <h2>{{benchmarks[selected].title}}</h2>
     <p>{{benchmarks[selected].description}}
     </p>
     <template v-if="benchmarks[selected].dimensions.length > 1">
