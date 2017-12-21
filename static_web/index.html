@@ -18,17 +18,18 @@
 <h2>Select Benchmark</h2>
     <div id="app">
         {{error}} 
-Select the benchmark used for comparison:
+        Select the benchmark used for comparison:
+        <!-- Select the benchmark -->
 <select v-model="selected" v-on:change="onChangedBenchmark">
     <option value="" selected="selected">------</option>
     <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>
 </select>
+<!-- Only visible with the benchmark was selected -->
 <template v-if="[[selected]] != ''">
     <h2>{{benchmarks[selected].title}}</h2>
     <p>{{benchmarks[selected].description}}
     </p>
     <template v-if="benchmarks[selected].dimensions.length > 1">
-<form name="form" action="http://localhost:5000/compare" method="post" enctype="multipart/form-data">
     Select the dimension value:
     <select name="dimension" v-model="dimension">
         <option v-for="dim in benchmarks[selected].dimensions" v-bind:value="dim">[[dim]]</option>
@@ -36,11 +37,19 @@ Select the benchmark used for comparison:
     </template>
     <template v-else>
         <p>
-        Dimension value: <strong>{{benchmarks[selected].dimensions[0]}}</strong>
             <input type="hidden" v-bind:value="benchmarks[selected].dimensions[0]" name="dimension"/>
+            Dimension value: <strong>{{benchmarks[selected].dimensions[0]}}</strong>
         </p>
     </template>
+        <!-- Form with the data (in ajax) -->
+        <form name="form" action="#" method="post" enctype="multipart/form-data">
+            <!-- benchmark_id -->
+            <input type="hidden" v-bind:value="benchmarks[selected].id" name="benchmark_id"/>
+            <!-- dimension -->
+            <input type="hidden" v-bind:value="dimension" name="dimension"/>
+        </p>
     <h2>Algorithms to compare</h2>
+    <!-- algs with the list of algorithms to compare -->
     <template v-if="available_algs.length > 0">
         <template v-for="alg in available_algs">
             <p>
@@ -61,17 +70,17 @@ If you want to compare existing results with your own proposal, set a Excel or a
     the results. The required format is indicated <a href="">here</a>.
 </p>
     <label for="fileupload">Select a file (.csv or .xls) to upload<br/></label>
-    <p><input id="upload_button" type="file" class=""></p>
-    <input id="benchvalue" name="benchmark" v-model="bench_name" placeholder="Proposal">
-    <p><input id="submit_button" type="submit" class="" value="Upload">
-    <p>
-	When it is ready click in the button
-    </p>
+    <p><input id="upload_button" type="file" name="file"></p>
+    <input id="alg_name" name="alg_name" v-model="alg_name" placeholder="Proposal">
+    <p><input id="submit_button" type="submit" class="" value="Upload"></p>
+    <p>When it is ready click in the button</p>
     <input type="submit" value="submit">
-</form>
+        </form>
+    </template>
 
-</template>
+    </template>
     </div>
-        <script src="./run.js"></script>
+    <script src="./run.js"></script>
+</div>
     </body>
 </html>
