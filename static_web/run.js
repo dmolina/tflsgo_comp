@@ -2,6 +2,7 @@ var app = new Vue({
     el: '#app',
     data: {
         benchmarks: {},
+        alg_name: '',
         selected: '',
         available_algs: {},
         algs: [],
@@ -23,7 +24,7 @@ var app = new Vue({
             var self = this;
             var dimensions = self.benchmarks[self.selected].dimensions;
 
-            if (length(dimensions)==1) {
+            if (dimensions.length==1) {
                 self.dimension = dimensions[0];
             }
             $.ajax({
