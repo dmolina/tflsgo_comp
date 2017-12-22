@@ -1,3 +1,5 @@
+var base_url = "http://localhost:8000";
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -12,7 +14,7 @@ var app = new Vue({
     mounted: function() {
         var self = this;
         $.ajax({
-            url: 'http://localhost:5000/benchmarks',
+            url: base_url +'/benchmarks',
             method: 'GET',
             success: function(data) {
                 self.benchmarks = data['benchmarks'];
@@ -28,7 +30,7 @@ var app = new Vue({
                 self.dimension = dimensions[0];
             }
             $.ajax({
-                url: 'http://localhost:5000/algs/' +self.selected,
+                url: base_url +'/algs/' +self.selected,
                 method: 'GET',
                 sucess: function(data) {
                     self.available_algs = data['algs'];
