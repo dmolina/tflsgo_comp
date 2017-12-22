@@ -24,9 +24,8 @@
     <option value="" selected="selected" value="-1">------</option>
     <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>
 </select>
-<form id="data" action="/pepe" method="post" enctype="multipart/form-data">
-<!-- Only visible with the benchmark was selected -->
-<template v-if="selected >= 0">
+<form id="data" action="/pepe" method="post" enctype="multipart/form-data" v-on:submit="sendData">
+<!-- Only visible with the benchmark was selected --><template v-if="selected >= 0">
 <!-- Form with the data (in ajax) -->
     <h2>{{benchmarks[selected].title}}</h2>
     <p>{{benchmarks[selected].description}}

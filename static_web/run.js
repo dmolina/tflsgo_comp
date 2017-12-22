@@ -1,29 +1,5 @@
 var base_url = "http://localhost:8000";
 
-var submitData = function(e) {
-    e.preventDefault();
-    var formData = new FormData(this);
-
-    $.ajax({
-        url: base_url +'/compare',
-        type: 'POST',
-        data: formData,
-        // The name of the callback parameter, as specified by the YQL service
-        success: function (data) {
-            alert(data);
-        },
-        beforeSend: function() {
-            $("input[type=submit]", $("#form")).attr("disabled", "disabled");
-        },
-        complete: function () {
-            $("input[type=submit]", $("#form")).removeAttr("disabled");
-        },
-        cache: false,
-        contentType: false,
-        processData: false
-    });
-};
-
 var app = new Vue({
     el: '#app',
     data: {
@@ -37,7 +13,6 @@ var app = new Vue({
     },
     mounted: function() {
         var self = this;
-        $("form#data").submit(submitData);
         $.ajax({
             url: base_url +'/benchmarks',
             method: 'GET',
@@ -63,6 +38,30 @@ var app = new Vue({
                 }
             });
         },
+        sendData: function(e) {
+            var self = this;
+            e.preventDefault();
+            var formData = new FormData(e.target);
+
+            $.ajax({
+                url: base_url +'/compare',
+                type: 'POST',
+                data: formData,
+                // The name of the callback parameter, as specified by the YQL service
+                success: function (data) {
+                    alert(data);
+                },
+                beforeSend: function() {
+                    $("input[type=submit]", $("#form")).attr("disabled", "disabled");
+                },
+                complete: function () {
+                    $("input[type=submit]", $("#form")).removeAttr("disabled");
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        }
     }
 
 });
