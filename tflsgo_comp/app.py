@@ -1,7 +1,10 @@
-from flask import Flask
-from flask_restful import Resource, Api
+from flask import Flask, send_file
+from flask_restful import Resource, Api, reqparse
 from flask_cors import CORS
 from models import db, init_db, get_benchmarks, get_alg
+
+import werkzeug
+
 
 def create_app(name, options={}):
     """
@@ -19,10 +22,10 @@ def create_app(name, options={}):
     db.init_app(app)
     return app
 
+
 app = create_app(__name__)
 CORS(app)
 api = Api(app)
-
 
 class Benchmark(Resource):
     def get(self):
@@ -31,13 +34,24 @@ class Benchmark(Resource):
 
 api.add_resource(Benchmark, '/benchmarks')
 
-
 class Algs(Resource):
     def get(self, benchmark_id):
         return get_alg(benchmark_id)
 
+
 api.add_resource(Algs, '/algs/<int:benchmark_id>')
+# Avoid problem with the Same-origin policy
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
+
+@app.route('/')
+def index():
+    return send_file('static/index.html')
 
 if __name__ == '__main__':
     init_db(db)
-    app.run(debug=True)
+    app.run(debug=True, port=8000)
