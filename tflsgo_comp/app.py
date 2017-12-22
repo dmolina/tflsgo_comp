@@ -5,12 +5,11 @@ from models import db, init_db, get_benchmarks, get_alg
 
 import werkzeug
 
-
 def create_app(name, options={}):
     """
     Create the app with the database connection (using Flask-SQLAlchemy).
     """
-    app = Flask(name)
+    app = Flask(name, static_url_path='', template_folder="../static_web")
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../bench_lsgo.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ECHO'] = True
@@ -27,6 +26,7 @@ app = create_app(__name__)
 CORS(app)
 api = Api(app)
 
+
 class Benchmark(Resource):
     def get(self):
         return {'benchmarks': get_benchmarks()}
@@ -34,12 +34,27 @@ class Benchmark(Resource):
 
 api.add_resource(Benchmark, '/benchmarks')
 
+
 class Algs(Resource):
     def get(self, benchmark_id):
         return get_alg(benchmark_id)
 
 
 api.add_resource(Algs, '/algs/<int:benchmark_id>')
+
+
+class Compare(Resource):
+    def post(self):
+        parse = reqparse.RequestParser()
+        parse.add_argument('file', type=werkzeug.datastructures.FileStorage,
+                           location='files')
+        args = parse.parse_args()
+        file_data = args['file']
+        file_data.save("/tmp/data")
+        return {'error': 'error', 'tables': [], 'figures': []}
+
+api.add_resource(Compare, '/compare')
+
 # Avoid problem with the Same-origin policy
 @app.after_request
 def after_request(response):
