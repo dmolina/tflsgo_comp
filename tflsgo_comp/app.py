@@ -52,6 +52,11 @@ def after_request(response):
 def index():
     return send_file('static/index.html')
 
+@app.route('/<path:path>')
+def path(path):
+    return send_file(path)
+
+
 if __name__ == '__main__':
     init_db(db)
     app.run(debug=True, port=8000)
