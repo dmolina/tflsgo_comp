@@ -21,11 +21,13 @@
         Select the benchmark used for comparison:
         <!-- Select the benchmark -->
 <select v-model="selected" v-on:change="onChangedBenchmark">
-    <option value="" selected="selected">------</option>
+    <option value="" selected="selected" value="-1">------</option>
     <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>
 </select>
+<form id="data" action="/pepe" method="post" enctype="multipart/form-data">
 <!-- Only visible with the benchmark was selected -->
-<template v-if="[[selected]] != ''">
+<template v-if="selected >= 0">
+<!-- Form with the data (in ajax) -->
     <h2>{{benchmarks[selected].title}}</h2>
     <p>{{benchmarks[selected].description}}
     </p>
@@ -41,8 +43,6 @@
             Dimension value: <strong>{{benchmarks[selected].dimensions[0]}}</strong>
         </p>
     </template>
-        <!-- Form with the data (in ajax) -->
-        <form name="form" action="#" method="post" enctype="multipart/form-data">
             <!-- benchmark_id -->
             <input type="hidden" v-bind:value="benchmarks[selected].id" name="benchmark_id"/>
             <!-- dimension -->
@@ -72,15 +72,14 @@ If you want to compare existing results with your own proposal, set a Excel or a
     <label for="fileupload">Select a file (.csv or .xls) to upload<br/></label>
     <p><input id="upload_button" type="file" name="file"></p>
     <input id="alg_name" name="alg_name" v-model="alg_name" placeholder="Proposal">
-    <p><input id="submit_button" type="submit" class="" value="Upload"></p>
     <p>When it is ready click in the button</p>
-    <input type="submit" value="submit">
-        </form>
+    <p><input id="submit_button" type="submit" class="" value="Upload"></p>
     </template>
-
-    </template>
+</template>
+</template>
+</form>
     </div>
     <script src="./run.js"></script>
 </div>
-    </body>
+</body>
 </html>
