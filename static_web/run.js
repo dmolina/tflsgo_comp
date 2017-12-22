@@ -5,7 +5,7 @@ var app = new Vue({
     data: {
         benchmarks: {},
         alg_name: '',
-        selected: '',
+        selected: -1,
         available_algs: {},
         algs: [],
         error: '',
