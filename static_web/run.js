@@ -47,20 +47,24 @@ var app = new Vue({
                 url: base_url +'/compare',
                 type: 'POST',
                 data: formData,
-                // The name of the callback parameter, as specified by the YQL service
-                success: function (data) {
-                    alert(data);
-                },
-                beforeSend: function() {
-                    $("input[type=submit]", $("#form")).attr("disabled", "disabled");
-                },
-                complete: function () {
-                    $("input[type=submit]", $("#form")).removeAttr("disabled");
-                },
+                dataType: 'json',
                 cache: false,
                 contentType: false,
                 processData: false
-            });
+            }).done(function(data) {
+                if (data['error']) {
+                    self.error = data['error'];
+                    $("label#file").focus();
+                }
+            })
+                .fail(function(data){
+                    console.log(data);
+                error = data.responseJSON.message;
+
+                for (name in error) {
+                    self.error += error[name];
+                }
+                });
         }
     }
 
