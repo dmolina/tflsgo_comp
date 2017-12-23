@@ -1,9 +1,10 @@
-from flask import Flask, send_file
-from flask_restful import Resource, Api, reqparse
-from flask_cors import CORS
-from models import db, init_db, get_benchmarks, get_alg
-
 import werkzeug
+from flask import Flask, send_file
+from flask_cors import CORS
+from flask_restful import Api, Resource, reqparse
+from models import db, get_alg, get_benchmarks, init_db
+from utils import tmpfile, is_error_in_args
+
 
 def create_app(name, options={}):
     """
@@ -13,6 +14,7 @@ def create_app(name, options={}):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../bench_lsgo.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ECHO'] = True
+    app.config['BUNDLE_ERRORS'] = True
 
     for opt in options:
         app.config[opt] = options[opt]
@@ -47,11 +49,16 @@ class Compare(Resource):
     def post(self):
         parse = reqparse.RequestParser()
         parse.add_argument('file', type=werkzeug.datastructures.FileStorage,
-                           location='files')
+                           location='files', required=True, help='File is missing')
+        parse.add_argument('benchmark_id', type=int, location='form',
+                           required=True, help='Benchmark_id is missing')
         args = parse.parse_args()
-        file_data = args['file']
-        file_data.save("/tmp/data")
-        return {'error': 'error', 'tables': [], 'figures': []}
+        fname = tmpfile(args['file'])
+        error = is_error_in_args(args)
+
+        if error:
+            return {'error': error}
+
 
 api.add_resource(Compare, '/compare')
 

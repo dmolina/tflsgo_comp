@@ -16,9 +16,8 @@
     <body>
 <div id="benchmark">
 <h2>Select Benchmark</h2>
-    <div id="app">
-        {{error}} 
-        Select the benchmark used for comparison:
+<div id="app">
+       Select the benchmark used for comparison:
         <!-- Select the benchmark -->
 <select v-model="selected" v-on:change="onChangedBenchmark">
     <option value="" selected="selected" value="-1">------</option>
@@ -68,9 +67,12 @@
 If you want to compare existing results with your own proposal, set a Excel or a CSV file with
     the results. The required format is indicated <a href="">here</a>.
 </p>
-    <label for="fileupload">Select a file (.csv or .xls) to upload<br/></label>
+    <label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>
     <p><input id="upload_button" type="file" name="file"></p>
     <input id="alg_name" name="alg_name" v-model="alg_name" placeholder="Proposal">
+    <div v-if="error" class="error">
+        <label id="error">{{error}}</label>
+    </div>
     <p>When it is ready click in the button</p>
     <p><input id="submit_button" type="submit" class="" value="Upload"></p>
     </template>
