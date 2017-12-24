@@ -31,7 +31,7 @@
     </p>
     <template v-if="benchmarks[selected].dimensions.length > 1">
     Select the dimension value:
-    <select name="dimension" v-model="dimension">
+    <select name="dimension" v-model="dimension" v-on:change="onChangedDimension">
         <option v-for="dim in benchmarks[selected].dimensions" v-bind:value="dim">[[dim]]</option>
     </select>
     </template>

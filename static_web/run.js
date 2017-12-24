@@ -28,9 +28,13 @@ var app = new Vue({
 
             if (dimensions.length==1) {
                 self.dimension = dimensions[0];
+                self.onChangedDimension();
             }
+        },
+        onChangedDimension: function() {
+            var self = this;
             $.ajax({
-                url: base_url +'/algs/' +self.selected,
+                url: base_url +'/algs/' +self.selected +'/' +self.dimension,
                 method: 'GET',
                 sucess: function(data) {
                     self.available_algs = data['algs'];

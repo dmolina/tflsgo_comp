@@ -197,6 +197,27 @@ def get_alg(bench_id):
         return {'error': "Benchmark '{}' not found".format(bench_id), 'algs': []}
 
     tablename, = tablenames[0]
-    data = get_class_by_tablename(tablename)
-    algs = db.session.query(data.alg).all()
+    data = get_class_by_tablename(tablename) 
+    algs = db.session.query(data.alg).filter_by(dimension=dimension).all()
     return {'error': '', 'algs': algs}
+
+
+def read_data_alg(benchmark_id, algs):
+    """
+    Read the data.
+
+    :param benchmark_id: id from benchmark
+    :param algs: alg
+    :return: tuple (data, error)
+    """
+    bench = db.session.query(Benchmark).filter_by(id=benchmark_id).all()
+    error = ''
+    data = ''
+
+    if bench:
+        error = 'id \'{}\' is not a known benchmark'.format(benchmark_id)
+    else:
+        data_class = get_class_by_tablename(bench[0].tablename)
+        data = db.session.query(data_class).filter(data_class.alg in algs)
+
+    return data, error
