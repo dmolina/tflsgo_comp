@@ -7,7 +7,9 @@ import werkzeug
 from flask import Flask, send_file
 from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
-from models import db, get_alg, get_benchmarks, init_db, read_data_alg
+from models import db, get_alg, get_benchmarks, get_benchmark, init_db
+from models import read_data_alg, get_report
+from readdata import read_results_from_file, error_in_data
 from utils import tmpfile, is_error_in_args
 
 
@@ -55,19 +57,20 @@ class Algs(Resource):
     """
     Rest resource to receive the list of algorithm for a benchmark.
     """
-    def get(self, benchmark_id):
+    def get(self, benchmark_id, dimension):
         """
         Return the algorithms available from the indicated benchmark.
 
         :param benchmark_id: Benchmark id.
+        :param dimension: Dimension.
         :returns: json object with the algorithm list.
         :rtype: json.
         """
 
-        return get_alg(benchmark_id)
+        return get_alg(benchmark_id, dimension)
 
 
-api.add_resource(Algs, '/algs/<int:benchmark_id>')
+api.add_resource(Algs, '/algs/<int:benchmark_id>/<int:dimension>')
 
 
 class Compare(Resource):
@@ -89,17 +92,27 @@ class Compare(Resource):
                            required=True, help='Benchmark_id is missing')
         parse.add_argument('algs', type=str, location='form',
                            action='append')
+        parse.add_argument('alg_name', type=str, location='form', required=True)
+        parse.add_argument('report', type=str, location='form', required=True)
         args = parse.parse_args()
         error = is_error_in_args(args)
+        data = ''
+        benchmark_id = args['benchmark_id']
+
+        report_module, error = get_report(args['report'], benchmark_id)
 
         if error:
             return {'error': error}
 
         if args['algs']:
-            data, error = read_data_alg(args['benchmark_id'], args['algs'])
+            data, error = read_data_alg(benchmark_id, args['algs'])
 
         if args['file'] and not error:
             fname = tmpfile(args['file'])
+            alg_name = args['alg_name']
+            data = read_results_from_file(alg_name, fname)
+            bench = get_benchmark(benchmark_id)
+            error = error_in_data(data, bench['nfuns'], bench['milestones'])
 
         return {'error': '', 'data': data}
 

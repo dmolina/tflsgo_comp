@@ -17,7 +17,7 @@ def tmpfile(file_data):
 def is_error_in_args(args):
     options = ['file', 'benchmark_id']
 
-    if 'file' not in args and 'algs' not in args:
-        return 'Not reference algorithms and file missing'
+    if not args['file'] and ('algs' not in args or not args['algs']):
+        return 'When there is not selected algorithms the file is mandatory'
 
     return ""

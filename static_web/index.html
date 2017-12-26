@@ -32,7 +32,7 @@
     <template v-if="benchmarks[selected].dimensions.length > 1">
     Select the dimension value:
     <select name="dimension" v-model="dimension" v-on:change="onChangedDimension">
-        <option v-for="dim in benchmarks[selected].dimensions" v-bind:value="dim">[[dim]]</option>
+        <option v-for="dim in benchmarks[selected].dimensions" v-bind:value="dim">{{dim}}</option>
     </select>
     </template>
     <template v-else>
@@ -73,8 +73,27 @@ If you want to compare existing results with your own proposal, set a Excel or a
     <div v-if="error" class="error">
         <label id="error">{{error}}</label>
     </div>
+    <template v-else>
+        <p>
+            <input type="hidden" v-bind:value="benchmarks[selected].dimensions[0]" name="dimension"/>
+        </p>
+    </template>
+    <template if="len(benchmark[selected])==1">
+        <p>
+            <strong>Report: {{report.description}}</strong> <input name="report" type="hidden" v-bind:value="report.description">
+        </p>
+    </template>
+    <template v-if="benchmarks[selected].reports.length > 1">
+        <p>
+        Select the dimension value:
+        <select name="report" v-model="report">
+            <option v-for="report in benchmarks[selected].reports" v-bind:value="report.name">{{report.description}}</option>
+        </select>
+        </p>
+    </template>
+
     <p>When it is ready click in the button</p>
-    <p><input id="submit_button" type="submit" class="" value="Upload"></p>
+    <p><input id="submit_button" type="submit" class="" value="Update"></p>
     </template>
 </template>
 </template>

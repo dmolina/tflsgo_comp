@@ -9,7 +9,8 @@ var app = new Vue({
         available_algs: {},
         algs: [],
         error: '',
-        dimension: ''
+        dimension: '',
+        report: {}
     },
     mounted: function() {
         var self = this;
@@ -25,10 +26,14 @@ var app = new Vue({
         onChangedBenchmark: function() {
             var self = this;
             var dimensions = self.benchmarks[self.selected].dimensions;
+            var reports = self.benchmarks[self.selected].reports;
 
             if (dimensions.length==1) {
                 self.dimension = dimensions[0];
                 self.onChangedDimension();
+            }
+            if (reports.length==1) {
+                self.report = reports[0];
             }
         },
         onChangedDimension: function() {
@@ -42,7 +47,7 @@ var app = new Vue({
                 }
             });
         },
-        sendData: function(e) {
+       sendData: function(e) {
             var self = this;
             e.preventDefault();
             var formData = new FormData(e.target);
@@ -56,6 +61,7 @@ var app = new Vue({
                 contentType: false,
                 processData: false
             }).done(function(data) {
+                console.log(data);
                 if (data['error']) {
                     self.error = data['error'];
                     $("label#file").focus();
