@@ -10,7 +10,7 @@ import holoviews as hv
 
 from .report_utils import getfilter_category, filter_milestone
 from .report_utils import get_plot_bar
-
+from .report_utils import figure_json
 
 def _get_values_df(data_df, functions):
     # Obtain the rank
@@ -219,8 +219,7 @@ def create_figures(df, categories, accuracies, dimension=1000):
     total_figs['Final2'] = plot_bokeh
     fig_names.append('Final2')
 
-    return fig_names, total_figs
-
+    return figure_json(fig_names, total_figs, type='bokeh')
 
 def get_f1_score(position):
     """

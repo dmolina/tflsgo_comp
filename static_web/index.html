@@ -2,15 +2,19 @@
 <html>
     <head>
         <title>Select your Benchmark</title>
-        <link rel="stylesheet" type="text/css" href="style.css">
         <script src="/vue.js"></script>
+   <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.css"
+         rel="stylesheet" type="text/css"/>
+   <link href="http://cdn.pydata.org/bokeh/release/bokeh-widget-0.12.13.min.css"
+         rel="stylesheet" type="text/css"/>
         <script src="/jquery-3.2.1.min.js"></script>
-        <!--
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.js"></script>
-<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.13.min.js"></script>
-<script src="http://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.13.min.js"></script>
--->
+   <script
+       src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.js"></script>
+   <script
+       src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.13.min.js"></script>
+       <script src="http://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.13.min.js"></script>
+       <script src="http://cdn.pydata.org/bokeh/release/bokeh-api-0.12.13.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
         <meta charset="utf-8" />
     </head>
     <body>
@@ -37,15 +41,15 @@
     </template>
     <template v-else>
         <p>
-            <input type="hidden" v-bind:value="benchmarks[selected].dimensions[0]" name="dimension"/>
             Dimension value: <strong>{{benchmarks[selected].dimensions[0]}}</strong>
         </p>
     </template>
+    <p>
             <!-- benchmark_id -->
             <input type="hidden" v-bind:value="benchmarks[selected].id" name="benchmark_id"/>
             <!-- dimension -->
             <input type="hidden" v-bind:value="dimension" name="dimension"/>
-        </p>
+    </p>
     <h2>Algorithms to compare</h2>
     <!-- algs with the list of algorithms to compare -->
     <template v-if="available_algs.length > 0">
@@ -73,29 +77,23 @@ If you want to compare existing results with your own proposal, set a Excel or a
     <div v-if="error" class="error">
         <label id="error">{{error}}</label>
     </div>
-    <template v-else>
+    <template if="len(benchmark[selected].reports)==1">
         <p>
-            <input type="hidden" v-bind:value="benchmarks[selected].dimensions[0]" name="dimension"/>
-        </p>
-    </template>
-    <template if="len(benchmark[selected])==1">
-        <p>
-            <strong>Report: {{report.description}}</strong> <input name="report" type="hidden" v-bind:value="report.description">
+            <strong>Report: {{benchmarks[selected].reports[0].description}}</strong>
         </p>
     </template>
     <template v-if="benchmarks[selected].reports.length > 1">
         <p>
-        Select the dimension value:
-        <select name="report" v-model="report">
-            <option v-for="report in benchmarks[selected].reports" v-bind:value="report.name">{{report.description}}</option>
-        </select>
+            <strong>Select the Report:</strong>
+            <select v-model="report_name" name="report_name">
+                <option v-for="report_item in benchmarks[selected].reports" :value="report_item.name">{{report_item.description}}
+                </option>
+            </select>
         </p>
     </template>
-
+    <input type="hidden" name="report" :value="report_name">
     <p>When it is ready click in the button</p>
     <p><input id="submit_button" type="submit" class="" value="Update"></p>
-    </template>
-</template>
 </template>
 </form>
 <template v-for="index in tables.idx">
@@ -103,7 +101,9 @@ If you want to compare existing results with your own proposal, set a Excel or a
     <p><span v-html="tables.tables[index]"></span></p>
 </template>
 </div>
-    <script src="./run.js"></script>
+<div id="figures"></div>
+<script src="./run.js"></script>
+</div>
 </div>
 </body>
 </html>

@@ -183,6 +183,9 @@ Benchmark for the Large Scale Global Optimization competitions.
     db.session.add(Report(name="cec2013_classical", filename="report_cec2013",
                           description="Classic Benchmark for LSGO (F1 criterion)", benchmarks=[bench]))
 
+    db.session.add(Report(name="test", filename="report_test",
+                          description="Test", benchmarks=[bench]))
+
     # Create milestone with required and optional
     milestones_required = np.array([1.2e5, 6e5, 3e6], dtype=np.int32)
     milestones_optional = np.linspace(3e5, 3e6, 10, dtype=np.int32)
@@ -294,11 +297,12 @@ def get_report(report_id, benchmark_id):
     """
     error = ''
     filename = ''
+    report_module = ''
 
     if not report_id:
         error = 'Report is missing'
     else:
-        reports = db.session.query(Report).join(bench_report).filter_by(bench_id=benchmark_id).all()
+        reports = db.session.query(Report).filter(Report.name == report_id).all()
 
         if not reports:
             error = 'Report selected is not related with the benchmark chosen'

@@ -1,5 +1,11 @@
 var base_url = "http://localhost:8000";
 
+function addCode(code){
+    var JS= document.createElement('script');
+    JS.text= code;
+    document.body.appendChild(JS);
+}
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -10,8 +16,11 @@ var app = new Vue({
         algs: [],
         error: '',
         dimension: '',
-        report: {},
+        report_name: '',
         tables: {},
+        figures: {},
+        figures_js: '',
+        figure_divs: {}
     },
     mounted: function() {
         var self = this;
@@ -34,7 +43,7 @@ var app = new Vue({
                 self.onChangedDimension();
             }
             if (reports.length==1) {
-                self.report = reports[0];
+                self.report_name = reports[0].name;
             }
         },
         onChangedDimension: function() {
@@ -47,6 +56,31 @@ var app = new Vue({
                     self.error = data['error'];
                 }
             });
+        },
+        runjs: function() {
+            console.log("run");
+            addCode(this.figures_js);
+        },
+        appendFigures: function() {
+            var self = this;
+            div = document.getElementById('figures');
+            // Empty the div
+            div.innerHTML = '';
+
+            for (fi in self.figure_divs) {
+                fig = self.figure_divs[fi];
+                new_title = document.createElement("h2");
+                new_title.append(document.createTextNode(fi));
+                div.append(new_title);
+                div.innerHTML += fig;
+            }
+            console.log("appendFigures Final div:");
+            console.log(div.innerHTML);
+            console.log(self.figures_js);
+            eval(self.figures_js);
+            // js = document.getElementById('figures_js');
+            // console.log(self.figures_js);
+            // setTimeout(self.runjs, 1000);
         },
        sendData: function(e) {
             var self = this;
@@ -62,22 +96,29 @@ var app = new Vue({
                 contentType: false,
                 processData: false
             }).done(function(data) {
+                console.log('done');
                 console.log(data);
                 self.error = '';
                 if (data['error']) {
                     self.error = data['error'];
                     $("label#file").focus();
+                    return;
                 }
                 self.tables = data['tables'];
+                self.figures = data['figures'];
+                self.figure_divs = data['divs'];
+                self.figures_js = data['js'];
+                self.appendFigures();
             })
                .fail(function(data){
-                   console.log('hola');
-                console.log(data);
-                error = data['error'];
+                   console.log('failed');
+                   console.log(data.responseJSON);
+                   error = data.responseJSON['message'];
+                   console.log(error);
 
-                for (name in error) {
-                    self.error += error[name];
-                }
+                   for (name in error) {
+                       self.error = name +': ' +error[name];
+                   }
                 });
         }
     }

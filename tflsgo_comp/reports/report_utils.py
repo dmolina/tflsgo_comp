@@ -1,6 +1,38 @@
+from bokeh.embed import components
+
+from pprint import pprint
+
 import holoviews as hv
 hv.extension('bokeh')
 
+def figure_json(fig_names, plots, type='bokeh'):
+    """Make the figure visualize with the json.
+
+    :param fig_names: name of the figs
+    :param plots: plots to visualize
+    :param type: type of plot library (bokeh and holoviews are only supported)
+    :returns: dictionary of type
+    :rtype: {'error': ..., 'plots': [{'title': ..., 'js': ...,  'tags': ...}, ..]}
+
+    """
+    result = dict()
+    error = ''
+
+    if type=='bokeh' or 'holoviews':
+        json_plots = []
+        script, divs = components(plots, wrap_script=False)
+
+        for title in fig_names:
+            json_plots.append({'title': title, 'div': divs[title]})
+
+        result['plots'] = json_plots
+        result['js'] = script
+        result['divs'] = divs
+    else:
+        error = 'type \'{}\' not known'.format(type)
+
+    result.update({'error': error, 'type': type})
+    return result
 
 def get_plot_bar(data_df, title):
     """Return a bar plot with the data and the title
