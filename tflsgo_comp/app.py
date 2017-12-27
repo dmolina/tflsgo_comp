@@ -4,7 +4,7 @@ Program for the Task Force in Large Scale Global Optimization.
 Author: Daniel  Molina Cabrera <dmolina@decsai.ugr.es>
 """
 import werkzeug
-from flask import Flask, send_file, request
+from flask import Flask, send_file
 from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
 
@@ -131,8 +131,8 @@ class Compare(Resource):
             error = 'Error: without reference algorithms the file is mandatory'
 
         if not error:
-            categories = bench['categories']
-            milestones = bench['all_milestones']
+            categories = sorted(bench['categories'], key=lambda cat: cat.position)
+            milestones = bench['milestones_required']
             dimension = args['dimension']
             tables_idx, tables_titles, tables_df = report_module.create_tables(data, categories, milestones, dimension)
             tables = {'idx': tables_idx, 'titles': tables_titles, 'tables': tables_df}
@@ -149,8 +149,8 @@ class Compare(Resource):
         return result
 
 
-
 api.add_resource(Compare, '/compare')
+
 
 # Avoid problem with the Same-origin policy
 @app.after_request

@@ -1,7 +1,6 @@
 """
 This functions contains all models from the database.
 """
-from pprint import pprint
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 import importlib
@@ -113,6 +112,7 @@ class CategoryFunction(db.Model):
      - functions: list of functions, separated by commas.
      """
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True, nullable=False)
     functions_str = db.Column(db.String(80), nullable=False)
     position = db.Column(db.Integer, nullable=False)
     benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
@@ -124,7 +124,7 @@ class CategoryFunction(db.Model):
         return self.functions_str.split(',')
 
     def __repr__(self):
-        return "{}: ({})".format(self.benchmark.name, self.category,
+        return "{}: ({})".format(self.benchmark.name, self.name,
                                  self.functions_str)
 
     __table_args__ = (
@@ -199,8 +199,20 @@ Benchmark for the Large Scale Global Optimization competitions.
 
     for mil, req in zip(milestones, required):
         mil_str = "{:.1E}".format(mil)
-        db.session.add(Milestone(name=mil_str, value=mil, required=req,
+        db.session.add(Milestone(name=mil_str, value=int(mil), required=req,
                                  benchmark=bench))
+
+    categories = [
+        {'name': 'Unimodal', 'functions': '1,2,3'},
+        {'name': 'Functions with a separable subcomponent', 'functions': '4,5,6,7'},
+        {'name': 'Functions with no separable subcomponents', 'functions': '8,9,10,11'},
+        {'name': 'Overlapping Functions', 'functions': '12,13,14'},
+        {'name': 'Non-separable Functions', 'functions': '15'}
+        ]
+
+    for i, cat in enumerate(categories):
+        cat = CategoryFunction(name=cat['name'], functions_str=cat['functions'], position=i+1, benchmark=bench)
+        db.session.add(cat)
 
     db.session.commit()
 
@@ -227,8 +239,8 @@ def get_benchmarks():
     bench_data = db.session.query(Benchmark).options(joinedload("dimensions"), joinedload("milestones"), joinedload("reports")).all()
     benchs = {bench.id: {'id': bench.id, 'description': bench.description, 'name':
                          bench.name, 'title': bench.title, 'dimensions': [dim.value for dim in bench.dimensions],
-                         'reports': [{'name': report.name, 'description': report.description} for report in bench.reports],
-                         'milestones': [mil.name for mil in bench.milestones]} for bench in bench_data}
+                         'reports': [{'name': report.name, 'description': report.description} for report in bench.reports]}
+              for bench in bench_data}
     return benchs
 
 
@@ -245,8 +257,8 @@ def get_benchmark(benchmark_id):
                   'nfuns': bench.nfuns, 'name': bench.name,
                   'title': bench.title, 'dimensions': [dim.value for dim
                                                        in bench.dimensions],
-                  'milestones_required': [mil.name for mil in milestones if mil.required],
-                  'all_milestones': [mil.name for mil in milestones if not mil.required],
+                  'milestones_required': [mil.value for mil in milestones if mil.required],
+                  'all_milestones': [mil.value for mil in milestones if not mil.required],
                   'categories': [cat for cat in bench.categories]}
     return bench_data
 

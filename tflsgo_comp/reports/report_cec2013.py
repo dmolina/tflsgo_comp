@@ -34,8 +34,8 @@ def plot_global(df):
         category = df['category'].unique()
         total = pd.pivot_table(m_df, values='ranking', index=['alg'],
                                columns=['category']).reset_index()
- #      plot = get_plot_barh(total, category, "Probando de nuevo con leyenda")
- #      plots.append(plot)
+        plot = get_plot_barh(total, category, "Probando de nuevo con leyenda")
+        plots.append(plot)
 
     return hv.Layout(plots).cols(3)
 
@@ -128,7 +128,7 @@ def get_plot_barh(df, title):
     fields = ['alg','category','ranking']
     data_df = df[fields].sort_values(['alg'])
     data = [tuple(row) for row in data_df.values]
-    options = "Bars [tools=['hover'] stack_index=1 color_index=1 show_legend=False]"
+    options = "Bars [tools=['hover'] stack_index=1 color_index=1 show_legend=False xrotation=90]"
     bar = hv.Bars(data, kdims[:2], kdims[2], label=title)
     return bar.opts(options)
 
@@ -151,7 +151,6 @@ def create_figures(df, categories, accuracies, dimension=1000):
 
     total_figs = {}
     dim_df = df[df['dimension'] == dimension]
-    df['milestone'] = df['milestone'].astype(int)
     fig_names = []
 
     num_rows, num_columns = df.shape
@@ -164,32 +163,31 @@ def create_figures(df, categories, accuracies, dimension=1000):
     pivot_i = 0
 
     for cat in categories:
-        cat_name = cat['category']
+        cat_name = cat.name
         # Filter only the function in the category
-        functions = getfilter_category(cat)
+        functions = ['F{}'.format(x) for x in cat.functions()]
         cat_df = dim_df[['alg', 'milestone']+functions]
         cat_figs = []
 
         for milestone in accuracies:
-            milestone_name = int(float(milestone['name']))
-            current_df = filter_milestone(cat_df, milestone_name)
+            current_df = df[df['milestone'] == milestone]
 
             if not current_df.empty:
                 # Remove field milestone and index by alg
                 current_df = current_df.drop('milestone', 1).set_index('alg')
                 # Add to total value
                 sum_df = _get_values_df(current_df, functions)
-                title = "Accuracy: {:2.1E}".format(milestone_name)
+                title = "Accuracy: {:2.1E}".format(milestone)
                 plot = get_plot_bar(sum_df, title)
                 cat_figs.append(plot)
                 # Add extra information
 
                 for alg, rank in sum_df.values:
-                    new_ranking_row = [cat_name, milestone_name, alg, rank]
+                    new_ranking_row = [cat_name, milestone, alg, rank]
                     total_pivot_df.loc[pivot_i] = new_ranking_row
                     pivot_i += 1
 
-            total_figs[cat_name] = renderer.get_plot(hv.Layout(cat_figs).cols(3)).state
+            total_figs[cat_name] = renderer.get_plot(hv.Layout(cat_figs).opts(options).cols(3)).state
 
     cat_global = []
 
@@ -203,12 +201,14 @@ def create_figures(df, categories, accuracies, dimension=1000):
         plot_dyn[mil] = plot
         cat_global.append(plot)
 
-    plots = hv.Layout(cat_global)
+    plots = hv.Layout(cat_global).opts(options)
     # legend_opts = {'NdOverlay': dict(show_legend=True, legend_position='right')}
     # plots.Bars.III = plots.Bars.III(plot=legend_opts)
     total_figs['All'] = renderer.get_plot(plots.cols(3)).state
-    fig_names.extend([cat['category'] for cat in categories])
+    fig_names.extend([cat.name for cat in categories])
     fig_names.append('All')
+
+    return figure_json(fig_names, total_figs, type='bokeh')
 
     final = hv.NdLayout(plot_dyn, kdims='milestone')
     total_figs['Final'] = renderer.get_plot(final).state
