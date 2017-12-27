@@ -224,7 +224,7 @@ def get_benchmarks():
     bench_data = db.session.query(Benchmark).options(joinedload("dimensions"), joinedload("milestones"), joinedload("reports")).all()
     benchs = {bench.id: {'id': bench.id, 'description': bench.description, 'name':
                          bench.name, 'title': bench.title, 'dimensions': [dim.value for dim in bench.dimensions],
-                         'reports': [{'name:': report.name, 'description': report.description} for report in bench.reports],
+                         'reports': [{'name': report.name, 'description': report.description} for report in bench.reports],
                          'milestones': [mil.name for mil in bench.milestones]} for bench in bench_data}
     return benchs
 
