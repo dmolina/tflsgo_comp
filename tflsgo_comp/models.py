@@ -235,14 +235,16 @@ def get_benchmark(benchmark_id):
 
     :param benchmark_id: benchmark id
     """
-    bench = db.session.query(Benchmark).filter_by(id=benchmark_id).options(joinedload("dimensions"), joinedload("milestones")).one()
+    bench = db.session.query(Benchmark).filter_by(id=benchmark_id).options(joinedload("dimensions"), joinedload("milestones"), joinedload("categories")).one()
+    milestones = bench.milestones
 
     bench_data = {'id': bench.id, 'description': bench.description,
                   'nfuns': bench.nfuns, 'name': bench.name,
                   'title': bench.title, 'dimensions': [dim.value for dim
                                                        in bench.dimensions],
-                  'milestones': [mil.name for mil in bench.milestones]}
-    pprint(bench_data)
+                  'milestones_required': [mil.name for mil in milestones if mil.required],
+                  'all_milestones': [mil.name for mil in milestones if not mil.required],
+                  'categories': [cat for cat in bench.categories]}
     return bench_data
 
 
@@ -291,7 +293,7 @@ def get_report(report_id, benchmark_id):
     :rtype: tuple(function, error)
     """
     error = ''
-    tablename = ''
+    filename = ''
 
     if not report_id:
         error = 'Report is missing'
@@ -304,7 +306,6 @@ def get_report(report_id, benchmark_id):
             filename = reports[0].filename
 
     if not error:
-        print(filename)
         report_name = "reports." + filename
         report_module = importlib.import_module(report_name, __name__)
 
