@@ -10,7 +10,8 @@ var app = new Vue({
         algs: [],
         error: '',
         dimension: '',
-        report: {}
+        report: {},
+        tables: {},
     },
     mounted: function() {
         var self = this;
@@ -62,14 +63,17 @@ var app = new Vue({
                 processData: false
             }).done(function(data) {
                 console.log(data);
+                self.error = '';
                 if (data['error']) {
                     self.error = data['error'];
                     $("label#file").focus();
                 }
+                self.tables = data['tables'];
             })
-                .fail(function(data){
-                    console.log(data);
-                error = data.responseJSON.message;
+               .fail(function(data){
+                   console.log('hola');
+                console.log(data);
+                error = data['error'];
 
                 for (name in error) {
                     self.error += error[name];

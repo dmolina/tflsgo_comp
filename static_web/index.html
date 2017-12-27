@@ -98,7 +98,11 @@ If you want to compare existing results with your own proposal, set a Excel or a
 </template>
 </template>
 </form>
-    </div>
+<template v-for="index in tables.idx">
+    <h2>{{tables.titles[index]}}</h2>
+    <p><span v-html="tables.tables[index]"></span></p>
+</template>
+</div>
     <script src="./run.js"></script>
 </div>
 </body>
