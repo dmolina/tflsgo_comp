@@ -125,8 +125,6 @@ class Compare(Resource):
                 data_local['alg'] = args['alg_name']
 
             data = concat_df(data, data_local)
-            print(data)
-            print(data.to_json())
             bench = get_benchmark(benchmark_id)
             error = error_in_data(data, bench['nfuns'], bench['milestones_required'])
 
