@@ -3,11 +3,12 @@
 Website to automatically compare results of algorithms for real and large-scale
 global optimization. Initially it was designed by the [Task Force on Large Scale
 Global Optimization](http://tflsgo.org/) for its own competitions, like 
-for [WCCI'2018](http://tflsgo.org/special_sessions/cec2018.html). However, it
-can be used for each Benchmark competition.
+for [WCCI'2018](http://tflsgo.org/special_sessions/cec2018.html). 
 
-The idea of the website is to allow researchers to compare the results of its
-algorithms compared with other algorithms. 
+
+However, it can be used for each Benchmark competition. The idea of the website
+is to allow researchers to compare the results of its algorithms compared with
+other algorithms.
 
 ## Structure
 
