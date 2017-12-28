@@ -25,7 +25,7 @@ def create_app(name, options={}):
     app = Flask(name, static_url_path='', template_folder="../static_web")
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bench_lsgo.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_ECHO'] = False
     app.config['BUNDLE_ERRORS'] = True
 
     for opt in options:
