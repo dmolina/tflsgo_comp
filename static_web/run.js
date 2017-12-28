@@ -1,4 +1,5 @@
-var base_url = "http://localhost:8000";
+// var base_url = "http://localhost:8000";
+var base_url = "";
 
 function addCode(code){
     var JS= document.createElement('script');
