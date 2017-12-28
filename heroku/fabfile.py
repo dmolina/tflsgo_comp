@@ -3,10 +3,11 @@ from fabric.state import output
 
 project = "tflsgo"
 
+
 env.warn_only = True
 
 log = ['stdout', 'status', 'aborts',  'users', 'exceptions', 'user']
-ignore = ['warnings', 'debug', 'stderr', 'exceptions', 'status', 'aborts', 'user']
+ignore = ['warnings', 'debug', 'stderr', 'exceptions', 'status', 'aborts', 'user', 'running']
 
 for level in output:
     if level in ignore:
@@ -31,6 +32,7 @@ def copy(directory):
     local('rm -Rf {}/__pycache__'.format(directory))
     local('rm -Rf __pycache__')
     print("Copied {} -> git".format(directory))
+
 
 def get_info():
     result_info = local('heroku apps:info tflsgo', capture=True)
@@ -74,6 +76,7 @@ def git_push(message):
         local('git commit -am "{}"'.format(message))
         local('git push')
 
+
 @task(default=True)
 def deploy(message=""):
     """fab [environment] deploy"""
@@ -90,10 +93,23 @@ def deploy(message=""):
 
     print("Run {}".format(web_url))
 
+
 @task
 def off():
-    local('heroku maintance:on --app {}'.format(project))
+    result = local('heroku maintenance:on --app {}'.format(project))
+    if result.failed:
+        print("Error disabling app")
+
 
 @task
 def on():
-    local('heroku maintance:off --app {}'.format(project))
+    result = local('heroku maintenance:off --app {}'.format(project))
+
+    if result.failed:
+        print("Error disabling app")
+
+
+
+@task
+def logs():
+    local('heroku logs --app {}'.format(project))
