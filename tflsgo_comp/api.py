@@ -2,7 +2,9 @@
 Program for the Task Force in Large Scale Global Optimization.
 Author: Daniel  Molina Cabrera <dmolina@decsai.ugr.es>
 """
+import os
 import werkzeug
+
 from flask import Flask, send_file
 from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
@@ -177,4 +179,6 @@ def path(path):
 
 if __name__ == '__main__':
     init_db(db)
-    app.run(debug=True, port=8000)
+    # Bind to PORT if defined, otherwise default to 5000.
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
