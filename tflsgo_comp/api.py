@@ -9,8 +9,13 @@ from flask import Flask, send_file
 from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
 
-from models import db, get_alg, get_benchmarks, get_benchmark, init_db
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+
+from models import db, get_alg, get_benchmarks, get_benchmark, init_db, User
 from models import read_data_alg, get_report
+from models import validate_user
+
 from readdata import read_results_from_file, error_in_data, concat_df
 from utils import tmpfile, is_error_in_args
 
@@ -27,6 +32,7 @@ def create_app(name, options={}):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ECHO'] = False
     app.config['BUNDLE_ERRORS'] = True
+    app.config['SECRET_KEY'] = 'En un lugar de la mancha'
 
     for opt in options:
         app.config[opt] = options[opt]
@@ -37,6 +43,8 @@ def create_app(name, options={}):
 
 
 app = create_app(__name__)
+admin = Admin(app, name='tflsgo', template_mode='bootstrap3')
+admin.add_view(ModelView(User, db.session))
 CORS(app)
 api = Api(app)
 
@@ -173,8 +181,53 @@ def path(path):
     return send_file(path)
 
 
+class Login(Resource):
+    """
+    Rest resource to get the data and file MOS.
+    """
+    def post(self):
+        """
+        Return the data for the comparisons.
+
+        :returns: error: With a error, data: with data.
+        :rtype: json
+        """
+        parse = reqparse.RequestParser()
+        parse.add_argument('username', type=str, location='form',
+                           required=True, help='username is missing')
+        parse.add_argument('password', type=str, location='form',
+                           required=True, help='password is missing')
+
+        args = parse.parse_args()
+        checks = ['username', 'password']
+        error = ''
+        result = {}
+        print("mensaje")
+
+        for check in checks:
+            if not args[check] and not error:
+                error = '\'{}\' is missing'.format(check)
+
+        if not error:
+            user = validate_user(args['username'], args['password'])
+
+            if user == None:
+                error = 'Error in login'
+            else:
+                token = user.generate_auth_token(app.config['SECRET_KEY'])
+                result.update({'token': token})
+
+        result.update({'error' :error})
+
+        print(result)
+        return result
+
+
+api.add_resource(Login, '/login')
+
+
 if __name__ == '__main__':
     init_db(db)
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port,debug=True)

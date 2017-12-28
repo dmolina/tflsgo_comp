@@ -5,6 +5,12 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 import importlib
 
+# For authentication
+import hashlib
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
+
+
 import numpy as np
 
 db = SQLAlchemy()
@@ -213,6 +219,14 @@ Benchmark for the Large Scale Global Optimization competitions.
         cat = CategoryFunction(name=cat['name'], functions_str=cat['functions'], position=i+1, benchmark=bench)
         db.session.add(cat)
 
+    # User add
+    user = User(username='tflsgo@gmail.com')
+
+    with open("admin_passwd.txt") as file:
+        pwd = file.readlines()[0].strip()
+
+    user.hash_password(pwd)
+    db.session.add(user)
     db.session.commit()
 
 
@@ -325,3 +339,54 @@ def get_report(report_id, benchmark_id):
         report_module = importlib.import_module(report_name, __name__)
 
     return report_module, error
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(32), unique=True, nullable=False, index=True)
+    password_hash = db.Column(db.String(64), nullable=False)
+
+    def hash_password(self, password):
+        code = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        self.password_hash = code
+
+    def verify_password(self, password):
+        code = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        return code == self.password_hash
+
+    def generate_auth_token(self, secret_key, expiration=600):
+        s = Serializer(secret_key, expires_in=expiration)
+        return s.dumps({'id': self.id}).decode('ascii')
+
+    @staticmethod
+    def verify_auth_token(secret_key, token):
+        s = Serializer(secret_key)
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None    # valid token, but expired
+        except BadSignature:
+            return None    # invalid token
+        user = User.query.get(data['id'])
+        return user
+
+
+class Algorithm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), unique=True, nullable=False, index=True)
+    benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    benchmark = db.relationship("Benchmark", cascade='all,delete')
+    user = db.relationship("User", cascade='all,delete', backref=db.backref("algorithms", uselist=True))
+
+
+def validate_user(username, password):
+    user = db.session.query(User).filter_by(username=username).join(Algorithm).options(joinedload("algorithms")).first()
+
+    if user is None:
+        return None
+
+    if not user.verify_password(password):
+        return None
+
+    return user
