@@ -2,8 +2,8 @@
 
 Website to automatically compare results of algorithms for real and large-scale
 global optimization. Initially it was designed by the [Task Force on Large Scale
-Global Optimization](http://tflsgo.org/) for its own competitions, like 
-for [WCCI'2018](http://tflsgo.org/special_sessions/cec2018.html). 
+Global Optimization](http://tflsgo.org/){:target="_blank"} for its own competitions, like 
+for [WCCI'2018](http://tflsgo.org/special_sessions/cec2018.html){:target="_blank"}. 
 
 
 However, it can be used for each Benchmark competition. The idea of the website
@@ -12,14 +12,14 @@ other algorithms.
 
 ## Demo
 
-There is a online demo at [https://tflsgo.herokuapp.com/](https://tflsgo.herokuapp.com/).
+There is a online demo at [https://tflsgo.herokuapp.com/](https://tflsgo.herokuapp.com/){:target="_blank"}.
 
 
 ## Structure
 
 The page is compose in two parts:
 
-- A HTML/CSS with JavaScript (using [Vue.js](http://vuejs.org/).
+- A HTML/CSS with JavaScript (using [Vue.js](http://vuejs.org/){:target="_blank"}.
 
 - A Flask application using a REST interface (with Flask_restful) to access the
   database (with SQLAlchemy using SQLite3). 
