@@ -52,9 +52,6 @@ class Benchmark(Resource):
         return {'benchmarks': get_benchmarks()}
 
 
-api.add_resource(Benchmark, '/benchmarks')
-
-
 class Algs(Resource):
     """
     Rest resource to receive the list of algorithm for a benchmark.
@@ -70,9 +67,6 @@ class Algs(Resource):
         """
 
         return get_alg(benchmark_id, dimension)
-
-
-api.add_resource(Algs, '/algs/<int:benchmark_id>/<int:dimension>')
 
 
 class Compare(Resource):
@@ -149,6 +143,8 @@ class Compare(Resource):
         return result
 
 
+api.add_resource(Benchmark, '/benchmarks')
+api.add_resource(Algs, '/algs/<int:benchmark_id>/<int:dimension>')
 api.add_resource(Compare, '/compare')
 
 
