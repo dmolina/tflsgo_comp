@@ -1,7 +1,10 @@
-# tflsgo_comp
+# Task Force on Large Scale Global Optimization comparison website
 
 Website to automatically compare results of algorithms for real and large-scale
-global optimization. 
+global optimization. Initially it was designed by the [Task Force on Large Scale
+Global Optimization](http://tflsgo.org/) for its own competitions, like 
+for [WCCI'2018](http://tflsgo.org/special_sessions/cec2018.html). However, it
+can be used for each Benchmark competition.
 
 The idea of the website is to allow researchers to compare the results of its
 algorithms compared with other algorithms. 
@@ -32,7 +35,8 @@ pip install -r requirements.txt
 
 ## Init the database
 
-At the beginning, the app create the initial database.
+At the beginning, the app create the initial database, with the CEC'2013
+Benchmark. No data algorithms is inserted.
 
 ## Run the application
 
