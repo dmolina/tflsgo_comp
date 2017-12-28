@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Program for the Task Force in Large Scale Global Optimization.
 Author: Daniel  Molina Cabrera <dmolina@decsai.ugr.es>
