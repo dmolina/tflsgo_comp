@@ -89,8 +89,6 @@ def error_in_data(df, nfuns, milestones_benchmark):
     # Check all milestone
     milestones_data = df['milestone'].astype(float).astype(int).tolist()
     milestones_benchmark = [int(float(mil_bench)) for mil_bench in milestones_benchmark]
-    print(milestones_benchmark)
-    print(milestones_data)
 
     # For each milestone check that exists
     for milestone in milestones_benchmark:

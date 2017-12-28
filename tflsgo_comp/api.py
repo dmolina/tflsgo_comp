@@ -100,7 +100,6 @@ class Compare(Resource):
         error = is_error_in_args(args)
         data = ''
         result = {}
-        print(args['report'])
         benchmark_id = args['benchmark_id']
         dimension = args['dimension']
 

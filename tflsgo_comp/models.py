@@ -169,7 +169,6 @@ class CEC2013Data(db.Model):
 
 
 def init_db(db):
-    print('create all')
     db.create_all()
 
     if Benchmark.query.all():
