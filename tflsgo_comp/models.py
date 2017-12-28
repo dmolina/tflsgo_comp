@@ -31,7 +31,7 @@ class Benchmark(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     # Name of the benchmark to use
-    name = db.Column(db.String(20), unique=True, nullable=False)
+    name = db.Column(db.String(20), unique=True, nullable=False, index=True)
     # Title of the benchmark to use
     title = db.Column(db.String(20), unique=True, nullable=False)
     # Description of the benchmark
@@ -56,7 +56,7 @@ class Dimension(db.Model):
     """Number of dimensions possible for the relative benchmark."""
     __tablename__ = "dimension"
     id = db.Column(db.Integer, primary_key=True)
-    value = db.Column(db.Integer, nullable=False, unique=True)
+    value = db.Column(db.Integer, nullable=False, unique=True, index=True)
     benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
                              nullable=False)
     benchmark = db.relationship("Benchmark", lazy="joined", cascade='all,delete',
@@ -74,7 +74,7 @@ class Report(db.Model):
     """Type of report possible for the relative benchmark."""
     __tablename__ = "report"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False, unique=True)
+    name = db.Column(db.String(20), nullable=False, unique=True, index=True)
     description = db.Column(db.Text, nullable=False, unique=True)
     filename = db.Column(db.String(200), nullable=False, unique=True)
     benchmarks = db.relationship("Benchmark",
@@ -112,7 +112,7 @@ class CategoryFunction(db.Model):
      - functions: list of functions, separated by commas.
      """
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), unique=True, nullable=False)
+    name = db.Column(db.String(30), unique=True, nullable=False, index=True)
     functions_str = db.Column(db.String(80), nullable=False)
     position = db.Column(db.Integer, nullable=False)
     benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
