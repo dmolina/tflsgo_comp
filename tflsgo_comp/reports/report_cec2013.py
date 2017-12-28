@@ -8,9 +8,9 @@ import pandas as pd
 
 import holoviews as hv
 
-from .report_utils import getfilter_category, filter_milestone
 from .report_utils import get_plot_bar
 from .report_utils import figure_json
+
 
 def _get_values_df(data_df, functions):
     # Obtain the rank
@@ -55,6 +55,7 @@ def changecol(col):
     else:
         return "F0{}".format(col[1])
 
+
 def highlight_max(s):
     '''
     highlight the maximum in a Series yellow.
@@ -68,7 +69,7 @@ def format_e(df):
 
 
 def get_plot_by_milestone(df, mil):
-    table = df[df['milestone']==mil]
+    table = df[df['milestone'] == mil]
     return get_plot_barh(table, "Accuracy: {:2.1E}".format(mil))
 
 
@@ -86,13 +87,9 @@ def create_tables(df, categories, accuracies, dimension=1000):
     :param algs: Pandas.
     """
     # Store all figures here
-    hv.extension('bokeh')
-    renderer = hv.renderer('bokeh')
-
     dim_df = df[df['dimension'] == dimension]
     dim_df.columns = [changecol(col) for col in dim_df.columns]
     table_g = dim_df
-    algs = dim_df['alg']
     table_g['milestone'] = table_g['milestone'].astype(int)
     titles_idx = table_g['milestone'].unique().tolist()
     titles_idx.sort()
@@ -114,6 +111,7 @@ def create_tables(df, categories, accuracies, dimension=1000):
 
     return titles_idx, titles, tables
 
+
 def get_plot_barh(df, title):
     """Return a bar plot with the data and the title
 
@@ -125,7 +123,7 @@ def get_plot_barh(df, title):
     # Prepare to visualize
     kdims = [('alg', 'Algorithm'), ('category', 'Category'), ('ranking', 'Ranking')]
     # Plot the bar
-    fields = ['alg','category','ranking']
+    fields = ['alg', 'category', 'ranking']
     data_df = df[fields].sort_values(['alg'])
     data = [tuple(row) for row in data_df.values]
     options = "Bars [tools=['hover'] stack_index=1 color_index=1 show_legend=False xrotation=90]"
@@ -148,6 +146,7 @@ def create_figures(df, categories, accuracies, dimension=1000):
     """
     hv.extension('bokeh')
     renderer = hv.renderer('bokeh')
+    options = "Bars [xrotation=90]"
 
     total_figs = {}
     dim_df = df[df['dimension'] == dimension]
@@ -166,11 +165,10 @@ def create_figures(df, categories, accuracies, dimension=1000):
         cat_name = cat.name
         # Filter only the function in the category
         functions = ['F{}'.format(x) for x in cat.functions()]
-        cat_df = dim_df[['alg', 'milestone']+functions]
         cat_figs = []
 
         for milestone in accuracies:
-            current_df = df[df['milestone'] == milestone]
+            current_df = dim_df[dim_df['milestone'] == milestone]
 
             if not current_df.empty:
                 # Remove field milestone and index by alg
@@ -192,7 +190,7 @@ def create_figures(df, categories, accuracies, dimension=1000):
     cat_global = []
 
     milestones = df['milestone'].unique()
-    total_pivot_df['milestone']=total_pivot_df['milestone'].astype(int)
+    total_pivot_df['milestone'] = total_pivot_df['milestone'].astype(int)
     milestones.sort()
     plot_dyn = {}
 
@@ -221,6 +219,7 @@ def create_figures(df, categories, accuracies, dimension=1000):
 
     return figure_json(fig_names, total_figs, type='bokeh')
 
+ 
 def get_f1_score(position):
     """
     Return a np.array with the scoring criterio by position from the Formula 1,
