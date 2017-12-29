@@ -12,7 +12,11 @@ from flask_restful import Api, Resource, reqparse
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from models import db, get_alg, get_benchmarks, get_benchmark, init_db, User
+from models import db, get_alg, get_benchmarks, get_benchmark
+
+from models import filter_with_user_algs
+
+from models import init_db, User
 from models import read_data_alg, get_report, write_proposal_data, Algorithm
 from models import validate_user, get_user_algs, validate_by_token
 
@@ -61,6 +65,23 @@ class Benchmark(Resource):
         return {'benchmarks': get_benchmarks()}
 
 
+class BenchmarkToken(Resource):
+    def get(self, token):
+        """
+        Return the benchmarks in which the author has algorithms.
+
+        :param token: token of user.
+
+        """
+        bench = get_benchmarks()
+        user = validate_by_token(app.config['SECRET_KEY'], token)
+
+        if user != None:
+            bench = filter_with_user_algs(bench, user)
+
+        return {'benchmarks': bench}
+
+
 class Algs(Resource):
     """
     Rest resource to receive the list of algorithm for a benchmark.
@@ -101,6 +122,8 @@ class Compare(Resource):
         parse.add_argument('report', type=str, location='form', required=True)
         parse.add_argument('dimension', type=int, location='form',
                            required=True)
+        print(request.form)
+        print(request.values)
         args = parse.parse_args()
         error = is_error_in_args(args)
         data = ''
@@ -147,6 +170,7 @@ class Compare(Resource):
 
 
 api.add_resource(Benchmark, '/benchmarks')
+api.add_resource(BenchmarkToken, '/benchmarks/<token>')
 api.add_resource(Algs, '/algs/<int:benchmark_id>/<int:dimension>')
 api.add_resource(Compare, '/compare')
 

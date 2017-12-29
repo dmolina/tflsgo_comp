@@ -3,19 +3,32 @@ Vue.component('select-bench', {
         <option value="" selected="selected" value="-1">------</option>\
         <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>\
         </select></div>',
-    props: ['benchmark'],
+    props: {'benchmark': { type: Object },
+            'token': {
+                type: String,
+                default: function() { return ''; }
+    }},
     data: function() {
         return {'benchmarks': [], 'selected': -1}
     },
     mounted: function() {
         var self = this;
+        console.log('token: \'' +self.token +'\'');
+        var token = self.token;
+
+        if (token) {
+            token = '/' +token;
+        }
+
         $.ajax({
-            url: '/benchmarks',
+            url: '/benchmarks' +token,
             method: 'GET',
-            success: function(data) {
-                self.benchmarks = data['benchmarks'];
-            }
+        }).done(function(data) {
+            console.log("done");
+            self.benchmarks = data['benchmarks'];
+            console.log("done");
         });
+ 
     },
     methods: {
         changed: function() {

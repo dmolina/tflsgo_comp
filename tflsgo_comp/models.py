@@ -262,6 +262,25 @@ def get_benchmarks():
     return benchs
 
 
+def filter_with_user_algs(benchmarks, user):
+    """Filter the benchmark in which the user has algorithms.
+
+    :param benchmarks: list of benchmarks
+    :param user: user object
+    :returns: list of filtered benchmarks.
+    :rtype: list
+
+    """
+    benchmarks_id = set([alg.benchmark_id for alg in user.algorithms])
+    print("filter")
+    print(benchmarks_id)
+    result = benchmarks
+    print(benchmarks)
+    result = {i: benchmarks[i] for i in benchmarks_id}
+    print(result)
+    return result
+
+
 def get_benchmark(benchmark_id):
     """
     Returns all benchmarks.
