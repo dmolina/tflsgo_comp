@@ -110,17 +110,21 @@ class Compare(Resource):
 
         report_module, error = get_report(args['report'], benchmark_id)
 
+        if not error:
+            bench = get_benchmark(benchmark_id)
+
         if args['algs'] and not error:
             data, error = read_data_alg(benchmark_id, args['algs'])
+            print(data)
 
         if args['file'] and not error:
             fname = tmpfile(args['file'])
             alg_name = args['alg_name']
-            bench = get_benchmark(benchmark_id)
             data_local, error = read_benchmark_data(alg_name, fname, bench)
 
             if not error:
                 data = concat_df(data, data_local)
+                print(data)
 
         if not args['file'] and not args['algs']:
             error = 'Error: without reference algorithms the file is mandatory'

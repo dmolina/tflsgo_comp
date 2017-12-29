@@ -136,10 +136,10 @@ def concat_df(df1, df2):
     :returns: the dataframe joining by rows
     :rtype: pandas.DataFrame
     """
-    if not df1:
+    if df1.empty:
         return df2
 
-    if not df2:
+    if df2.empty:
         return df1
 
     return pd.concat([df1, df2]).reset_index().drop('index', axis=1)
@@ -171,4 +171,3 @@ def read_benchmark_data(alg_name, fullname, benchmark):
                           benchmark['milestones_required'])
 
     return data_local, error
-

@@ -6,6 +6,7 @@ from sqlalchemy.orm import joinedload
 import importlib
 
 # For authentication
+import pandas
 import hashlib
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
@@ -312,11 +313,14 @@ def read_data_alg(benchmark_id, algs):
     error = ''
     data = ''
 
-    if bench:
+    if not bench:
         error = 'id \'{}\' is not a known benchmark'.format(benchmark_id)
     else:
-        data_class = get_class_by_tablename(bench[0].tablename)
-        data = db.session.query(data_class).filter(data_class.alg in algs)
+        df = read_df(bench[0].data_table, algs)
+        df['milestone'] = df['milestone'].astype(float).astype(int)
+        print(df)
+        data = df[df['alg'].isin(algs)]
+        print(data)
 
     return data, error
 
@@ -411,8 +415,8 @@ def write_proposal_data(df, user, benchmark):
 
     :param df: dataframe to store.
     :param benchmark: benchmark.
-    :returns: 
-    :rtype: 
+    :returns: None
+    :rtype: None.
 
     """
     con = db.engine.connect()
@@ -421,9 +425,14 @@ def write_proposal_data(df, user, benchmark):
     algs = df['alg'].unique()
     # Add algorithm information
     con.execute(Algorithm.__table__.insert(), [{'name': alg, 'user_id': user.id,
-                                      'benchmark_id': benchmark['id']}
-                                     for alg in algs])
+                                                'benchmark_id': benchmark['id']}
+                                               for alg in algs])
 
     trans.commit()
     df.to_sql(benchmark['data_table'], con=db.engine, index=False, if_exists='append')
     db.session.commit()
+
+
+def read_df(tablename, algs):
+    df = pandas.read_sql(tablename, db.engine)
+    return df
