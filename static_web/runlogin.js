@@ -3,7 +3,9 @@ var app = new Vue({
     el: '#login',
     data: {
         token:  '',
+        message: '',
         benchmark: {},
+        bench_user: {},
         error: '',
         error_load: '',
         algs: [],
@@ -27,21 +29,39 @@ var app = new Vue({
             });
         },
         store: function(e) {
-                var self = this;
-                $.ajax(make_ajax_info('store', e)
-                      ).done(function(data) {
-                          self.error_load = data['error'];
+            var self = this;
 
-                          if (!self.error) {
-                              var new_algs = data['new_algs'];
-                              self.algs = self.algs.concat(new_algs);
-                              var new_algs_str = data['new_algs_str'];
-                              self.message = 'Algorithms \'' +new_algs_str +'\' written without error';
-                          }
-                      }).fail(function(data) {
-                          self.error_load = process_fail(data);
-                      });
+            $.ajax(make_ajax_info('store', e)
+                  ).done(function(data) {
+                      self.error_load = data['error'];
 
+                      if (!self.error) {
+                          var new_algs = data['new_algs'];
+                          self.algs = self.algs.concat(new_algs);
+                          var new_algs_str = data['new_algs_str'];
+                          self.message = 'Algorithms \'' +new_algs_str +'\' written without error';
+                      }
+                  }).fail(function(data) {
+                      self.error_load = process_fail(data);
+                  });
+        },
+        check_delete: function() {
+            var self = this;
+            var result = confirm(self.sel_algs.toString() +' will be deleted. Are you sure?');
+
+            if (result) {
+                data = {'algs': self.sel_algs, 'token': self.token};
+                $.ajax({
+                    url: '/delete',
+                    type: 'POST',
+                    data: '',
+                    dataType: 'json',
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                }).done(function(data) {
+                });
+            }
         }
     }
 });

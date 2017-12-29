@@ -86,6 +86,20 @@ var make_ajax_info = function(name, e) {
     };
 }
 
+var make_ajax_info = function(name, e) {
+    e.preventDefault();
+    var formData = new FormData(e.target);
+
+    return {url: '/' +name,
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false
+           };
+}
+
 var process_fail = function(data) {
     console.log('failed');
     console.log(data.responseJSON);
@@ -96,5 +110,4 @@ var process_fail = function(data) {
         result += name +': ' +error[name];
     }
     return result;
- 
 }

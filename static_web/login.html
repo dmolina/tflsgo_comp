@@ -19,31 +19,36 @@
         <div class="error" v-if="error">
             {{error}}
         </div>
+        <form method="post" action="#" v-on:submit="store" enctype="multipart/form-data">
         <template v-if="token">
-            <form method="post" action="#" v-on:submit="store" enctype="multipart/form-data">
-                <input type="hidden" name="token" v-bind:value="token" />
-                <template v-if="algs.length > 0">
-                    <h2>List of algorithms</h2>
+            <input type="hidden" name="token" v-bind:value="token" />
+            <template v-if="algs.length > 0">
+                <h2>List of your algorithms</h2>
                 <p>
                     <select-bench :benchmark.sync="bench_user" :token="token"></select-bench>
                 </p>
                 <template v-for="alg in algs">
-                    <label>{{alg}}</label><input type="checkbox" v-model="sel_algs" :value="alg">
+                    <input type="checkbox" v-model="sel_algs" :value="alg"><label>{{alg}}</label>
                 </template>
+                <p>
+                    <button type="button" v-on:click="check_delete">Delete</button>
+                </p>
             </template>
             <template v-else>
                 <h2>There is no algorithms</h2>
             </template>
-            <h2>Update your results</h2>
-           <p>
+        </template>
+        <h2>Update your results</h2>
+        <p>
             <select-bench :benchmark.sync="benchmark"></select-bench>
             <input type="hidden" v-bind:value="benchmark.id" name="benchmark_id"/>
             <template v-if="benchmark.name">
-            Select the file to submit your results.
-            <input-alg v-bind:benchmark="benchmark"></input-alg>
-            <input type="submit" name="submit" value="submit"/>
+                Select the file to submit your results.
+                <input-alg v-bind:benchmark="benchmark"></input-alg>
+                <input type="submit" value="store">
             </template>
-            </form>
+        </p>
+        </form>
         <div class="error" v-if="error_load">
             {{error_load}}
         </div>
