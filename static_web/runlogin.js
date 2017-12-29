@@ -30,12 +30,13 @@ var app = new Vue({
         },
         store: function(e) {
             var self = this;
+            self.message = '';
 
             $.ajax(make_ajax_info('store', e)
                   ).done(function(data) {
                       self.error_load = data['error'];
 
-                      if (!self.error) {
+                      if (!self.error_load) {
                           var new_algs = data['new_algs'];
                           self.algs = self.algs.concat(new_algs);
                           var new_algs_str = data['new_algs_str'];

@@ -297,7 +297,7 @@ class Store(Resource):
             data_local, error = read_benchmark_data(alg_name, fname, bench)
             print(data_local.head())
             new_algs = data_local['alg'].unique().tolist()
-            write_proposal_data(data_local, user, bench)
+            error = write_proposal_data(data_local, user, bench)
 
         result.update({'error': error, 'new_algs': new_algs, 'new_algs_str': ",".join(new_algs)})
 

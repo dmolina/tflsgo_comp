@@ -335,7 +335,7 @@ def read_data_alg(benchmark_id, algs):
     if not bench:
         error = 'id \'{}\' is not a known benchmark'.format(benchmark_id)
     else:
-        df = read_df(bench[0].data_table, algs)
+        df = read_df(bench[0].data_table)
         df['milestone'] = df['milestone'].astype(float).astype(int)
         print(df)
         data = df[df['alg'].isin(algs)]
@@ -442,16 +442,25 @@ def write_proposal_data(df, user, benchmark):
     trans = con.begin()
 
     algs = df['alg'].unique()
+    data_table = benchmark['data_table']
+    # Detect there is not previous
+    existing_df = read_df(data_table)
+    repeated = existing_df[existing_df['alg'].isin(algs)]['alg'].unique().tolist()
+
+    if repeated:
+        return 'Algorithms {} repeated'.format(",".join(repeated))
+
     # Add algorithm information
     con.execute(Algorithm.__table__.insert(), [{'name': alg, 'user_id': user.id,
                                                 'benchmark_id': benchmark['id']}
                                                for alg in algs])
 
     trans.commit()
-    df.to_sql(benchmark['data_table'], con=db.engine, index=False, if_exists='append')
+    df.to_sql(data_table, con=db.engine, index=False, if_exists='append')
     db.session.commit()
+    return ''
 
 
-def read_df(tablename, algs):
+def read_df(tablename):
     df = pandas.read_sql(tablename, db.engine)
     return df
