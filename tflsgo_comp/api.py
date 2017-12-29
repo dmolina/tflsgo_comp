@@ -74,8 +74,8 @@ class Algs(Resource):
         :returns: json object with the algorithm list.
         :rtype: json.
         """
-
-        return get_alg(benchmark_id, dimension)
+        result = get_alg(benchmark_id, dimension)
+        return result
 
 
 class Compare(Resource):
@@ -238,8 +238,6 @@ class Store(Resource):
         parse.add_argument('benchmark_id', type=int, location='form',
                            required=True, help='Benchmark_id is missing')
         parse.add_argument('alg_name', type=str, location='form', required=True)
-        parse.add_argument('algs', type=str, location='form',
-                           action='append')
 
         print(request.form)
         args = parse.parse_args()
@@ -247,7 +245,8 @@ class Store(Resource):
         alg_name = args['alg_name']
         bench = None
         error = ''
-        algs = []
+
+        new_algs = []
         result = {}
 
         for check in checks:
@@ -269,11 +268,10 @@ class Store(Resource):
             fname = tmpfile(args['file'])
             data_local, error = read_benchmark_data(alg_name, fname, bench)
             print(data_local.head())
-            algs = data_local['alg'].unique().tolist()
-            print(algs)
+            new_algs = data_local['alg'].unique().tolist()
             write_proposal_data(data_local, user, bench)
 
-        result.update({'error': error, 'algs': algs})
+        result.update({'error': error, 'new_algs': new_algs, 'new_algs_str': ",".join(new_algs)})
 
         print(result)
         return result

@@ -33,8 +33,10 @@ var app = new Vue({
                           self.error_load = data['error'];
 
                           if (!self.error) {
-                              self.algs = data['algs'];
-                              self.sel_algs = [];
+                              var new_algs = data['new_algs'];
+                              self.algs = self.algs.concat(new_algs);
+                              var new_algs_str = data['new_algs_str'];
+                              self.message = 'Algorithms \'' +new_algs_str +'\' written without error';
                           }
                       }).fail(function(data) {
                           self.error_load = process_fail(data);
