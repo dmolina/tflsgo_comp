@@ -58,10 +58,6 @@ var app = new Vue({
                 }
             });
         },
-        runjs: function() {
-            console.log("run");
-            addCode(this.figures_js);
-        },
         appendFigures: function() {
             var self = this;
             div = document.getElementById('figures');
@@ -75,30 +71,12 @@ var app = new Vue({
                 div.append(new_title);
                 div.innerHTML += fig;
             }
-            console.log("appendFigures Final div:");
-            console.log(div.innerHTML);
-            console.log(self.figures_js);
             eval(self.figures_js);
-            // js = document.getElementById('figures_js');
-            // console.log(self.figures_js);
-            // setTimeout(self.runjs, 1000);
         },
        sendData: function(e) {
-            var self = this;
-            e.preventDefault();
-            var formData = new FormData(e.target);
-
-            $.ajax({
-                url: base_url +'/compare',
-                type: 'POST',
-                data: formData,
-                dataType: 'json',
-                cache: false,
-                contentType: false,
-                processData: false
-            }).done(function(data) {
-                console.log('done');
-                console.log(data);
+           var self = this;
+           $.ajax(make_ajax_info('compare', e)
+            ).done(function(data) {
                 self.error = '';
                 if (data['error']) {
                     self.error = data['error'];
@@ -106,20 +84,12 @@ var app = new Vue({
                     return;
                 }
                 self.tables = data['tables'];
-                self.figures = data['figures'];
                 self.figure_divs = data['divs'];
                 self.figures_js = data['js'];
                 self.appendFigures();
             })
                .fail(function(data){
-                   console.log('failed');
-                   console.log(data.responseJSON);
-                   error = data.responseJSON['message'];
-                   console.log(error);
-
-                   for (name in error) {
-                       self.error = name +': ' +error[name];
-                   }
+                   self.error = process_fail(data);
                 });
         }
     }
