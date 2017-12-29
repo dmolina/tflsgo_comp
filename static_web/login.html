@@ -16,10 +16,33 @@
             <input type="password" name="password" placeholder="" />
             <input type="submit" value="upload" />
         </form>
-        <div v-if="error" class="error">
+        <div class="error" v-if="error">
             {{error}}
         </div>
+        <template v-if="token">
+            <form method="post" action="#" v-on:submit="changeAlg" enctype="multipart/form-data">
+            <template v-if="algs.length > 0">
+                <template v-for="alg in algs">
+                    <h2>List of algorithms</h2>
+                    <label>{{alg}}</label><input in algs" type="checkbox" v-model="sel_algs" :value="alg">
+                </template>
+            </template>
+            <template v-else>
+                <h2>There is no algorithms</h2>
+            </template>
+            <h2>Update your results</h2>
+           <p>
+            <select-bench :benchmark.sync="benchmark"></select-bench>
+            If you want to compare existing results with your own proposal, set a Excel or a CSV file with
+            the results. The required format is indicated <a href="">here</a>.
+            </p>
+            <input type="hidden" v-bind:value="benchmark.name" name="benchmark_id"/>
+            <label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>
+            <p><input id="upload_button" type="file" name="file"></p>
+            </form>
+        </template>
         </div>
+        <script src="/runcommon.js" charset="utf-8"></script>
         <script src="/runlogin.js" charset="utf-8"></script>
     </body>
 </html>
