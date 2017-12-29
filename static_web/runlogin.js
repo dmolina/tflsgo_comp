@@ -37,7 +37,14 @@ var app = new Vue({
                     self.sel_algs = [];
                 }
             }).fail(function(data) {
-                self.error = data['error'];
+                console.log('failed');
+                console.log(data.responseJSON);
+                var error = data.responseJSON['message'];
+                self.error = '';
+
+                for (name in error) {
+                    self.error += name +': ' +error[name];
+                }
             });
         }
     }
