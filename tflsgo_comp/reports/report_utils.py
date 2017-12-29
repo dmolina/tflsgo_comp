@@ -17,13 +17,7 @@ def figure_json(fig_names, plots, type='bokeh'):
     error = ''
 
     if type == 'bokeh' or 'holoviews':
-        json_plots = []
         script, divs = components(plots, wrap_script=False)
-
-        for title in fig_names:
-            json_plots.append({'title': title, 'div': divs[title]})
-
-        result['plots'] = json_plots
         result['js'] = script
         result['divs'] = divs
     else:

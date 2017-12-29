@@ -125,6 +125,7 @@ class Compare(Resource):
             error = 'Error: without reference algorithms the file is mandatory'
 
         if not error:
+            # Sort by categories
             categories = sorted(bench['categories'], key=lambda cat: cat.position)
             milestones = bench['milestones_required']
             dimension = args['dimension']
@@ -133,9 +134,8 @@ class Compare(Resource):
             figures_json = report_module.create_figures(data, categories, milestones, dimension)
             error = figures_json['error']
             divs = figures_json['divs']
-            figures = figures_json['plots']
             js = figures_json['js']
-            result.update({'tables': tables, 'figures': figures, 'js': js, 'divs': divs})
+            result.update({'tables': tables, 'js': js, 'divs': divs})
 
         result.update({'error': error})
         return result
