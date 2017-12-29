@@ -39,6 +39,7 @@ The required format is indicated <a v-bind:href="example">here</a>.\
 </p>\
 <label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>\
 <p><input id="upload_button" type="file" name="file"></p>\
+<input id="alg_name" name="alg_name" v-model="alg_name" placeholder="Proposal">\
 </div>',
     props: ['benchmark'],
     computed: {
