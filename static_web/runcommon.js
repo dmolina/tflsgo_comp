@@ -72,3 +72,16 @@ var make_ajax_info = function(name, e) {
             processData: false
     };
 }
+
+var process_fail = function(data) {
+    console.log('failed');
+    console.log(data.responseJSON);
+    var error = data.responseJSON['message'];
+    var result = '';
+
+    for (name in error) {
+        result += name +': ' +error[name];
+    }
+    return result;
+ 
+}
