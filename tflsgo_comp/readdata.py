@@ -4,6 +4,7 @@ from os.path import splitext
 import pandas as pd
 
 
+
 def read_results_from_file(algname, fullname):
     """
     Read the results of an algorithm using pandas library.
@@ -80,11 +81,25 @@ def error_in_data(df, nfuns, milestones_benchmark):
     if pending_columns:
         return "columns '{}' are unknown".format(pending_columns)
 
-    min_value = float(df[funs].min(axis=1).min())
+    check_df = df[funs]
+
+    min_value = float(check_df.min(axis=1).min())
 
     # Check all positive values
     if min_value < 0:
         return "negative value '{}' found".format(min_value)
+
+    max_value = check_df.max(axis=1).max()
+
+    # Check all positive values
+    if max_value == 0:
+        return "not positive value '{}' found, check".format(max_value)
+
+    is_there_nan = check_df.isnull().values.any()
+
+    # Check all positive values
+    if is_there_nan:
+        return "Missing values, error reading"
 
     # Check all milestone
     milestones_data = df['milestone'].astype(float).astype(int).tolist()
