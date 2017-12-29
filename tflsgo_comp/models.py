@@ -187,7 +187,7 @@ Benchmark for the Large Scale Global Optimization competitions.
         """, data_table="cec2013lsgo", example="example_cec2013")
     db.session.add(bench)
     db.session.add(Dimension(value=1000, benchmark=bench))
-    db.session.add(Report(name="cec2013_classical", filename="report_cec2013", 
+    db.session.add(Report(name="cec2013_classical", filename="report_cec2013",
                           description="Classic Benchmark for LSGO (F1 criterion)", benchmarks=[bench]))
 
     db.session.add(Report(name="test", filename="report_test",
@@ -362,26 +362,16 @@ class User(db.Model):
         s = Serializer(secret_key, expires_in=expiration)
         return s.dumps({'id': self.id}).decode('ascii')
 
-    @staticmethod
-    def verify_auth_token(secret_key, token):
-        s = Serializer(secret_key)
-        try:
-            data = s.loads(token)
-        except SignatureExpired:
-            return None    # valid token, but expired
-        except BadSignature:
-            return None    # invalid token
-        user = User.query.get(data['id'])
-        return user
-
 
 class Algorithm(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False, index=True)
-    benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"), nullable=False)
+    benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
+                             nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     benchmark = db.relationship("Benchmark", cascade='all,delete')
-    user = db.relationship("User", cascade='all,delete', backref=db.backref("algorithms", uselist=True))
+    user = db.relationship("User", cascade='all,delete',
+                           backref=db.backref("algorithms", uselist=True))
 
 
 def validate_user(username, password):
@@ -394,6 +384,18 @@ def validate_user(username, password):
         return None
 
     return user
+
+
+def validate_by_token(secret_key, token):
+        s = Serializer(secret_key)
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None    # valid token, but expired
+        except BadSignature:
+            return None    # invalid token
+        user = User.query.get(data['id'])
+        return user
 
 
 def get_user_algs(user):

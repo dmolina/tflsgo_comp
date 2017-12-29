@@ -5,7 +5,7 @@ Author: Daniel  Molina Cabrera <dmolina@decsai.ugr.es>
 import os
 import werkzeug
 
-from flask import Flask, send_file
+from flask import Flask, send_file, request
 from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
 
@@ -14,7 +14,7 @@ from flask_admin.contrib.sqla import ModelView
 
 from models import db, get_alg, get_benchmarks, get_benchmark, init_db, User
 from models import read_data_alg, get_report
-from models import validate_user, get_user_algs
+from models import validate_user, get_user_algs, validate_by_token
 
 from readdata import read_results_from_file, error_in_data, concat_df
 from utils import tmpfile, is_error_in_args
@@ -144,10 +144,8 @@ class Compare(Resource):
             figures = figures_json['plots']
             js = figures_json['js']
             result.update({'tables': tables, 'figures': figures, 'js': js, 'divs': divs})
-            # print(js)
 
         result.update({'error': error})
-        # print(result)
         return result
 
 
@@ -202,7 +200,6 @@ class Login(Resource):
         checks = ['username', 'password']
         error = ''
         result = {}
-        print("mensaje")
 
         for check in checks:
             if not args[check] and not error:
@@ -216,7 +213,54 @@ class Login(Resource):
             else:
                 algs = get_user_algs(user)
                 token = user.generate_auth_token(app.config['SECRET_KEY'])
-                result.update({'token': token, 'username': user.username, 'algs': algs})
+                result.update({'token': token, 'username': user.username,
+                               'algs': algs})
+
+        result.update({'error': error})
+
+        return result
+
+
+class Store(Resource):
+    """
+    Rest resource to get the data and file MOS.
+    """
+    def post(self):
+        """
+        Return the data for the comparisons.
+
+        :returns: error: With a error, data: with data.
+        :rtype: json
+        """
+        print("store")
+        parse = reqparse.RequestParser()
+        parse.add_argument('token', type=str, location='form',
+                           required=True, help='password is missing')
+        parse.add_argument('file', type=werkzeug.datastructures.FileStorage,
+                           location='files', required=True,
+                           help='File is missing')
+        parse.add_argument('benchmark_id', type=int, location='form',
+                           required=True, help='Benchmark_id is missing')
+        parse.add_argument('algs', type=str, location='form',
+                           action='append')
+
+        print(request.form)
+        args = parse.parse_args()
+        checks = ['token']
+        error = ''
+        result = {}
+
+        for check in checks:
+            if not args[check] and not error:
+                error = 'User not authenticated'
+
+        if not error:
+            user = validate_by_token(app.config['SECRET_KEY'], args['token'])
+
+            if user is None:
+                error = 'User not authenticated'
+            else:
+                pass
 
         result.update({'error': error})
 
@@ -225,7 +269,7 @@ class Login(Resource):
 
 
 api.add_resource(Login, '/login')
-
+api.add_resource(Store, '/changeAlg')
 
 if __name__ == '__main__':
     init_db(db)

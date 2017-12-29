@@ -21,6 +21,7 @@
         </div>
         <template v-if="token">
             <form method="post" action="#" v-on:submit="changeAlg" enctype="multipart/form-data">
+                <input type="hidden" name="token" v-bind:value="token" />
             <template v-if="algs.length > 0">
                 <template v-for="alg in algs">
                     <h2>List of algorithms</h2>
@@ -33,7 +34,7 @@
             <h2>Update your results</h2>
            <p>
             <select-bench :benchmark.sync="benchmark"></select-bench>
-            <input type="hidden" v-bind:value="benchmark.name" name="benchmark_id"/>
+            <input type="hidden" v-bind:value="benchmark.id" name="benchmark_id"/>
             <template v-if="benchmark.name">
             Select the file to submit your results.
             <input-alg v-bind:benchmark="benchmark"></input-alg>
