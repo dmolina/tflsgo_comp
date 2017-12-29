@@ -316,6 +316,14 @@ def get_alg(bench_id, dimension):
     return {'error': '', 'algs': algs}
 
 
+def get_alg_user(bench_id, user):
+    """
+    Returns the list of algorithms in comparisons
+    """
+    algs = db.session.query(Algorithm).filter_by(benchmark_id=bench_id).filter_by(user_id=user.id).all()
+    return [alg.name for alg in algs]
+
+
 def read_data_alg(benchmark_id, algs):
     """
     Read the data.

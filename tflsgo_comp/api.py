@@ -12,7 +12,7 @@ from flask_restful import Api, Resource, reqparse
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from models import db, get_alg, get_benchmarks, get_benchmark
+from models import db, get_alg, get_alg_user, get_benchmarks, get_benchmark
 
 from models import filter_with_user_algs
 
@@ -99,6 +99,43 @@ class Algs(Resource):
         return result
 
 
+class AlgsUsers(Resource):
+    """
+    Rest resource to receive the list of algorithm for a benchmark.
+    """
+    def post(self):
+        """
+        Return the algorithms available from the indicated benchmark.
+
+        :param benchmark_id: Benchmark id.
+        :param dimension: Dimension.
+        :returns: json object with the algorithm list.
+        :rtype: json.
+        """
+        print("algusers")
+        parse = reqparse.RequestParser()
+        parse.add_argument('benchmark_id', type=int, location='form')
+        parse.add_argument('token', type=str, location='form')
+        args = parse.parse_args()
+        print("evaluated")
+        print(args)
+        error = ''
+        result = {}
+        user = None
+
+        if 'benchmark_id' not in args:
+            error = 'Benchmark id missing'
+        elif 'token' in args:
+            user = validate_by_token(app.config['SECRET_KEY'], args['token'])
+
+        if user and not error:
+            benchmark_id = args['benchmark_id']
+            result.update({'algs': get_alg_user(benchmark_id, user)})
+
+        result.update({'error': error})
+        return result
+
+
 class Compare(Resource):
     """
     Rest resource to get the data and file MOS.
@@ -161,6 +198,7 @@ class Compare(Resource):
             js = figures_json['js']
             result.update({'tables': tables, 'js': js, 'divs': divs})
 
+        print(result)
         result.update({'error': error})
         return result
 
@@ -168,6 +206,7 @@ class Compare(Resource):
 api.add_resource(Benchmark, '/benchmarks')
 api.add_resource(BenchmarkToken, '/benchmarks/<token>')
 api.add_resource(Algs, '/algs/<int:benchmark_id>/<int:dimension>')
+api.add_resource(AlgsUsers, '/algs')
 api.add_resource(Compare, '/compare')
 
 

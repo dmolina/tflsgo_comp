@@ -1,8 +1,8 @@
 Vue.component('select-bench', {
-    template: '<div><label>Select the Benchmark </label><select v-model="selected" v-on:change="changed">\
+    template: '<select v-model="selected" v-on:change="changed">\
         <option value="" selected="selected" value="-1">------</option>\
         <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>\
-        </select></div>',
+        </select>',
     props: {'benchmark': { type: Object },
             'token': {
                 type: String,
@@ -33,14 +33,14 @@ Vue.component('select-bench', {
     methods: {
         changed: function() {
             var self = this;
+            var bench = {}
 
-            if (self.selected < 0) {
-                this.$emit('update:benchmark', {});
-            }
-            else {
+            if (self.selected >= 0) {
                 var bench = self.benchmarks[self.selected];
-                this.$emit('update:benchmark', bench);
             }
+
+            this.$emit('update:benchmark', bench);
+            this.$emit('updated', bench);
         }
     }
 });
@@ -70,7 +70,19 @@ The required format is indicated <a v-bind:href="example">here</a>.\
         }
     }
 }
-);
+             );
+
+var make_ajax_noform = function(name, data) {
+
+    return {url: '/' +name,
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false
+           };
+}
 
 var make_ajax_info = function(name, e) {
     e.preventDefault();

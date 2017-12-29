@@ -20,12 +20,12 @@
             {{error}}
         </div>
         <form method="post" action="#" v-on:submit="store" enctype="multipart/form-data">
-        <template v-if="token">
+        <template v-if="token.length > 0">
             <input type="hidden" name="token" v-bind:value="token" />
-            <template v-if="algs.length > 0">
+            <template v-if="total_algs.length > 0">
                 <h2>List of your algorithms</h2>
                 <p>
-                    <select-bench :benchmark.sync="bench_user" :token="token"></select-bench>
+                    <label>Select the benchmark </label><select-bench :benchmark.sync="bench_user" :token="token" v-on:updated="getmyalgs"></select-bench>
                 </p>
                 <template v-for="alg in algs">
                     <input type="checkbox" v-model="sel_algs" :value="alg"><label>{{alg}}</label>
@@ -40,7 +40,7 @@
         </template>
         <h2>Update your results</h2>
         <p>
-            <select-bench :benchmark.sync="benchmark"></select-bench>
+            <label>Select benchmark </label><select-bench :benchmark.sync="benchmark"></select-bench>
             <input type="hidden" v-bind:value="benchmark.id" name="benchmark_id"/>
             <template v-if="benchmark.name">
                 Select the file to submit your results.
