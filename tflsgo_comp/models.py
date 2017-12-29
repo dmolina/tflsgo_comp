@@ -167,7 +167,7 @@ class CEC2013Data(db.Model):
     F15 = db.Column(db.Float, nullable=False)
 
     # Add the constraint in a loop
-    __table_args__ = tuple([db.CheckConstraint('F{} > 0'.format(f),
+    __table_args__ = tuple([db.CheckConstraint('F{} >= 0'.format(f),
                                                name='value_{}_must_be_positive'.format(f)) for f in
                             range(1, 16)] + [db.CheckConstraint(dimension > 0,
                                                                 name='dimension_must_be_positive')])
