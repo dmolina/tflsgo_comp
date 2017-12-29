@@ -22,10 +22,10 @@
         <template v-if="token">
             <form method="post" action="#" v-on:submit="store" enctype="multipart/form-data">
                 <input type="hidden" name="token" v-bind:value="token" />
-            <template v-if="algs.length > 0">
-                <template v-for="alg in algs">
+                <template v-if="algs.length > 0">
                     <h2>List of algorithms</h2>
-                    <label>{{alg}}</label><input in algs" type="checkbox" v-model="sel_algs" :value="alg">
+                <template v-for="alg in algs">
+                    <label>{{alg}}</label><input type="checkbox" v-model="sel_algs" :value="alg">
                 </template>
             </template>
             <template v-else>

@@ -269,7 +269,7 @@ class Store(Resource):
             fname = tmpfile(args['file'])
             data_local, error = read_benchmark_data(alg_name, fname, bench)
             print(data_local.head())
-            algs = data_local['alg'].unique()
+            algs = data_local['alg'].unique().tolist()
             print(algs)
             write_proposal_data(data_local, user, bench)
 
