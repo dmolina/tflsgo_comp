@@ -33,12 +33,12 @@
             <h2>Update your results</h2>
            <p>
             <select-bench :benchmark.sync="benchmark"></select-bench>
-            If you want to compare existing results with your own proposal, set a Excel or a CSV file with
-            the results. The required format is indicated <a href="">here</a>.
-            </p>
             <input type="hidden" v-bind:value="benchmark.name" name="benchmark_id"/>
-            <label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>
-            <p><input id="upload_button" type="file" name="file"></p>
+            <template v-if="benchmark.name">
+            Select the file to submit your results.
+            <input-alg v-bind:benchmark="benchmark"></input-alg>
+            <input type="submit" name="submit" value="submit"/>
+            </template>
             </form>
         </template>
         </div>

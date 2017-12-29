@@ -46,6 +46,8 @@ class Benchmark(db.Model):
     nfuns = db.Column(db.Integer, nullable=False)
     # table name
     data_table = db.Column(db.String(20), unique=True,  nullable=False)
+    # Number of example data
+    example = db.Column(db.String(20), unique=True, nullable=False)
     # many to many Benchmark<->Report
     reports = db.relationship('Report', secondary=bench_report,
                               back_populates='benchmarks')
@@ -182,10 +184,10 @@ def init_db(db):
 
     bench = Benchmark(name="CEC2013LSGO", title="CEC'2013 Large Scale Global Optimization", nfuns=15, description="""
 Benchmark for the Large Scale Global Optimization competitions.
-        """, data_table="cec2013lsgo")
+        """, data_table="cec2013lsgo", example="example_cec2013")
     db.session.add(bench)
     db.session.add(Dimension(value=1000, benchmark=bench))
-    db.session.add(Report(name="cec2013_classical", filename="report_cec2013",
+    db.session.add(Report(name="cec2013_classical", filename="report_cec2013", 
                           description="Classic Benchmark for LSGO (F1 criterion)", benchmarks=[bench]))
 
     db.session.add(Report(name="test", filename="report_test",
@@ -251,7 +253,9 @@ def get_benchmarks():
     """
     bench_data = db.session.query(Benchmark).options(joinedload("dimensions"), joinedload("milestones"), joinedload("reports")).all()
     benchs = {bench.id: {'id': bench.id, 'description': bench.description, 'name':
-                         bench.name, 'title': bench.title, 'dimensions': [dim.value for dim in bench.dimensions],
+                         bench.name, 'title': bench.title,
+                         'example': bench.example,
+                         'dimensions': [dim.value for dim in bench.dimensions],
                          'reports': [{'name': report.name, 'description': report.description} for report in bench.reports]}
               for bench in bench_data}
     return benchs
