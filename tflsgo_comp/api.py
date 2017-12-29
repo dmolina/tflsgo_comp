@@ -24,6 +24,29 @@ from readdata import concat_df, read_benchmark_data
 from utils import tmpfile, is_error_in_args
 
 
+def get_options(list):
+    parse = reqparse.RequestParser()
+
+    for option in list:
+        if option in ['benchmark_id', 'dimension']:
+            parse.add_argument(option, type=int, location='form',
+                               required=True, help='{}_id is missing'.format(option))
+        elif option in ['token', 'alg_name', 'report', 'username', 'password']:
+            parse.add_argument(option, type=str, location='form')
+        elif option in ['algs']:
+            parse.add_argument(option, type=str, location='form',
+                                action='append')
+        elif option in ['file']:
+            parse.add_argument('file',
+                               type=werkzeug.datastructures.FileStorage,
+                               location='files', required=True,
+                               help='File is missing')
+        else:
+            raise("option '{}' in unknown".format(option))
+
+    return parse
+
+
 def create_app(name, options={}):
     """
     Create the app with the database connection (using Flask-SQLAlchemy).
@@ -112,10 +135,7 @@ class AlgsUsers(Resource):
         :returns: json object with the algorithm list.
         :rtype: json.
         """
-        print("algusers")
-        parse = reqparse.RequestParser()
-        parse.add_argument('benchmark_id', type=int, location='form')
-        parse.add_argument('token', type=str, location='form')
+        parse = get_options(['benchmark_id', 'token'])
         args = parse.parse_args()
         print("evaluated")
         print(args)
@@ -136,6 +156,11 @@ class AlgsUsers(Resource):
         return result
 
 
+class Delete(Resource):
+    def post(self):
+        return {}
+
+
 class Compare(Resource):
     """
     Rest resource to get the data and file MOS.
@@ -147,21 +172,10 @@ class Compare(Resource):
         :returns: error: With a error, data: with data.
         :rtype: json
         """
-        parse = reqparse.RequestParser()
-        parse.add_argument('file', type=werkzeug.datastructures.FileStorage,
-                           location='files', required=True,
-                           help='File is missing')
-        parse.add_argument('benchmark_id', type=int, location='form',
-                           required=True, help='Benchmark_id is missing')
-        parse.add_argument('algs', type=str, location='form',
-                           action='append')
-        parse.add_argument('alg_name', type=str, location='form', required=True)
-        parse.add_argument('report', type=str, location='form', required=True)
-        parse.add_argument('dimension', type=int, location='form',
-                           required=True)
+        parse = get_options(['file', 'benchmark_id', 'algs', 'alg_name', 'report', 'dimension'])
         args = parse.parse_args()
         error = is_error_in_args(args)
-        data = ''
+        data = {}
         result = {}
         benchmark_id = args['benchmark_id']
         dimension = args['dimension']
@@ -208,6 +222,7 @@ api.add_resource(BenchmarkToken, '/benchmarks/<token>')
 api.add_resource(Algs, '/algs/<int:benchmark_id>/<int:dimension>')
 api.add_resource(AlgsUsers, '/algs')
 api.add_resource(Compare, '/compare')
+api.add_resource(Delete, '/delete')
 
 
 # Avoid problem with the Same-origin policy
@@ -246,12 +261,7 @@ class Login(Resource):
         :returns: error: With a error, data: with data.
         :rtype: json
         """
-        parse = reqparse.RequestParser()
-        parse.add_argument('username', type=str, location='form',
-                           required=True, help='username is missing')
-        parse.add_argument('password', type=str, location='form',
-                           required=True, help='password is missing')
-
+        parse = get_options(['username', 'password'])
         args = parse.parse_args()
         checks = ['username', 'password']
         error = ''
@@ -288,19 +298,7 @@ class Store(Resource):
         :returns: error: With a error, data: with data.
         :rtype: json
         """
-        parse = reqparse.RequestParser()
-        parse.add_argument('token', type=str, location='form',
-                           required=True, help='password is missing')
-        parse.add_argument('file', type=werkzeug.datastructures.FileStorage,
-                           location='files', required=True,
-                           help='File is missing')
-        parse.add_argument('benchmark_id', type=int, location='form',
-                           required=True, help='Benchmark_id is missing')
-
-        parse.add_argument('benchmark_id', type=int, location='form',
-                           required=True, help='Benchmark_id is missing')
-        parse.add_argument('alg_name', type=str, location='form', required=True)
-
+        parse = get_options(['token', 'file', 'benchmark_id', 'alg_name'])
         args = parse.parse_args()
         checks = ['token', 'benchmark_id']
         alg_name = args['alg_name']
