@@ -381,7 +381,7 @@ class Algorithm(db.Model):
 
 
 def validate_user(username, password):
-    user = db.session.query(User).filter_by(username=username).join(Algorithm).options(joinedload("algorithms")).first()
+    user = db.session.query(User).filter_by(username=username).options(joinedload("algorithms")).first()
 
     if user is None:
         return None
@@ -390,3 +390,7 @@ def validate_user(username, password):
         return None
 
     return user
+
+
+def get_user_algs(user):
+    return [alg.name for alg in user.algorithms]

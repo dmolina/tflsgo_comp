@@ -14,7 +14,7 @@ from flask_admin.contrib.sqla import ModelView
 
 from models import db, get_alg, get_benchmarks, get_benchmark, init_db, User
 from models import read_data_alg, get_report
-from models import validate_user
+from models import validate_user, get_user_algs
 
 from readdata import read_results_from_file, error_in_data, concat_df
 from utils import tmpfile, is_error_in_args
@@ -211,13 +211,14 @@ class Login(Resource):
         if not error:
             user = validate_user(args['username'], args['password'])
 
-            if user == None:
+            if user is None:
                 error = 'Error in login'
             else:
+                algs = get_user_algs(user)
                 token = user.generate_auth_token(app.config['SECRET_KEY'])
-                result.update({'token': token})
+                result.update({'token': token, 'username': user.username, 'algs': algs})
 
-        result.update({'error' :error})
+        result.update({'error': error})
 
         print(result)
         return result
@@ -230,4 +231,4 @@ if __name__ == '__main__':
     init_db(db)
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port,debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
