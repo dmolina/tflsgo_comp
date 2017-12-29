@@ -76,7 +76,7 @@ class BenchmarkToken(Resource):
         bench = get_benchmarks()
         user = validate_by_token(app.config['SECRET_KEY'], token)
 
-        if user != None:
+        if user:
             bench = filter_with_user_algs(bench, user)
 
         return {'benchmarks': bench}
@@ -122,8 +122,6 @@ class Compare(Resource):
         parse.add_argument('report', type=str, location='form', required=True)
         parse.add_argument('dimension', type=int, location='form',
                            required=True)
-        print(request.form)
-        print(request.values)
         args = parse.parse_args()
         error = is_error_in_args(args)
         data = ''
@@ -138,7 +136,6 @@ class Compare(Resource):
 
         if args['algs'] and not error:
             data, error = read_data_alg(benchmark_id, args['algs'])
-            print(data)
 
         if args['file'] and not error:
             fname = tmpfile(args['file'])
@@ -147,7 +144,6 @@ class Compare(Resource):
 
             if not error:
                 data = concat_df(data, data_local)
-                print(data)
 
         if not args['file'] and not args['algs']:
             error = 'Error: without reference algorithms the file is mandatory'
@@ -253,7 +249,6 @@ class Store(Resource):
         :returns: error: With a error, data: with data.
         :rtype: json
         """
-        print("store")
         parse = reqparse.RequestParser()
         parse.add_argument('token', type=str, location='form',
                            required=True, help='password is missing')
@@ -267,7 +262,6 @@ class Store(Resource):
                            required=True, help='Benchmark_id is missing')
         parse.add_argument('alg_name', type=str, location='form', required=True)
 
-        print(request.form)
         args = parse.parse_args()
         checks = ['token', 'benchmark_id']
         alg_name = args['alg_name']
@@ -295,13 +289,11 @@ class Store(Resource):
         if not error:
             fname = tmpfile(args['file'])
             data_local, error = read_benchmark_data(alg_name, fname, bench)
-            print(data_local.head())
             new_algs = data_local['alg'].unique().tolist()
             error = write_proposal_data(data_local, user, bench)
 
         result.update({'error': error, 'new_algs': new_algs, 'new_algs_str': ",".join(new_algs)})
 
-        print(result)
         return result
 
 

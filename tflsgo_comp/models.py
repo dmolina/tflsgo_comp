@@ -272,12 +272,8 @@ def filter_with_user_algs(benchmarks, user):
 
     """
     benchmarks_id = set([alg.benchmark_id for alg in user.algorithms])
-    print("filter")
-    print(benchmarks_id)
     result = benchmarks
-    print(benchmarks)
     result = {i: benchmarks[i] for i in benchmarks_id}
-    print(result)
     return result
 
 
@@ -337,9 +333,7 @@ def read_data_alg(benchmark_id, algs):
     else:
         df = read_df(bench[0].data_table)
         df['milestone'] = df['milestone'].astype(float).astype(int)
-        print(df)
         data = df[df['alg'].isin(algs)]
-        print(data)
 
     return data, error
 
