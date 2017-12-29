@@ -20,7 +20,7 @@
             {{error}}
         </div>
         <template v-if="token">
-            <form method="post" action="#" v-on:submit="changeAlg" enctype="multipart/form-data">
+            <form method="post" action="#" v-on:submit="store" enctype="multipart/form-data">
                 <input type="hidden" name="token" v-bind:value="token" />
             <template v-if="algs.length > 0">
                 <template v-for="alg in algs">
@@ -41,6 +41,9 @@
             <input type="submit" name="submit" value="submit"/>
             </template>
             </form>
+        <div class="error" v-if="error_load">
+            {{error_load}}
+        </div>
         </template>
         </div>
         <script src="/runcommon.js" charset="utf-8"></script>

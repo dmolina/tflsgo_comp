@@ -2,10 +2,10 @@
 var app = new Vue({
     el: '#login',
     data: {
-        message: '',
         token:  '',
         benchmark: {},
         error: '',
+        error_load: '',
         algs: [],
         sel_algs: []
     },
@@ -26,26 +26,20 @@ var app = new Vue({
                 self.error = data['error'];
             });
         },
-        changeAlg: function(e) {
-            var self = this;
-            $.ajax(make_ajax_info('changeAlg', e)
-            ).done(function(data) {
-                self.error = data['error'];
+        store: function(e) {
+                var self = this;
+                $.ajax(make_ajax_info('store', e)
+                      ).done(function(data) {
+                          self.error_load = data['error'];
 
-                if (!self.error) {
-                    self.algs = data['algs'];
-                    self.sel_algs = [];
-                }
-            }).fail(function(data) {
-                console.log('failed');
-                console.log(data.responseJSON);
-                var error = data.responseJSON['message'];
-                self.error = '';
+                          if (!self.error) {
+                              self.algs = data['algs'];
+                              self.sel_algs = [];
+                          }
+                      }).fail(function(data) {
+                          self.error_load = process_fail(data);
+                      });
 
-                for (name in error) {
-                    self.error += name +': ' +error[name];
-                }
-            });
         }
     }
 });
