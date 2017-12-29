@@ -293,7 +293,10 @@ def get_alg(bench_id, dimension):
 
     tablename, = tablenames[0]
     data = get_class_by_tablename(tablename)
-    algs = db.session.query(data.alg).filter_by(dimension=dimension).all()
+    result = db.session.query(data.alg).distinct().filter_by(dimension=dimension).all()
+
+    algs = [res[0] for res in result]
+
     return {'error': '', 'algs': algs}
 
 

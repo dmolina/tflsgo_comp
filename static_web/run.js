@@ -13,7 +13,7 @@ var app = new Vue({
         benchmarks: {},
         alg_name: '',
         selected: -1,
-        available_algs: {},
+        available_algs: [],
         algs: [],
         error: '',
         dimension: '',
@@ -49,13 +49,15 @@ var app = new Vue({
         },
         onChangedDimension: function() {
             var self = this;
+            console.log("onChangedDimension");
             $.ajax({
                 url: base_url +'/algs/' +self.selected +'/' +self.dimension,
-                method: 'GET',
-                sucess: function(data) {
+                method: 'GET'}
+            ).done(function(data) {
+                    console.log('algs');
+                    console.log(data['algs']);
                     self.available_algs = data['algs'];
                     self.error = data['error'];
-                }
             });
         },
         appendFigures: function() {
