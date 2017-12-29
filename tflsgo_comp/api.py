@@ -16,7 +16,7 @@ from models import db, get_alg, get_benchmarks, get_benchmark, init_db, User
 from models import read_data_alg, get_report
 from models import validate_user, get_user_algs, validate_by_token
 
-from readdata import read_results_from_file, error_in_data, concat_df
+from readdata import concat_df, read_benchmark_data
 from utils import tmpfile, is_error_in_args
 
 
@@ -115,19 +115,11 @@ class Compare(Resource):
         if args['file'] and not error:
             fname = tmpfile(args['file'])
             alg_name = args['alg_name']
-            data_local, error = read_results_from_file(alg_name, fname)
-
-            data_local['milestone'] = data_local['milestone'].astype(float).astype(int)
-
-            if 'dimension' not in data_local:
-                data_local['dimension'] = dimension
-
-            if 'alg' not in data_local:
-                data_local['alg'] = args['alg_name']
-
-            data = concat_df(data, data_local)
             bench = get_benchmark(benchmark_id)
-            error = error_in_data(data, bench['nfuns'], bench['milestones_required'])
+            data_local, error = read_benchmark_data(alg_name, fname, bench)
+
+            if not error:
+                data = concat_df(data, data_local)
 
         if not args['file'] and not args['algs']:
             error = 'Error: without reference algorithms the file is mandatory'
