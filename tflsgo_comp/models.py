@@ -272,6 +272,7 @@ def get_benchmark(benchmark_id):
 
     bench_data = {'id': bench.id, 'description': bench.description,
                   'nfuns': bench.nfuns, 'name': bench.name,
+                  'data_table': bench.data_table,
                   'title': bench.title, 'dimensions': [dim.value for dim
                                                        in bench.dimensions],
                   'milestones_required': [mil.value for mil in milestones if mil.required],
@@ -400,3 +401,26 @@ def validate_by_token(secret_key, token):
 
 def get_user_algs(user):
     return [alg.name for alg in user.algorithms]
+
+
+def write_proposal_data(df, user, benchmark):
+    """Store the data to the benchmark.
+
+    :param df: dataframe to store.
+    :param benchmark: benchmark.
+    :returns: 
+    :rtype: 
+
+    """
+    con = db.engine.connect()
+    trans = con.begin()
+
+    algs = df['alg'].unique()
+    # Add algorithm information
+    con.execute(Algorithm.__table__.insert(), [{'name': alg, 'user_id': user.id,
+                                      'benchmark_id': benchmark['id']}
+                                     for alg in algs])
+
+    trans.commit()
+    df.to_sql(benchmark['data_table'], con=db.engine, index=False, if_exists='append')
+    db.session.commit()

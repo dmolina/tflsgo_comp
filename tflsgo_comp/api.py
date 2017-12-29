@@ -13,7 +13,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
 from models import db, get_alg, get_benchmarks, get_benchmark, init_db, User
-from models import read_data_alg, get_report
+from models import read_data_alg, get_report, write_proposal_data, Algorithm
 from models import validate_user, get_user_algs, validate_by_token
 
 from readdata import concat_df, read_benchmark_data
@@ -45,6 +45,7 @@ def create_app(name, options={}):
 app = create_app(__name__)
 admin = Admin(app, name='tflsgo', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Algorithm, db.session))
 CORS(app)
 api = Api(app)
 
@@ -267,7 +268,10 @@ class Store(Resource):
         if not error:
             fname = tmpfile(args['file'])
             data_local, error = read_benchmark_data(alg_name, fname, bench)
-            print(data_local)
+            print(data_local.head())
+            algs = data_local['alg'].unique()
+            print(algs)
+            write_proposal_data(data_local, user, bench)
 
         result.update({'error': error, 'algs': algs})
 
