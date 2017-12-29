@@ -241,13 +241,20 @@ class Store(Resource):
                            help='File is missing')
         parse.add_argument('benchmark_id', type=int, location='form',
                            required=True, help='Benchmark_id is missing')
+
+        parse.add_argument('benchmark_id', type=int, location='form',
+                           required=True, help='Benchmark_id is missing')
+        parse.add_argument('alg_name', type=str, location='form', required=True)
         parse.add_argument('algs', type=str, location='form',
                            action='append')
 
         print(request.form)
         args = parse.parse_args()
-        checks = ['token']
+        checks = ['token', 'benchmark_id']
+        alg_name = args['alg_name']
+        bench = None
         error = ''
+        algs = []
         result = {}
 
         for check in checks:
@@ -260,16 +267,24 @@ class Store(Resource):
             if user is None:
                 error = 'User not authenticated'
             else:
-                pass
+                bench = get_benchmark(args['benchmark_id'])
 
-        result.update({'error': error})
+                if bench is None:
+                    error = 'Benchmark not known'
+
+        if not error:
+            fname = tmpfile(args['file'])
+            data_local, error = read_benchmark_data(alg_name, fname, bench)
+            print(data_local)
+
+        result.update({'error': error, 'algs': algs})
 
         print(result)
         return result
 
 
 api.add_resource(Login, '/login')
-api.add_resource(Store, '/changeAlg')
+api.add_resource(Store, '/store')
 
 if __name__ == '__main__':
     init_db(db)

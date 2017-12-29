@@ -138,3 +138,22 @@ def empty_data():
 
     """
     return pd.DataFrame({})
+
+
+def read_benchmark_data(alg_name, fullname, benchmark):
+    data_local, error = read_results_from_file(alg_name, fullname)
+
+    data_local['milestone'] = data_local['milestone'].astype(float).astype(int)
+    dimensions = benchmark['dimensions']
+
+    if (len(dimensions) == 1) and 'dimension' not in data_local:
+        data_local['dimension'] = dimensions[0]
+
+    if 'alg' not in data_local:
+        data_local['alg'] = alg_name
+
+    error = error_in_data(data_local, benchmark['nfuns'],
+                          benchmark['milestones_required'])
+
+    return data_local, error
+
