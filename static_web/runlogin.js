@@ -58,7 +58,25 @@ var app = new Vue({
                 data = {'algs_str': algs_str, 'token': self.token, 'benchmark_id': self.bench_user.id};
                 $.post('/delete', data).done(
                     function(data) {
-                        console.log('delete');
+                        self.error = data['error'];
+                        console.log(self.error);
+                        console.log(self.sel_algs);
+                        console.log(self.algs);
+                        console.log('hola');
+
+                        if (!data['error']) {
+                            console.log(self.sel_algs);
+                            for (alg in self.sel_algs) {
+                                pos = self.algs.indexOf(self.sel_algs[alg]);
+                                console.log('pos es \'' +pos.toString() +'\'');
+                                self.algs.splice(pos, 1);
+                            }
+
+                            self.sel_algs = [];
+                        }
+                        algs = data['algs'];
+                    }).fail(function(data) {
+                        self.error = process_fail(data);
                     });
             }
         },

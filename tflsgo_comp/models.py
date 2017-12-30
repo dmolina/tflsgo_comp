@@ -480,10 +480,10 @@ def delete_alg(algs_to_delete, user, benchmark_id):
     :returns: error.
     :rtype: str
     """
-    import ipdb; ipdb.set_trace()
     # Check you are the owner
     alg_users = get_alg_user(benchmark_id, user)
     ignored = [alg for alg in algs_to_delete if alg not in alg_users]
+    error = ''
 
     if ignored:
         ignored_str = ",".join(ignored)
@@ -501,7 +501,7 @@ def delete_alg(algs_to_delete, user, benchmark_id):
         error = "Error: benchmark_id not known"
     else:
         data = get_class_by_tablename(tablename)
-        q_delete_data = db.session.query(data).filter(data.alg.in_(algs_to_delete))
+        q_delete_data = db.session.query(data.id).filter(data.alg.in_(algs_to_delete))
         pprint(q_delete_data.all())
         q_delete_data.delete(synchronize_session=False)
 
