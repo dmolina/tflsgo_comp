@@ -17,15 +17,16 @@ var app = new Vue({
             var self = this;
             $.ajax(make_ajax_info('login', e)
                   ).done(function(data) {
-                self.token = '';
-                self.error = data['error'];
+                      self.token = '';
+                      self.error = data['error'];
+                      console.log(self.error);
 
-                if (!self.error) {
-                    self.total_algs = data['algs'];
-                    console.log(self.total_algs);
-                    self.token = data['token'];
-                    self.sel_algs = [];
-                }
+                      if (!self.error) {
+                          self.total_algs = data['algs'];
+                          console.log(self.total_algs);
+                          self.token = data['token'];
+                          self.sel_algs = [];
+                      }
             }).fail(function(data) {
                 self.error = data['error'];
             });
@@ -50,10 +51,11 @@ var app = new Vue({
         },
         check_delete: function() {
             var self = this;
-            var result = confirm(self.sel_algs.toString() +' will be deleted. Are you sure?');
+            var algs_str = self.sel_algs.toString();
+            var result = confirm('Algorithms \'' +algs_str +'\' will be deleted. Are you sure?');
 
             if (result) {
-                data = {'algs': self.sel_algs, 'token': self.token};
+                data = {'algs_str': algs_str, 'token': self.token, 'benchmark_id': self.bench_user.id};
                 $.post('/delete', data).done(
                     function(data) {
                         console.log('delete');
@@ -62,16 +64,13 @@ var app = new Vue({
         },
         getmyalgs: function(bench) {
             var self = this;
-            console.log("getmyalgs");
             var bench_id = bench['id'];
-            console.log(bench_id);
 
             if (bench_id) {
                 var data = {'benchmark_id': bench_id,
                         'token': self.token};
                 $.post('/algs', data)
                     .done(function(data) {
-                        console.log("pedido");
                         self.algs = data['algs'];
 
                     }).fail(function(data) {
@@ -80,7 +79,6 @@ var app = new Vue({
             }
             else {
                 this.algs = [];
-                console.log(this.algs);
             }
         }
     }

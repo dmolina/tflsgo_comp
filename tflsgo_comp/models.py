@@ -5,6 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 import importlib
 
+from pprint import pprint
+
 # For authentication
 import pandas
 import hashlib
@@ -466,3 +468,46 @@ def write_proposal_data(df, user, benchmark):
 def read_df(tablename):
     df = pandas.read_sql(tablename, db.engine)
     return df
+
+
+def delete_alg(algs_to_delete, user, benchmark_id):
+    """
+    Delete all algorithms of user in the indicated benchmark.
+
+    :param algs_to_delete: list of algorithms.
+    :param user: user
+    :param benchmark_id: benchmark_id.
+    :returns: error.
+    :rtype: str
+    """
+    import ipdb; ipdb.set_trace()
+    # Check you are the owner
+    alg_users = get_alg_user(benchmark_id, user)
+    ignored = [alg for alg in algs_to_delete if alg not in alg_users]
+
+    if ignored:
+        ignored_str = ",".join(ignored)
+        error = 'You are not the owner of algorithms \'{}\''.format(ignored_str)
+        return error
+
+    # Delete them from Algorithms first
+    q_delete_algs = db.session.query(Algorithm).filter(Algorithm.name.in_(algs_to_delete), Algorithm.benchmark_id == benchmark_id)
+    q_delete_algs.delete(synchronize_session=False)
+
+    # Delete them from the database
+    tablename, = db.session.query(Benchmark.data_table).filter_by(id=benchmark_id).one()
+
+    if not tablename:
+        error = "Error: benchmark_id not known"
+    else:
+        data = get_class_by_tablename(tablename)
+        q_delete_data = db.session.query(data).filter(data.alg.in_(algs_to_delete))
+        pprint(q_delete_data.all())
+        q_delete_data.delete(synchronize_session=False)
+
+    if error:
+        db.session.rollback()
+    else:
+        db.session.commit()
+
+    return error

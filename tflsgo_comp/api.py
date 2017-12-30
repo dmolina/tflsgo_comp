@@ -17,8 +17,10 @@ from models import db, get_alg, get_alg_user, get_benchmarks, get_benchmark
 from models import filter_with_user_algs
 
 from models import init_db, User
-from models import read_data_alg, get_report, write_proposal_data, Algorithm
+from models import read_data_alg, get_report, Algorithm
 from models import validate_user, get_user_algs, validate_by_token
+
+from models import delete_alg,  write_proposal_data
 
 from readdata import concat_df, read_benchmark_data
 from utils import tmpfile, is_error_in_args
@@ -33,9 +35,11 @@ def get_options(list):
                                required=True, help='{}_id is missing'.format(option))
         elif option in ['token', 'alg_name', 'report', 'username', 'password']:
             parse.add_argument(option, type=str, location='form')
+        elif option in ['algs_str']:
+            parse.add_argument('algs_str', type=str, location='form')
         elif option in ['algs']:
             parse.add_argument(option, type=str, location='form',
-                                action='append')
+                               action='append')
         elif option in ['file']:
             parse.add_argument('file',
                                type=werkzeug.datastructures.FileStorage,
@@ -137,8 +141,6 @@ class AlgsUsers(Resource):
         """
         parse = get_options(['benchmark_id', 'token'])
         args = parse.parse_args()
-        print("evaluated")
-        print(args)
         error = ''
         result = {}
         user = None
@@ -158,7 +160,23 @@ class AlgsUsers(Resource):
 
 class Delete(Resource):
     def post(self):
-        return {}
+        parse = get_options(['benchmark_id', 'token', 'algs_str'])
+        args = parse.parse_args()
+        benchmark_id = args['benchmark_id']
+        token = args['token']
+        algs = args['algs_str'].split(',')
+        error = ''
+        print(algs)
+
+        user = validate_by_token(app.config['SECRET_KEY'], token)
+
+        if not user:
+            error = 'User not identified'
+
+        if not error and user:
+            error = delete_alg(algs, user, benchmark_id)
+
+        return {'error': error}
 
 
 class Compare(Resource):
