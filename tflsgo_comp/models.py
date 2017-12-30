@@ -147,7 +147,7 @@ class CEC2013Data(db.Model):
     """
     __tablename__ = "cec2013lsgo"
     id = db.Column(db.Integer, primary_key=True)
-    alg = db.Column(db.String(20), nullable=False)
+    alg = db.Column(db.String(20), nullable=False, index=True)
     milestone = db.Column(db.String(5), nullable=False)
     dimension = db.Column(db.Integer, default=1000)
 
