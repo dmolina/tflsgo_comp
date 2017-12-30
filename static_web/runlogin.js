@@ -1,4 +1,3 @@
-
 var app = new Vue({
     el: '#login',
     data: {
@@ -19,11 +18,9 @@ var app = new Vue({
                   ).done(function(data) {
                       self.token = '';
                       self.error = data['error'];
-                      console.log(self.error);
 
                       if (!self.error) {
                           self.total_algs = data['algs'];
-                          console.log(self.total_algs);
                           self.token = data['token'];
                           self.sel_algs = [];
                       }
@@ -44,6 +41,7 @@ var app = new Vue({
                           self.total_algs = self.algs.concat(new_algs);
                           var new_algs_str = data['new_algs_str'];
                           self.message = 'Algorithms \'' +new_algs_str +'\' written without error';
+                          self.benchmark = {};
                       }
                   }).fail(function(data) {
                       self.error_load = process_fail(data);

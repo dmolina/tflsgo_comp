@@ -13,7 +13,6 @@ Vue.component('select-bench', {
     },
     mounted: function() {
         var self = this;
-        console.log('token: \'' +self.token +'\'');
         var token = self.token;
 
         if (token) {
@@ -24,9 +23,7 @@ Vue.component('select-bench', {
             url: '/benchmarks' +token,
             method: 'GET',
         }).done(function(data) {
-            console.log("done");
             self.benchmarks = data['benchmarks'];
-            console.log("done");
         });
  
     },
@@ -113,8 +110,6 @@ var make_ajax_info = function(name, e) {
 }
 
 var process_fail = function(data) {
-    console.log('failed');
-    console.log(data.responseJSON);
     var error = data.responseJSON['message'];
     var result = '';
 
