@@ -37,7 +37,6 @@
             <template v-else>
                 <h2>There is no algorithms</h2>
             </template>
-        </template>
         <h2>Update your results</h2>
         <p>
             <label>Select benchmark </label><select-bench :benchmark.sync="benchmark"></select-bench>
@@ -48,6 +47,7 @@
                 <input type="submit" value="store">
             </template>
         </p>
+        </template>
         </form>
         <div class="error" v-if="error_load">
             {{error_load}}
