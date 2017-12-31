@@ -51,6 +51,10 @@ var app = new Vue({
         check_delete: function() {
             var self = this;
             var algs_str = self.sel_algs.toString();
+
+            if (algs_str.length == 0) {
+                return;
+            }
             var result = confirm('Algorithms \'' +algs_str +'\' will be deleted. Are you sure?');
 
             if (result) {
