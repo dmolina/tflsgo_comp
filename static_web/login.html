@@ -22,20 +22,23 @@
         <form method="post" action="#" v-on:submit="store" enctype="multipart/form-data">
         <template v-if="token.length > 0">
             <input type="hidden" name="token" v-bind:value="token" />
-            <template v-if="total_algs.length > 0">
                 <h2>List of your algorithms</h2>
+            <template v-if="total_algs.length > 0">
                 <p>
                     <label>Select the benchmark </label><select-bench :benchmark.sync="bench_user" :token="token" v-on:updated="getmyalgs" ref="selectowner"></select-bench>
-                </p>
+               </p>
+                <template v-if="algs.length > 0">
+                </template>
                 <template v-for="alg in algs">
-                    <input type="checkbox" v-model="sel_algs" :value="alg"><label>{{alg}}</label>
+                    <input type="checkbox" v-model="sel_algs" :value="alg" name="sel_algs"><label>{{alg}}</label>
                 </template>
                 <p>
+                    <input type="checkbox" id="all" v-on:click="set_all"><label>All</label>
                     <button type="button" v-on:click="check_delete">Delete</button>
                 </p>
             </template>
             <template v-else>
-                <h2>There is no algorithms</h2>
+                <h4>There is no algorithms</h4>
             </template>
         <h2>Update your results</h2>
         <p>
@@ -58,6 +61,7 @@
         </template>
         </div>
         <script src="/runcommon.js" charset="utf-8"></script>
+        <script src="/underscore.js" charset="utf-8"></script>
         <script src="/runlogin.js" charset="utf-8"></script>
     </body>
 </html>

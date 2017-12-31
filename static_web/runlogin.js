@@ -59,17 +59,19 @@ var app = new Vue({
 
             if (result) {
                 data = {'algs_str': algs_str, 'token': self.token, 'benchmark_id': self.bench_user.id};
+
                 $.post('/delete', data).done(
                     function(data) {
                         self.error = data['error'];
 
                         if (!data['error']) {
-                            for (alg in self.sel_algs) {
-                                pos = self.algs.indexOf(self.sel_algs[alg]);
-                                self.algs.splice(pos, 1);
-                            }
-
+                            self.algs = _.difference(self.algs, self.sel_algs);
+                            self.total_algs = _.difference(self.total_algs, self.sel_algs);
                             self.sel_algs = [];
+
+                            if (self.algs.length == 0) {
+                                self.bench_user = {}
+                            }
                         }
                         algs = data['algs'];
                     }).fail(function(data) {
@@ -93,6 +95,19 @@ var app = new Vue({
             }
             else {
                 this.algs = [];
+            }
+        },
+        set_all : function() {
+            var self=this;
+            var all = document.getElementById('all');
+
+            if (all.checked) {
+                self.sel_algs = self.algs;
+                all.name = 'None';
+            }
+            else {
+                self.sel_algs = [];
+                all.name = 'All';
             }
         }
     }
