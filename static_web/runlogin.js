@@ -41,7 +41,8 @@ var app = new Vue({
                           self.total_algs = self.algs.concat(new_algs);
                           var new_algs_str = data['new_algs_str'];
                           self.message = 'Algorithms \'' +new_algs_str +'\' written without error';
-                          self.benchmark = {};
+                          self.$refs.selectowner.changed();
+                          self.getmyalgs(self.benchmark);
                       }
                   }).fail(function(data) {
                       self.error_load = process_fail(data);
