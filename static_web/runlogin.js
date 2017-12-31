@@ -57,16 +57,10 @@ var app = new Vue({
                 $.post('/delete', data).done(
                     function(data) {
                         self.error = data['error'];
-                        console.log(self.error);
-                        console.log(self.sel_algs);
-                        console.log(self.algs);
-                        console.log('hola');
 
                         if (!data['error']) {
-                            console.log(self.sel_algs);
                             for (alg in self.sel_algs) {
                                 pos = self.algs.indexOf(self.sel_algs[alg]);
-                                console.log('pos es \'' +pos.toString() +'\'');
                                 self.algs.splice(pos, 1);
                             }
 
@@ -88,7 +82,6 @@ var app = new Vue({
                 $.post('/algs', data)
                     .done(function(data) {
                         self.algs = data['algs'];
-
                     }).fail(function(data) {
                         self.error_load = process_fail(data);
                     });

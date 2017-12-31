@@ -230,7 +230,6 @@ class Compare(Resource):
             js = figures_json['js']
             result.update({'tables': tables, 'js': js, 'divs': divs})
 
-        print(result)
         result.update({'error': error})
         return result
 
