@@ -7,9 +7,36 @@
         <meta charset="utf-8" />
     </head>
     <body>
-<div id="benchmark">
-<h2>Select Benchmark</h2>
-<div id="app">
+    <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+      <div class="container">
+        <a href="." class="navbar-brand">TFLSGO Comparison web</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav">
+              <li class="nav-item"><a class="nav-link" href="">Compare</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/update">Update data</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="page-header" id="banner">
+        <div class="row">
+          <div class="col-lg-8 col-md-7 col-sm-6">
+            <h1>Cerulean</h1>
+          </div>
+        </div>
+      </div>
+ <div class="bs-docs-section clearfix">      
+    <div id="app" class="row" id="benchmark">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>Select Benchmark</h2>
        Select the benchmark used for comparison:
         <!-- Select the benchmark -->
 <select v-model="selected" v-on:change="onChangedBenchmark">
@@ -87,10 +114,19 @@ If you want to compare existing results with your own proposal, set a Excel or a
 </form>
 <template v-for="index in tables.idx">
     <h2>{{tables.titles[index]}}</h2>
-    <p><span v-html="tables.tables[index]"></span></p>
+    <div class="bs-component">
+        <div class="table dataframe">
+        <span v-html="tables.tables[index]"></span>
+            </p>
+</div>
 </template>
+<div id="figures">
 </div>
-        <script src="/static/js/index.js" charset="utf-8"></script>
-</div>
+            </div>
+        </div>
+    </div>
+ </div>
+    </div>
+ <script src="/static/js/index.js" charset="utf-8"></script>
 </body>
 </html>
