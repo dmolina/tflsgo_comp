@@ -9,9 +9,10 @@ from flask import Flask, send_file, request
 from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
 
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
 from assets import gen_static
+
+# from flask_admin import Admin
+# from flask_admin.contrib.sqla import ModelView
 
 from models import db, get_alg, get_alg_user, get_benchmarks, get_benchmark
 
@@ -75,9 +76,9 @@ def create_app(name, options={}):
 
 
 app = create_app(__name__)
-admin = Admin(app, name='tflsgo', template_mode='bootstrap3')
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Algorithm, db.session))
+# admin = Admin(app, name='tflsgo', template_mode='bootstrap3')
+# admin.add_view(ModelView(User, db.session))
+# admin.add_view(ModelView(Algorithm, db.session))
 CORS(app)
 api = Api(app)
 gen_static()
