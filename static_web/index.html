@@ -2,19 +2,8 @@
 <html>
     <head>
         <title>Select your Benchmark</title>
-        <script src="/vue.js"></script>
-   <link href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.css"
-         rel="stylesheet" type="text/css"/>
-   <link href="https://cdn.pydata.org/bokeh/release/bokeh-widget-0.12.13.min.css"
-         rel="stylesheet" type="text/css"/>
-        <script src="/jquery-3.2.1.min.js"></script>
-   <script
-       src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.js"></script>
-   <script
-       src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.13.min.js"></script>
-       <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.13.min.js"></script>
-       <script src="https://cdn.pydata.org/bokeh/release/bokeh-api-0.12.13.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="/static/js/index_lib.js" charset="utf-8"></script>
+        <link rel="stylesheet" type="text/css" href="/static/css/index.css">
         <meta charset="utf-8" />
     </head>
     <body>
@@ -101,10 +90,7 @@ If you want to compare existing results with your own proposal, set a Excel or a
     <p><span v-html="tables.tables[index]"></span></p>
 </template>
 </div>
-<div id="figures"></div>
-<script src="./runcommon.js"></script>
-<script src="./run.js"></script>
-</div>
+        <script src="/static/js/index.js" charset="utf-8"></script>
 </div>
 </body>
 </html>

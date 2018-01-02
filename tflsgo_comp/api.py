@@ -11,6 +11,7 @@ from flask_restful import Api, Resource, reqparse
 
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from assets import gen_static
 
 from models import db, get_alg, get_alg_user, get_benchmarks, get_benchmark
 
@@ -58,7 +59,7 @@ def create_app(name, options={}):
     :param name: name of the application
     :param options: optional number of options for the app.
     """
-    app = Flask(name, static_url_path='', template_folder="../static_web")
+    app = Flask(name, static_url_path='/static')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bench_lsgo.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ECHO'] = False
@@ -79,7 +80,7 @@ admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Algorithm, db.session))
 CORS(app)
 api = Api(app)
-
+gen_static()
 
 class Benchmark(Resource):
     """
