@@ -263,6 +263,10 @@ def after_request(response):
 def index():
     return send_file('static/index.html')
 
+@app.route('/update')
+def update():
+    return send_file('static/login.html')
+
 
 @app.route('/<path:path>')
 def path(path):
