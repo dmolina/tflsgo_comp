@@ -61,7 +61,7 @@ def highlight_max(s):
     highlight the maximum in a Series yellow.
     '''
     is_min = s == s.min()
-    return ['background-color: yellow' if v else '' for v in is_min]
+    return ['color: RoyalBlue' if v else '' for v in is_min]
 
 
 def format_e(df):
