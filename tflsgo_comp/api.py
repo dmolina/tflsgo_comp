@@ -5,9 +5,10 @@ Author: Daniel  Molina Cabrera <dmolina@decsai.ugr.es>
 import os
 import werkzeug
 
-from flask import Flask, send_file, request
+from flask import Flask, send_file
 from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
+from flask_cache import Cache
 
 from assets import gen_static
 from whitenoise import WhiteNoise
@@ -74,7 +75,7 @@ def create_app(name, options={}):
     db.app = app
     db.init_app(app)
     # add whitenoise
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/')
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='./static/')
     return app
 
 
@@ -84,12 +85,15 @@ app = create_app(__name__)
 # admin.add_view(ModelView(Algorithm, db.session))
 CORS(app)
 api = Api(app)
+# Check Configuring Flask-Cache section for more details
+cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 gen_static()
 
 class Benchmark(Resource):
     """
     Rest object to receive the benchmark information.
     """
+    @cache.cached(timeout=300)
     def get(self):
         """
         Return the information about benchmarks.
@@ -98,6 +102,7 @@ class Benchmark(Resource):
 
 
 class BenchmarkToken(Resource):
+    @cache.cached(timeout=10)
     def get(self, token):
         """
         Return the benchmarks in which the author has algorithms.
@@ -118,6 +123,7 @@ class Algs(Resource):
     """
     Rest resource to receive the list of algorithm for a benchmark.
     """
+    @cache.cached(timeout=10)
     def get(self, benchmark_id, dimension):
         """
         Return the algorithms available from the indicated benchmark.
@@ -135,6 +141,7 @@ class AlgsUsers(Resource):
     """
     Rest resource to receive the list of algorithm for a benchmark.
     """
+    @cache.cached(timeout=30)
     def post(self):
         """
         Return the algorithms available from the indicated benchmark.
@@ -181,6 +188,9 @@ class Delete(Resource):
         if not error and user:
             error = delete_alg(algs, user, benchmark_id)
 
+            if not error:
+                cache.clear()
+
         return {'error': error}
 
 
@@ -188,6 +198,7 @@ class Compare(Resource):
     """
     Rest resource to get the data and file MOS.
     """
+    @cache.cached(timeout=300)
     def post(self):
         """
         Return the data for the comparisons.
@@ -354,6 +365,9 @@ class Store(Resource):
             data_local, error = read_benchmark_data(alg_name, fname, bench)
             new_algs = data_local['alg'].unique().tolist()
             error = write_proposal_data(data_local, user, bench)
+
+            if not error:
+                cache.clear()
 
         result.update({'error': error, 'new_algs': new_algs, 'new_algs_str': ",".join(new_algs)})
 
