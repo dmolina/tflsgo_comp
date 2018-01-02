@@ -109,6 +109,12 @@ def on():
         print("Error disabling app")
 
 
+@task
+def clean():
+    result = local('heroku plugins:install heroku-repo')
+
+    if not result.failed:
+        result = local('heroku repo:purge_cache -a {}'.format(project))
 
 @task
 def logs():
