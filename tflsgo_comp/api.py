@@ -244,19 +244,19 @@ api.add_resource(Compare, '/compare')
 api.add_resource(Delete, '/delete')
 
 
-# Avoid problem with the Same-origin policy
-@app.after_request
-def after_request(response):
-    """Avoid problem for POST in a different domain.
+# # Avoid problem with the Same-origin policy
+# @app.after_request
+# def after_request(response):
+#     """Avoid problem for POST in a different domain.
 
-    :param response: add headers for modern browsers.
-    :returns: None
-    :rtype: None
-    """
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
-    return response
+#     :param response: add headers for modern browsers.
+#     :returns: None
+#     :rtype: None
+#     """
+#     response.headers.add('Access-Control-Allow-Origin', '*')
+#     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+#     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+#     return response
 
 
 @app.route('/')
