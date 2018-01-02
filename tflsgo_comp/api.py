@@ -6,7 +6,6 @@ import os
 import werkzeug
 
 from flask import Flask, send_file
-from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
 from flask_cache import Cache
 
@@ -83,7 +82,6 @@ app = create_app(__name__)
 # admin = Admin(app, name='tflsgo', template_mode='bootstrap3')
 # admin.add_view(ModelView(User, db.session))
 # admin.add_view(ModelView(Algorithm, db.session))
-CORS(app)
 api = Api(app)
 # Check Configuring Flask-Cache section for more details
 cache = Cache(app,config={'CACHE_TYPE': 'simple'})
