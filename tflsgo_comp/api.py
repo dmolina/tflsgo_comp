@@ -10,7 +10,6 @@ from flask_restful import Api, Resource, reqparse
 from flask_cache import Cache
 
 from assets import gen_static
-from whitenoise import WhiteNoise
 
 # from flask_admin import Admin
 # from flask_admin.contrib.sqla import ModelView
@@ -74,7 +73,6 @@ def create_app(name, options={}):
     db.app = app
     db.init_app(app)
     # add whitenoise
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='./static/')
     return app
 
 
@@ -82,10 +80,13 @@ app = create_app(__name__)
 # admin = Admin(app, name='tflsgo', template_mode='bootstrap3')
 # admin.add_view(ModelView(User, db.session))
 # admin.add_view(ModelView(Algorithm, db.session))
+Compress(app)
 api = Api(app)
 # Check Configuring Flask-Cache section for more details
-cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+cache.clear()
 gen_static()
+
 
 class Benchmark(Resource):
     """
@@ -196,7 +197,6 @@ class Compare(Resource):
     """
     Rest resource to get the data and file MOS.
     """
-    @cache.cached(timeout=300)
     def post(self):
         """
         Return the data for the comparisons.
