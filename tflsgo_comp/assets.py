@@ -36,6 +36,7 @@ bundles = {
         filters='cssmin',
         output='css/index.css'),
     'login_css': Bundle(
+        'css/lib/bootstrap_celurian.min.css',
         'css/style.css',
         filters='cssmin',
         output='css/login.css')
