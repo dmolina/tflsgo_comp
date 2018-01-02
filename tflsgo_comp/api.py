@@ -17,8 +17,8 @@ from models import db, get_alg, get_alg_user, get_benchmarks, get_benchmark
 
 from models import filter_with_user_algs
 
-from models import init_db, User
-from models import read_data_alg, get_report, Algorithm
+from models import init_db
+from models import read_data_alg, get_report
 from models import validate_user, get_user_algs, validate_by_token
 
 from models import delete_alg,  write_proposal_data
