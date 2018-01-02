@@ -10,6 +10,7 @@ from flask_cors import CORS
 from flask_restful import Api, Resource, reqparse
 
 from assets import gen_static
+from whitenoise import WhiteNoise
 
 # from flask_admin import Admin
 # from flask_admin.contrib.sqla import ModelView
@@ -72,6 +73,8 @@ def create_app(name, options={}):
 
     db.app = app
     db.init_app(app)
+    # add whitenoise
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/')
     return app
 
 
