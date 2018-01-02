@@ -1,7 +1,7 @@
 import logging
 from webassets import Bundle, Environment
 from webassets.script import CommandLineEnvironment
-
+        
 bundles = {
     'home_js_libs': Bundle(
         'js/lib/jquery-3.2.1.min.js',
@@ -9,6 +9,8 @@ bundles = {
         'js/lib/bokeh-api-0.12.13.min.js',
         'js/lib/bokeh-tables-0.12.13.min.js',
         'js/lib/bokeh-widgets-0.12.13.min.js',
+        'js/lib/popper.min.js',
+        'js/lib/bootstrap.min.js',
         filters='jsmin',
         output='js/index_lib.js'),
     'home_js': Bundle(
@@ -20,6 +22,8 @@ bundles = {
     'login_js_libs': Bundle(
         'js/lib/jquery-3.2.1.min.js',
         'js/lib/underscore.js',
+        'js/lib/popper.min.js',
+        'js/lib/bootstrap.min.js',
         filters='jsmin',
         output='js/login_lib.js'),
     'login_js':  Bundle(
