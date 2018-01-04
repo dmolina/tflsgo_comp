@@ -265,11 +265,6 @@ def update():
     return send_file('static/login.html')
 
 
-#@app.route('/<path:path>')
-#def path(path):
- #   return send_file(path)
-
-
 class Login(Resource):
     """
     Rest resource to get the data and file MOS.
