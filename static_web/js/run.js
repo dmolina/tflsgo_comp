@@ -68,7 +68,7 @@ var app = new Vue({
             var self = this;
             div = document.getElementById('figures');
             // Empty the div
-            div.innerHTML = '';
+            div.innerHTML = '<a href="" id="figures_link"></a>';
 
             for (fi in self.figure_divs) {
                 fig = self.figure_divs[fi];
@@ -77,6 +77,7 @@ var app = new Vue({
                 div.append(new_title);
                 div.innerHTML += fig;
             }
+            $('#figures_link').focus();
             eval(self.figures_js);
         },
        sendData: function(e) {
