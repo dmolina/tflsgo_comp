@@ -5,7 +5,7 @@ Author: Daniel  Molina Cabrera <dmolina@decsai.ugr.es>
 import os
 import werkzeug
 
-from flask import Flask, send_file
+from flask import Flask, send_file, request
 from flask_restful import Api, Resource, reqparse
 from flask_cache import Cache
 
@@ -52,6 +52,12 @@ def get_options(list):
             raise("option '{}' in unknown".format(option))
 
     dict = parse.parse_args()
+
+    if 'mobile' in list:
+        mobile_str = request.form['mobile']
+        mobile = mobile_str.lower() != 'false'
+        dict['mobile'] = mobile
+
     return dict
 
 
@@ -237,7 +243,7 @@ class Compare(Resource):
             dimension = args['dimension']
             tables_idx, tables_titles, tables_df = report_module.create_tables(data, categories, milestones, dimension)
             tables = {'idx': tables_idx, 'titles': tables_titles, 'tables': tables_df}
-            figures_json = report_module.create_figures(data, categories, milestones, dimension)
+            figures_json = report_module.create_figures(data, categories, milestones, dimension, mobile=args['mobile'])
             error = figures_json['error']
             divs = figures_json['divs']
             js = figures_json['js']

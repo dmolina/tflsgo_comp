@@ -131,7 +131,7 @@ def get_plot_barh(df, title):
     return bar.opts(options)
 
 
-def create_figures(df, categories, accuracies, dimension=1000):
+def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     """
     Create graphics from the dataframe with the data.
 
@@ -144,6 +144,11 @@ def create_figures(df, categories, accuracies, dimension=1000):
     :param categories: categories to compare (sorted).
     :param algs: algorithm list (sorted).
     """
+    num_cols = 3
+
+    if mobile:
+        num_cols = 1
+
     hv.extension('bokeh')
     renderer = hv.renderer('bokeh')
     options = "Bars [xrotation=90]"
@@ -185,7 +190,7 @@ def create_figures(df, categories, accuracies, dimension=1000):
                     total_pivot_df.loc[pivot_i] = new_ranking_row
                     pivot_i += 1
 
-            total_figs[cat_name] = renderer.get_plot(hv.Layout(cat_figs).opts(options).cols(3)).state
+            total_figs[cat_name] = renderer.get_plot(hv.Layout(cat_figs).opts(options).cols(num_cols)).state
 
     cat_global = []
 
@@ -202,7 +207,7 @@ def create_figures(df, categories, accuracies, dimension=1000):
     plots = hv.Layout(cat_global).opts(options)
     # legend_opts = {'NdOverlay': dict(show_legend=True, legend_position='right')}
     # plots.Bars.III = plots.Bars.III(plot=legend_opts)
-    total_figs['All'] = renderer.get_plot(plots.cols(3)).state
+    total_figs['All'] = renderer.get_plot(plots.cols(num_cols)).state
     fig_names.extend([cat.name for cat in categories])
     fig_names.append('All')
 

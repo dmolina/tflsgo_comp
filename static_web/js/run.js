@@ -19,7 +19,14 @@ var app = new Vue({
         tables: {},
         figures: {},
         figures_js: '',
-        figure_divs: {}
+        figure_divs: {},
+        mobile: false
+    },
+    mounted:  function() {
+        if (/Mobi/.test(navigator.userAgent)) {
+            this.mobile = true;
+            console.log(navigator.userAgent);
+        }
     },
     methods: {
         onChangedBenchmark: function(bench) {

@@ -37,6 +37,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <form id="data" action="#" method="post" enctype="multipart/form-data" v-on:submit="sendData">
+                    <input type="hidden" name="mobile" v-bind:value="mobile">
                     <h2>About the website</h2>
                     <p>This website allows researcher to compare </p>
                 <h2>Select Benchmark</h2>

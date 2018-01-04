@@ -12,7 +12,7 @@ def create_tables(df, categories, accuracies, dimension=1000):
     return [], {}, {}
 
 
-def create_figures(df, categories, accuracies, dimension=1000):
+def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     """
     Create convergence figures.
 
