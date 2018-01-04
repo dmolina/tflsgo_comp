@@ -58,7 +58,7 @@ The required format is indicated <a v-bind:href="example">here</a>.\
             var example = self.benchmark.example;
 
             if (example.length > 0) {
-                return "examples/" +example +".xls";
+                return "/static/examples/" +example +".xls";
             }
             else {
                 return '#'
