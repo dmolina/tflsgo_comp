@@ -39,7 +39,16 @@
                 <form id="data" action="#" method="post" enctype="multipart/form-data" v-on:submit="sendData">
                     <input type="hidden" name="mobile" v-bind:value="mobile">
                     <h2>About the website</h2>
-                    <p>This website allows researcher to compare </p>
+                    <p>This website allows researcher to compare results of different algorithms for different benchmarks.
+                        The process is simple:</p>
+                    <ol>
+                        <li>Select the wanted benchmark.</li>
+                        <li>Select the dimension (if there is more of one for the benchmark).</li>
+                        <li>Select the algorithm to compare. You can select from the Database and/or add results from
+                        an Excel file.</li>
+                        <li>Select the report.</li>
+                        <li>Push the button <strong>Compare</strong>.</li>
+                    </ol>
                 <h2>Select Benchmark</h2>
                 Select the benchmark used for comparison:
                 <!-- Select the benchmark -->
@@ -83,12 +92,12 @@
             There are not algorithms to compare.
         </p>
     </template>
-    <h2>Update your results</h2>
-If you want to compare existing results with your own proposal, set a Excel or a
-CSV file with the results.
+    <br>
+If you want to compare existing results with your own proposal, set a Excel or 
+        CSV file with the results (optional).
 
     <input-alg v-bind:benchmark="benchmark"></input-alg>
-    <div v-if="error" class="error">
+    <div v-if="error" class="alert alert-danger">
         <label id="error">{{error}}</label>
     </div>
     <template v-if="reports.length == 0">
@@ -97,17 +106,27 @@ CSV file with the results.
         </p>
     </template>
     <template v-if="reports.length > 1">
-        <p>
-            <strong>Select the Report:</strong>
-            <select v-model="report_name" name="report_name">
-                <option v-for="report_item in reports" :value="report_item.name">{{report_item.description}}
-                </option>
+        <div class="form-group row">
+             <div class="col-lg-3 col-md-6 col-sm-12">
+                 <label class="form-control">Select the Report:</label>
+             </div>
+             <div class="col-lg-9 col-md-6 col-sm-12">
+                 <select v-model="report_name" name="report_name" class="form-control">
+                     <option v-for="report in reports" :value="report.name">{{report.description}}</option>
             </select>
+             </div>
         </p>
     </template>
     <input type="hidden" name="report" :value="report_name">
     <p>When it is ready click in the button</p>
-    <p><input id="submit_button" type="submit" class="" value="Compare"></p>
+    <div class="row">
+    <div class="col-md-3 col-sm-12">
+        <input id="submit_button" type="submit" class="btn btn-primary" value="Compare">
+    </div>
+    <div class="col-md-9 col-sm-12">
+        <i id="refresh" class="d-none fa fa-spin fa-refresh fa-2x fa-fw"><span class="sr-only">Loading...</span></i>
+    </div>
+    </div>
 </template>
 </form>
 <template v-for="index in tables.idx">

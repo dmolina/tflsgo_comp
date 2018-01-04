@@ -43,6 +43,8 @@ def get_options(list):
         elif option in ['algs']:
             parse.add_argument(option, type=str, location='form',
                                action='append')
+        elif option in ['mobile']:
+            pass
         elif option in ['file']:
             parse.add_argument('file',
                                type=werkzeug.datastructures.FileStorage,
