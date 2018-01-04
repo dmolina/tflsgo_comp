@@ -33,6 +33,7 @@ bundles = {
         filters='jsmin',
         output='js/login.js'),
     'home_css': Bundle(
+        'css/lib/font-awesome.min.css',
         'css/lib/bokeh-widget-0.12.13.min.css',
         'css/lib/bokeh-0.12.13.min.css',
         'css/lib/bootstrap_celurian.min.css',
