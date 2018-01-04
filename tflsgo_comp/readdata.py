@@ -136,16 +136,16 @@ def concat_df(df1, df2):
     :returns: the dataframe joining by rows
     :rtype: pandas.DataFrame
     """
-    if not df1:
+    if type(df1) is not pd.core.frame.DataFrame:
+        if not df1:
+            return df2
+    elif df1.empty:
         return df2
 
-    if df1.empty:
-        return df2
-
-    if not df2:
-        return df1
-
-    if df2.empty:
+    if type(df2) is not pd.core.frame.DataFrame:
+        if not df2:
+            return df1
+    elif df2.empty:
         return df1
 
     return pd.concat([df1, df2]).reset_index().drop('index', axis=1)
