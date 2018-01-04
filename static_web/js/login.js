@@ -1209,7 +1209,7 @@ The required format is indicated <a v-bind:href="example">here</a>.\
 <label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>\
 <p><input id="upload_button" type="file" name="file"></p>\
 <input id="alg_name" name="alg_name" placeholder="Proposal">\
-</div>',props:['benchmark'],computed:{example:function(){var self=this;var example=self.benchmark.example;if(example.length>0){return"examples/"+example+".xls";}
+</div>',props:['benchmark'],computed:{example:function(){var self=this;var example=self.benchmark.example;if(example.length>0){return"/static/examples/"+example+".xls";}
 else{return'#'}}}});var make_ajax_noform=function(name,data){return{url:'/'+name,type:'POST',data:data,dataType:'json',cache:false,contentType:false,processData:false};}
 var make_ajax_info=function(name,e){e.preventDefault();var formData=new FormData(e.target);return{url:'/'+name,type:'POST',data:formData,dataType:'json',cache:false,contentType:false,processData:false};}
 var make_ajax_info=function(name,e){e.preventDefault();var formData=new FormData(e.target);return{url:'/'+name,type:'POST',data:formData,dataType:'json',cache:false,contentType:false,processData:false};}
