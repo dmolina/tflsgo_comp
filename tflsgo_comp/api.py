@@ -51,7 +51,8 @@ def get_options(list):
         else:
             raise("option '{}' in unknown".format(option))
 
-    return parse
+    dict = parse.parse_args()
+    return dict
 
 
 def create_app(name, options={}):
@@ -151,8 +152,7 @@ class AlgsUsers(Resource):
         :returns: json object with the algorithm list.
         :rtype: json.
         """
-        parse = get_options(['benchmark_id', 'token'])
-        args = parse.parse_args()
+        args = get_options(['benchmark_id', 'token'])
         error = ''
         result = {}
         user = None
@@ -172,8 +172,7 @@ class AlgsUsers(Resource):
 
 class Delete(Resource):
     def post(self):
-        parse = get_options(['benchmark_id', 'token', 'algs_str'])
-        args = parse.parse_args()
+        args = get_options(['benchmark_id', 'token', 'algs_str'])
         benchmark_id = args['benchmark_id']
         token = args['token']
         algs = args['algs_str'].split(',')
@@ -205,8 +204,7 @@ class Compare(Resource):
         :returns: error: With a error, data: with data.
         :rtype: json
         """
-        parse = get_options(['file', 'benchmark_id', 'algs', 'alg_name', 'report', 'dimension'])
-        args = parse.parse_args()
+        args = get_options(['file', 'benchmark_id', 'algs', 'alg_name', 'report', 'dimension', 'mobile'])
         error = is_error_in_args(args)
         data = {}
         result = {}
@@ -283,8 +281,7 @@ class Login(Resource):
         :returns: error: With a error, data: with data.
         :rtype: json
         """
-        parse = get_options(['username', 'password'])
-        args = parse.parse_args()
+        args = get_options(['username', 'password'])
         checks = ['username', 'password']
         error = ''
         result = {}
@@ -320,8 +317,7 @@ class Store(Resource):
         :returns: error: With a error, data: with data.
         :rtype: json
         """
-        parse = get_options(['token', 'file', 'benchmark_id', 'alg_name'])
-        args = parse.parse_args()
+        args = get_options(['token', 'file', 'benchmark_id', 'alg_name'])
         checks = ['token', 'benchmark_id']
         alg_name = args['alg_name']
         bench = None
