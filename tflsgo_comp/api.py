@@ -61,7 +61,7 @@ def create_app(name, options={}):
     :param name: name of the application
     :param options: optional number of options for the app.
     """
-    app = Flask(name, static_url_path='/static')
+    app = Flask(name)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bench_lsgo.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ECHO'] = False
@@ -261,14 +261,15 @@ api.add_resource(Delete, '/delete')
 def index():
     return send_file('static/index.html')
 
+
 @app.route('/update')
 def update():
     return send_file('static/login.html')
 
 
-@app.route('/<path:path>')
-def path(path):
-    return send_file(path)
+#@app.route('/<path:path>')
+#def path(path):
+ #   return send_file(path)
 
 
 class Login(Resource):
