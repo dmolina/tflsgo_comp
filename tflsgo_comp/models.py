@@ -193,8 +193,8 @@ Benchmark for the Large Scale Global Optimization competitions.
     db.session.add(Report(name="cec2013_classical", filename="report_cec2013",
                           description="Classic Benchmark for LSGO (F1 criterion)", benchmarks=[bench]))
 
-    db.session.add(Report(name="test", filename="report_test",
-                          description="Test", benchmarks=[bench]))
+    db.session.add(Report(name="functions", filename="report_functions",
+                          description="Convergence Functions", benchmarks=[bench]))
 
     # Create milestone with required and optional
     milestones_required = np.array([1.2e5, 6e5, 3e6], dtype=np.int32)
