@@ -33,3 +33,18 @@ https://progblog.io/How-to-deploy-a-Flask-App-to-Heroku/
 https://coderwall.com/p/pstm1w/deploying-a-flask-app-at-heroku
 
 https://stackoverflow.com/questions/13714205/deploying-flask-app-to-heroku#13714363
+
+
+* Holoviews
+
+https://stackoverflow.com/questions/41752111/how-to-control-holoviews-y-tick-format#41752642
+
+https://stackoverflow.com/questions/46024901/how-to-format-colorbar-label-in-bokeh
+
+https://stackoverflow.com/questions/25657448/python-bokeh-plot-how-to-format-axis-display#28034490
+
+https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format#4673436
+
+toFixed(3)
+toExponential(3)
+toString()
