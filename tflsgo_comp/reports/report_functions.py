@@ -59,7 +59,6 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     hv.output("size=130")
     plot = holomap.overlay('Algorithm').layout('Function').cols(1)
     # plot[2] = plot[2].opts("Curve [show_legend=True]")
-    fig_names = ['test']
-    figures['test'] = renderer.get_plot(plot).state
-    titles['test'] = 'Convergence Functions'
-    return figure_json(fig_names, figures)
+    figures['Convergence Functions'] = renderer.get_plot(plot).state
+    titles = ['test']
+    return figure_json(titles, figures)
