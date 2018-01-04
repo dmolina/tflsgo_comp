@@ -32,37 +32,37 @@
           </div>
         </div>
       </div>
- <div class="bs-docs-section clearfix">      
+ <div class="bs-docs-section clearfix">
     <div id="app" class="row" id="benchmark">
         <div class="row">
             <div class="col-lg-12">
+                <form id="data" action="#" method="post" enctype="multipart/form-data" v-on:submit="sendData">
+                    <h2>About the website</h2>
+                    <p>This website allows researcher to compare </p>
                 <h2>Select Benchmark</h2>
-       Select the benchmark used for comparison:
-        <!-- Select the benchmark -->
-<select v-model="selected" v-on:change="onChangedBenchmark">
-    <option value="" selected="selected" value="-1">------</option>
-    <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>
-</select>
-<form id="data" action="/pepe" method="post" enctype="multipart/form-data" v-on:submit="sendData">
-<!-- Only visible with the benchmark was selected --><template v-if="selected >= 0">
-<!-- Form with the data (in ajax) -->
-    <h2>{{benchmarks[selected].title}}</h2>
-    <p>{{benchmarks[selected].description}}
+                Select the benchmark used for comparison:
+                <!-- Select the benchmark -->
+<select-bench :benchmark.sync="benchmark" v-on:updated="onChangedBenchmark" ref="selectowner"></select-bench>
+    <!-- Only visible with the benchmark was selected -->
+    <template v-if="dimensions.length > 0">
+<!-- Form with the data ( in ajax) -->
+    <h2>{{benchmark.title}}</h2>
+    <p>{{benchmark.description}}
     </p>
-    <template v-if="benchmarks[selected].dimensions.length > 1">
+    <template v-if="dimensions.length > 1">
     Select the dimension value:
     <select name="dimension" v-model="dimension" v-on:change="onChangedDimension">
-        <option v-for="dim in benchmarks[selected].dimensions" v-bind:value="dim">{{dim}}</option>
+        <option v-for="dim in dimensions" v-bind:value="dim">{{dim}}</option>
     </select>
     </template>
     <template v-else>
         <p>
-            Dimension value: <strong>{{benchmarks[selected].dimensions[0]}}</strong>
+            Dimension value: <strong>{{dimensions[0]}}</strong>
         </p>
     </template>
     <p>
             <!-- benchmark_id -->
-            <input type="hidden" v-bind:value="benchmarks[selected].id" name="benchmark_id"/>
+            <input type="hidden" v-bind:value="benchmark.id" name="benchmark_id"/>
             <!-- dimension -->
             <input type="hidden" v-bind:value="dimension" name="dimension"/>
     </p>
@@ -82,34 +82,31 @@
             There are not algorithms to compare.
         </p>
     </template>
-<h2>Update your results</h2>
-<p>
-If you want to compare existing results with your own proposal, set a Excel or a CSV file with
-    the results. The required format is indicated <a href="">here</a>.
-</p>
-    <label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>
-    <p><input id="upload_button" type="file" name="file"></p>
-    <input id="alg_name" name="alg_name" v-model="alg_name" placeholder="Proposal">
+    <h2>Update your results</h2>
+If you want to compare existing results with your own proposal, set a Excel or a
+CSV file with the results.
+
+    <input-alg v-bind:benchmark="benchmark"></input-alg>
     <div v-if="error" class="error">
         <label id="error">{{error}}</label>
     </div>
-    <template if="len(benchmark[selected].reports)==1">
+    <template v-if="reports.length == 0">
         <p>
-            <strong>Report: {{benchmarks[selected].reports[0].description}}</strong>
+            <strong>Report: {{reports[0].name}}</strong>
         </p>
     </template>
-    <template v-if="benchmarks[selected].reports.length > 1">
+    <template v-if="reports.length > 1">
         <p>
             <strong>Select the Report:</strong>
             <select v-model="report_name" name="report_name">
-                <option v-for="report_item in benchmarks[selected].reports" :value="report_item.name">{{report_item.description}}
+                <option v-for="report_item in reports" :value="report_item.name">{{report_item.description}}
                 </option>
             </select>
         </p>
     </template>
     <input type="hidden" name="report" :value="report_name">
     <p>When it is ready click in the button</p>
-    <p><input id="submit_button" type="submit" class="" value="Update"></p>
+    <p><input id="submit_button" type="submit" class="" value="Compare"></p>
 </template>
 </form>
 <template v-for="index in tables.idx">

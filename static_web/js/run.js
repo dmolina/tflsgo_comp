@@ -1,6 +1,3 @@
-// var base_url = "http://localhost:8000";
-var base_url = "";
-
 function addCode(code){
     var JS= document.createElement('script');
     JS.text= code;
@@ -10,9 +7,10 @@ function addCode(code){
 var app = new Vue({
     el: '#app',
     data: {
-        benchmarks: {},
+        benchmark: {},
+        dimensions: [],
+        reports: [],
         alg_name: '',
-        selected: -1,
         available_algs: [],
         algs: [],
         error: '',
@@ -23,35 +21,32 @@ var app = new Vue({
         figures_js: '',
         figure_divs: {}
     },
-    mounted: function() {
-        var self = this;
-        $.ajax({
-            url: base_url +'/benchmarks',
-            method: 'GET',
-            success: function(data) {
-                self.benchmarks = data['benchmarks'];
-            }
-        });
-    },
     methods: {
-        onChangedBenchmark: function() {
+        onChangedBenchmark: function(bench) {
             var self = this;
-            var dimensions = self.benchmarks[self.selected].dimensions;
-            var reports = self.benchmarks[self.selected].reports;
+            self.dimensions = [];
+            self.reports = [];
+            self.available_algs = [];
 
-            if (dimensions.length==1) {
-                self.dimension = dimensions[0];
-                self.onChangedDimension();
-            }
-            if (reports.length==1) {
-                self.report_name = reports[0].name;
+            if (bench['id']) {
+                self.dimensions = bench['dimensions'];
+                self.reports = bench['reports'];
+
+                if (self.dimensions.length==1) {
+                    self.dimension = self.dimensions[0];
+                    self.onChangedDimension();
+                }
+                if (self.reports.length==1) {
+                    self.report_name = self.reports[0].name;
+                }
             }
         },
         onChangedDimension: function() {
             var self = this;
             console.log("onChangedDimension");
+            console.log('/algs/' +self.benchmark['id'] +'/' +self.dimension);
             $.ajax({
-                url: base_url +'/algs/' +self.selected +'/' +self.dimension,
+                url: 'algs/' +self.benchmark['id'] +'/' +self.dimension,
                 method: 'GET'}
             ).done(function(data) {
                     console.log('algs');
@@ -59,6 +54,7 @@ var app = new Vue({
                     self.available_algs = data['algs'];
                     self.error = data['error'];
             });
+ 
         },
         appendFigures: function() {
             var self = this;
