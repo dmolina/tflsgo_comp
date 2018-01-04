@@ -1204,19 +1204,31 @@ Vue$3.compile=compileToFunctions;return Vue$3;})));Vue.component('select-bench',
 $.ajax({url:'/benchmarks'+token,method:'GET',}).done(function(data){self.benchmarks=data['benchmarks'];});},methods:{changed:function(){var self=this;var bench={}
 if(self.selected>=0){var bench=self.benchmarks[self.selected];}
 this.$emit('update:benchmark',bench);this.$emit('updated',bench);}}});Vue.component('input-alg',{template:'<div>\
-The required format is indicated <a v-bind:href="example">here</a>.\
-</p>\
-<label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>\
-<p><input id="upload_button" type="file" name="file"></p>\
-<input id="alg_name" name="alg_name" placeholder="Proposal">\
+<div class="row">\
+The required format is indicated  <a v-bind:href="example">here</a>.\
+</div>\
+<div class="form-group row">\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<input id="alg_name" name="alg_name" class="form-control" placeholder="Proposal">\
+</div>\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<label id="file" for="fileupload" class="col form-control">Select a file (.csv or .xls) to upload<br/></label>\
+</div>\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<input id="upload_button" type="file" class="col" name="file">\
+</div>\
+</div>\
 </div>',props:['benchmark'],computed:{example:function(){var self=this;var example=self.benchmark.example;if(example.length>0){return"/static/examples/"+example+".xls";}
 else{return'#'}}}});var make_ajax_noform=function(name,data){return{url:'/'+name,type:'POST',data:data,dataType:'json',cache:false,contentType:false,processData:false};}
 var make_ajax_info=function(name,e){e.preventDefault();var formData=new FormData(e.target);return{url:'/'+name,type:'POST',data:formData,dataType:'json',cache:false,contentType:false,processData:false};}
 var make_ajax_info=function(name,e){e.preventDefault();var formData=new FormData(e.target);return{url:'/'+name,type:'POST',data:formData,dataType:'json',cache:false,contentType:false,processData:false};}
 var process_fail=function(data){var error=data.responseJSON['message'];var result='';for(name in error){result+=name+': '+error[name];}
 return result;}
+var init_process=function(){console.log("init_process");$("i#refresh").removeClass("d-none");$("#submit_button").prop("disabled",true);}
+var finish_process=function(){console.log("finish_process");$("#submit_button").prop("disabled",false);$("i#refresh").addClass("d-none");}
 function addCode(code){var JS=document.createElement('script');JS.text=code;document.body.appendChild(JS);}
-var app=new Vue({el:'#app',data:{benchmark:{},dimensions:[],reports:[],alg_name:'',available_algs:[],algs:[],error:'',dimension:'',report_name:'',tables:{},figures:{},figures_js:'',figure_divs:{}},methods:{onChangedBenchmark:function(bench){var self=this;self.dimensions=[];self.reports=[];self.available_algs=[];if(bench['id']){self.dimensions=bench['dimensions'];self.reports=bench['reports'];if(self.dimensions.length==1){self.dimension=self.dimensions[0];self.onChangedDimension();}
-if(self.reports.length==1){self.report_name=self.reports[0].name;}}},onChangedDimension:function(){var self=this;console.log("onChangedDimension");console.log('/algs/'+self.benchmark['id']+'/'+self.dimension);$.ajax({url:'algs/'+self.benchmark['id']+'/'+self.dimension,method:'GET'}).done(function(data){console.log('algs');console.log(data['algs']);self.available_algs=data['algs'];self.error=data['error'];});},appendFigures:function(){var self=this;div=document.getElementById('figures');div.innerHTML='';for(fi in self.figure_divs){fig=self.figure_divs[fi];new_title=document.createElement("h2");new_title.append(document.createTextNode(fi));div.append(new_title);div.innerHTML+=fig;}
-eval(self.figures_js);},sendData:function(e){var self=this;$.ajax(make_ajax_info('compare',e)).done(function(data){self.error='';if(data['error']){self.error=data['error'];$("label#file").focus();return;}
-self.tables=data['tables'];self.figure_divs=data['divs'];self.figures_js=data['js'];self.appendFigures();}).fail(function(data){self.error=process_fail(data);});}}});
+var app=new Vue({el:'#app',data:{benchmark:{},dimensions:[],reports:[],alg_name:'',available_algs:[],algs:[],error:'',dimension:'',report_name:'',tables:{},figures:{},figures_js:'',figure_divs:{},mobile:false},mounted:function(){if(/Mobi/.test(navigator.userAgent)){this.mobile=true;}},methods:{enumerate:function(elements){var results=[];elements.forEach(function(e,ind){results.push([ind,e]);});console.log(results);return results;},onChangedBenchmark:function(bench){var self=this;self.dimensions=[];self.reports=[];self.available_algs=[];if(bench['id']){self.dimensions=bench['dimensions'];self.reports=bench['reports'];if(self.dimensions.length==1){self.dimension=self.dimensions[0];self.onChangedDimension();}
+if(self.reports.length==1){self.report_name=self.reports[0].name;}}},onChangedDimension:function(){var self=this;$.ajax({url:'algs/'+self.benchmark['id']+'/'+self.dimension,method:'GET'}).done(function(data){self.available_algs=data['algs'];self.error=data['error'];});},appendFigures:function(){var self=this;div=document.getElementById('figures');div.innerHTML='';for(fi in self.figure_divs){fig=self.figure_divs[fi];new_title=document.createElement("h2");new_title.append(document.createTextNode(fi));div.append(new_title);div.innerHTML+=fig;}
+eval(self.figures_js);},sendData:function(e){var self=this;var mobile=false;console.log("sendData");init_process();$.ajax(make_ajax_info('compare',e)).done(function(data){self.error='';if(data['error']){self.error=data['error'];$("label#file").focus();}
+else{self.tables=data['tables'];self.figure_divs=data['divs'];self.figures_js=data['js'];self.appendFigures();}
+finish_process();}).fail(function(data){self.error=process_fail(data);finish_process();});}}});

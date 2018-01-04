@@ -1204,17 +1204,28 @@ Vue$3.compile=compileToFunctions;return Vue$3;})));Vue.component('select-bench',
 $.ajax({url:'/benchmarks'+token,method:'GET',}).done(function(data){self.benchmarks=data['benchmarks'];});},methods:{changed:function(){var self=this;var bench={}
 if(self.selected>=0){var bench=self.benchmarks[self.selected];}
 this.$emit('update:benchmark',bench);this.$emit('updated',bench);}}});Vue.component('input-alg',{template:'<div>\
-The required format is indicated <a v-bind:href="example">here</a>.\
-</p>\
-<label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>\
-<p><input id="upload_button" type="file" name="file"></p>\
-<input id="alg_name" name="alg_name" placeholder="Proposal">\
+<div class="row">\
+The required format is indicated  <a v-bind:href="example">here</a>.\
+</div>\
+<div class="form-group row">\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<input id="alg_name" name="alg_name" class="form-control" placeholder="Proposal">\
+</div>\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<label id="file" for="fileupload" class="col form-control">Select a file (.csv or .xls) to upload<br/></label>\
+</div>\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<input id="upload_button" type="file" class="col" name="file">\
+</div>\
+</div>\
 </div>',props:['benchmark'],computed:{example:function(){var self=this;var example=self.benchmark.example;if(example.length>0){return"/static/examples/"+example+".xls";}
 else{return'#'}}}});var make_ajax_noform=function(name,data){return{url:'/'+name,type:'POST',data:data,dataType:'json',cache:false,contentType:false,processData:false};}
 var make_ajax_info=function(name,e){e.preventDefault();var formData=new FormData(e.target);return{url:'/'+name,type:'POST',data:formData,dataType:'json',cache:false,contentType:false,processData:false};}
 var make_ajax_info=function(name,e){e.preventDefault();var formData=new FormData(e.target);return{url:'/'+name,type:'POST',data:formData,dataType:'json',cache:false,contentType:false,processData:false};}
 var process_fail=function(data){var error=data.responseJSON['message'];var result='';for(name in error){result+=name+': '+error[name];}
 return result;}
+var init_process=function(){console.log("init_process");$("i#refresh").removeClass("d-none");$("#submit_button").prop("disabled",true);}
+var finish_process=function(){console.log("finish_process");$("#submit_button").prop("disabled",false);$("i#refresh").addClass("d-none");}
 var app=new Vue({el:'#login',data:{token:'',message:'',benchmark:{},bench_user:{},error:'',error_load:'',total_algs:[],algs:[],sel_algs:[]},methods:{login:function(e){var self=this;$.ajax(make_ajax_info('login',e)).done(function(data){self.token='';self.error=data['error'];if(!self.error){self.total_algs=data['algs'];self.token=data['token'];self.sel_algs=[];}}).fail(function(data){self.error=data['error'];});},store:function(e){var self=this;self.message='';$.ajax(make_ajax_info('store',e)).done(function(data){self.error_load=data['error'];if(!self.error_load){var new_algs=data['new_algs'];self.total_algs=self.algs.concat(new_algs);var new_algs_str=data['new_algs_str'];self.message='Algorithms \''+new_algs_str+'\' written without error';self.$refs.selectowner.changed();self.getmyalgs(self.benchmark);}}).fail(function(data){self.error_load=process_fail(data);});},check_delete:function(){var self=this;var algs_str=self.sel_algs.toString();if(algs_str.length==0){return;}
 var result=confirm('Algorithms \''+algs_str+'\' will be deleted. Are you sure?');if(result){data={'algs_str':algs_str,'token':self.token,'benchmark_id':self.bench_user.id};$.post('/delete',data).done(function(data){self.error=data['error'];if(!data['error']){self.algs=_.difference(self.algs,self.sel_algs);self.total_algs=_.difference(self.total_algs,self.sel_algs);self.sel_algs=[];if(self.algs.length==0){self.bench_user={}}}
 algs=data['algs'];}).fail(function(data){self.error=process_fail(data);});}},getmyalgs:function(bench){var self=this;var bench_id=bench['id'];if(bench_id){var data={'benchmark_id':bench_id,'token':self.token};$.post('/algs',data).done(function(data){self.algs=data['algs'];}).fail(function(data){self.error_load=process_fail(data);});}

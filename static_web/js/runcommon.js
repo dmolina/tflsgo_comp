@@ -45,11 +45,20 @@ Vue.component('select-bench', {
 
 Vue.component('input-alg', {
     template: '<div>\
-The required format is indicated <a v-bind:href="example">here</a>.\
-</p>\
-<label id="file" for="fileupload">Select a file (.csv or .xls) to upload<br/></label>\
-<p><input id="upload_button" type="file" name="file"></p>\
-<input id="alg_name" name="alg_name" placeholder="Proposal">\
+<div class="row">\
+The required format is indicated  <a v-bind:href="example">here</a>.\
+</div>\
+<div class="form-group row">\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<input id="alg_name" name="alg_name" class="form-control" placeholder="Proposal">\
+</div>\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<label id="file" for="fileupload" class="col form-control">Select a file (.csv or .xls) to upload<br/></label>\
+</div>\
+<div class="col-md-6 col-lg-4 col-sm-12">\
+<input id="upload_button" type="file" class="col" name="file">\
+</div>\
+</div>\
 </div>',
     props: ['benchmark'],
     computed: {
@@ -117,4 +126,16 @@ var process_fail = function(data) {
         result += name +': ' +error[name];
     }
     return result;
+}
+
+var init_process = function() {
+    console.log("init_process");
+    $("i#refresh").removeClass("d-none");
+    $("#submit_button").prop("disabled", true);
+}
+
+var finish_process = function() {
+    console.log("finish_process");
+    $("#submit_button").prop("disabled", false);
+    $("i#refresh").addClass("d-none");
 }

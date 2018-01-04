@@ -25,10 +25,16 @@ var app = new Vue({
     mounted:  function() {
         if (/Mobi/.test(navigator.userAgent)) {
             this.mobile = true;
-            console.log(navigator.userAgent);
         }
     },
     methods: {
+        enumerate: function(elements) {
+            var results = [];
+            elements.forEach(function(e, ind) {
+                results.push([ind, e]);
+            });
+            return results;
+        },
         onChangedBenchmark: function(bench) {
             var self = this;
             self.dimensions = [];
@@ -50,18 +56,13 @@ var app = new Vue({
         },
         onChangedDimension: function() {
             var self = this;
-            console.log("onChangedDimension");
-            console.log('/algs/' +self.benchmark['id'] +'/' +self.dimension);
             $.ajax({
                 url: 'algs/' +self.benchmark['id'] +'/' +self.dimension,
                 method: 'GET'}
             ).done(function(data) {
-                    console.log('algs');
-                    console.log(data['algs']);
                     self.available_algs = data['algs'];
                     self.error = data['error'];
             });
- 
         },
         appendFigures: function() {
             var self = this;
@@ -80,21 +81,28 @@ var app = new Vue({
         },
        sendData: function(e) {
            var self = this;
-           $.ajax(make_ajax_info('compare', e)
+           var mobile = false;
+
+           init_process();
+
+        $.ajax(make_ajax_info('compare', e)
             ).done(function(data) {
                 self.error = '';
                 if (data['error']) {
                     self.error = data['error'];
                     $("label#file").focus();
-                    return;
                 }
-                self.tables = data['tables'];
-                self.figure_divs = data['divs'];
-                self.figures_js = data['js'];
-                self.appendFigures();
+                else {
+                    self.tables = data['tables'];
+                    self.figure_divs = data['divs'];
+                    self.figures_js = data['js'];
+                    self.appendFigures();
+                }
+                finish_process();
             })
                .fail(function(data){
                    self.error = process_fail(data);
+                   finish_process();
                 });
         }
     }
