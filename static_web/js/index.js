@@ -1198,7 +1198,6 @@ if(template){if("development"!=='production'&&config.performance&&mark){mark('co
 var ref=compileToFunctions(template,{shouldDecodeNewlines:shouldDecodeNewlines,shouldDecodeNewlinesForHref:shouldDecodeNewlinesForHref,delimiters:options.delimiters,comments:options.comments},this);var render=ref.render;var staticRenderFns=ref.staticRenderFns;options.render=render;options.staticRenderFns=staticRenderFns;if("development"!=='production'&&config.performance&&mark){mark('compile end');measure(("vue "+(this._name)+" compile"),'compile','compile end');}}}
 return mount.call(this,el,hydrating)};function getOuterHTML(el){if(el.outerHTML){return el.outerHTML}else{var container=document.createElement('div');container.appendChild(el.cloneNode(true));return container.innerHTML}}
 Vue$3.compile=compileToFunctions;return Vue$3;})));Vue.filter('to_space',function(value){return value.replace('_',' ');})
-var myFilter=Vue.filter('my-filter')
 Vue.component('select-bench',{template:'<select v-model="selected" v-on:change="changed">\
         <option value="" selected="selected" value="-1">------</option>\
         <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>\
