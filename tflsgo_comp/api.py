@@ -218,6 +218,8 @@ class Compare(Resource):
         result = {}
         benchmark_id = args['benchmark_id']
         dimension = args['dimension']
+        old_algs = set()
+        new_algs = set()
 
         report_module, error = get_report(args['report'], benchmark_id)
 
@@ -226,11 +228,19 @@ class Compare(Resource):
 
         if args['algs'] and not error:
             data, error = read_data_alg(benchmark_id, args['algs'])
+            old_algs = set(data['alg'].tolist())
 
         if args['file'] and not error:
             fname = tmpfile(args['file'])
             alg_name = args['alg_name']
             data_local, error = read_benchmark_data(alg_name, fname, bench)
+
+            if not error:
+                new_algs = set(data_local['alg'].tolist())
+                common_alg = new_algs.intersection(old_algs)
+
+                if common_alg:
+                    error = 'Algorithms \'{}\' were already in the database'.format(", ".join(common_alg))
 
             if not error:
                 data = concat_df(data, data_local)
