@@ -171,6 +171,7 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
         # Filter only the function in the category
         functions = ['F{}'.format(x) for x in cat.functions()]
         cat_figs = []
+        accuracies.sort()
 
         for milestone in accuracies:
             current_df = dim_df[dim_df['milestone'] == milestone]
