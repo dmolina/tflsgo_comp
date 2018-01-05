@@ -97,7 +97,7 @@ def create_tables(df, categories, accuracies, dimension=1000):
     titles = {}
 
     for mil, table in table_g.groupby(['milestone']):
-        table = table.transpose().drop('dimension').drop('milestone')
+        table = table.transpose().drop('dimension').drop('milestone').drop('id')
         table.columns = table.loc['alg']
         table.drop('alg', inplace=True)
         table.sort_index(inplace=True)
