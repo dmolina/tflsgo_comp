@@ -8,7 +8,8 @@
     </head>
     <body>
     <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
-      <div class="container">
+        <div class="container">
+            <div class="row">
         <a href="." class="navbar-brand">TFLSGO Comparison web</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -22,9 +23,11 @@
             </li>
           </ul>
         </div>
-      </div>
+            </div>
+            </div>
+        </div>
     </div>
-    <div class="container">
+    <div class="container-fluid mt-3">
       <div class="page-header" id="banner">
         <div class="row">
           <div class="col-lg-8 col-md-7 col-sm-6">
@@ -35,10 +38,13 @@
  <div class="bs-docs-section clearfix">
     <div id="app" class="row" id="benchmark">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-2">
+            </div>
+            <div class="col-lg-10 col-sm-12">
                 <form id="data" action="#" method="post" enctype="multipart/form-data" v-on:submit="sendData">
+                    <fieldset>
                     <input type="hidden" name="mobile" v-bind:value="mobile">
-                    <h2>About the website</h2>
+                    <h2 class="mx-auto">About the website</h2>
                     <p>This website allows researcher to compare results of different algorithms for different benchmarks.
                         The process is simple:</p>
                     <ol>
@@ -82,7 +88,7 @@
         <template v-for="alg in available_algs">
             <p>
             <ul class="checkbox">
-                <li><input type="checkbox" v-bind:value="alg" name="algs" v-model="algs" checked>{{alg}}</li>
+                <li><label><input type="checkbox" v-bind:value="alg" name="algs" v-model="algs" checked>{{alg | to_space}}</li></label>
             </ul>
             </p><br>
         </template>
@@ -107,24 +113,25 @@ If you want to compare existing results with your own proposal, set a Excel or
         <div class="form-group row">
     </template>
     <template v-if="reports.length > 1">
-             <div class="col-lg-3 col-md-3 col-sm-12">
-                 <label class="form-control">Select the Report:</label>
-             </div>
+             <div class="col-lg-3 col-md-4 col-sm-12">
+                 <label class="form-control no-border">Select the Report:</label>
+             </div> 
              <div class="col-lg-5 col-md-4 col-sm-12">
                  <select v-model="report_name" name="report_name" class="form-control">
                      <option v-for="report in reports" :value="report.name">{{report.description}}</option>
                  </select>
              </div>
     </template>
-    <div class="col-md-2 col-sm-6">
+    <div class="col-lg-2 col-sm-6">
         <input type="hidden" name="report" :value="report_name">
         <input id="submit_button" type="submit" class="btn btn-primary" value="Compare">
     </div>
-    <div class="col-md-2 col-sm-6">
+    <div class="col-lg-2 col-sm-6">
         <i id="refresh" class="d-none fa fa-spin fa-refresh fa-2x fa-fw"><span class="sr-only">Loading...</span></i>
     </div>
     </div>
-</template>
+    </template>
+                    </fieldset>
 </form>
 <template v-for="index in tables.idx">
     <h2>{{tables.titles[index]}}</h2>

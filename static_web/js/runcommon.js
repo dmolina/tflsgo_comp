@@ -1,3 +1,8 @@
+// register
+Vue.filter('to_space', function (value) {
+    return value.replace('_', ' ');
+})
+
 Vue.component('select-bench', {
     template: '<select v-model="selected" v-on:change="changed">\
         <option value="" selected="selected" value="-1">------</option>\
@@ -46,14 +51,14 @@ Vue.component('select-bench', {
 Vue.component('input-alg', {
     template: '<div>\
 <div class="row">\
-The required format is indicated  <a v-bind:href="example">here</a>.\
+The required format is indicated&nbsp;<a v-bind:href="example">here</a>.\
 </div>\
 <div class="form-group row">\
-<div class="col-md-6 col-lg-4 col-sm-12">\
-<input id="alg_name" name="alg_name" class="form-control" placeholder="Proposal">\
+<div class="col-md-3 col-lg-3 col-sm-12">\
+<input id="alg_name" name="alg_name" class="form-control up" placeholder="Proposal" v-uppercase="alg_name">\
 </div>\
-<div class="col-md-6 col-lg-4 col-sm-12">\
-<label id="file" for="fileupload" class="col form-control">Select a file (.csv or .xls) to upload<br/></label>\
+<div class="col-md-6 col-lg-5 col-sm-12">\
+<label id="file" for="fileupload" class="form-control no-border">Select a file (.csv or .xls) to upload<br/></label>\
 </div>\
 <div class="col-md-6 col-lg-4 col-sm-12">\
 <input id="upload_button" type="file" class="col" name="file">\
@@ -139,3 +144,4 @@ var finish_process = function() {
     $("#submit_button").prop("disabled", false);
     $("i#refresh").addClass("d-none");
 }
+

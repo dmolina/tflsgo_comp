@@ -27,3 +27,15 @@ ul.checkbox li {
     min-width: 200px;
 }
 
+.no-border {
+    border: 0;
+    box-shadow: none; /* You may want to include this as bootstrap applies these styles too */
+}
+
+input.up {
+    text-transform: uppercase;
+}
+
+.bk-root { height: auto;
+           width: auto;
+         }

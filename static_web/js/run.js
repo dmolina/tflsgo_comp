@@ -13,6 +13,7 @@ var app = new Vue({
         alg_name: '',
         available_algs: [],
         algs: [],
+        alg_name: 'PROPOSAL',
         error: '',
         dimension: '',
         report_name: '',
@@ -75,15 +76,17 @@ var app = new Vue({
                 new_title = document.createElement("h2");
                 new_title.append(document.createTextNode(fi));
                 div.append(new_title);
+                console.log(fig);
                 div.innerHTML += fig;
             }
             $('#figures_link').focus();
             eval(self.figures_js);
+            $('figures img').addClass('img-fluid');
         },
        sendData: function(e) {
            var self = this;
            var mobile = false;
-
+           self.error = '';
            init_process();
 
         $.ajax(make_ajax_info('compare', e)

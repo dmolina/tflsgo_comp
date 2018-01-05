@@ -1197,7 +1197,9 @@ return this}}else if(el){template=getOuterHTML(el);}
 if(template){if("development"!=='production'&&config.performance&&mark){mark('compile');}
 var ref=compileToFunctions(template,{shouldDecodeNewlines:shouldDecodeNewlines,shouldDecodeNewlinesForHref:shouldDecodeNewlinesForHref,delimiters:options.delimiters,comments:options.comments},this);var render=ref.render;var staticRenderFns=ref.staticRenderFns;options.render=render;options.staticRenderFns=staticRenderFns;if("development"!=='production'&&config.performance&&mark){mark('compile end');measure(("vue "+(this._name)+" compile"),'compile','compile end');}}}
 return mount.call(this,el,hydrating)};function getOuterHTML(el){if(el.outerHTML){return el.outerHTML}else{var container=document.createElement('div');container.appendChild(el.cloneNode(true));return container.innerHTML}}
-Vue$3.compile=compileToFunctions;return Vue$3;})));Vue.component('select-bench',{template:'<select v-model="selected" v-on:change="changed">\
+Vue$3.compile=compileToFunctions;return Vue$3;})));Vue.filter('to_space',function(value){return value.replace('_',' ');})
+var myFilter=Vue.filter('my-filter')
+Vue.component('select-bench',{template:'<select v-model="selected" v-on:change="changed">\
         <option value="" selected="selected" value="-1">------</option>\
         <option v-for="bench in benchmarks" :value="bench.id">{{bench.name}}</option>\
         </select>',props:{'benchmark':{type:Object},'token':{type:String,default:function(){return'';}}},data:function(){return{'benchmarks':[],'selected':-1}},mounted:function(){var self=this;var token=self.token;if(token){token='/'+token;}
@@ -1205,14 +1207,14 @@ $.ajax({url:'/benchmarks'+token,method:'GET',}).done(function(data){self.benchma
 if(self.selected>=0){var bench=self.benchmarks[self.selected];}
 this.$emit('update:benchmark',bench);this.$emit('updated',bench);}}});Vue.component('input-alg',{template:'<div>\
 <div class="row">\
-The required format is indicated  <a v-bind:href="example">here</a>.\
+The required format is indicated&nbsp;<a v-bind:href="example">here</a>.\
 </div>\
 <div class="form-group row">\
-<div class="col-md-6 col-lg-4 col-sm-12">\
-<input id="alg_name" name="alg_name" class="form-control" placeholder="Proposal">\
+<div class="col-md-3 col-lg-3 col-sm-12">\
+<input id="alg_name" name="alg_name" class="form-control up" placeholder="Proposal" v-uppercase="alg_name">\
 </div>\
-<div class="col-md-6 col-lg-4 col-sm-12">\
-<label id="file" for="fileupload" class="col form-control">Select a file (.csv or .xls) to upload<br/></label>\
+<div class="col-md-6 col-lg-5 col-sm-12">\
+<label id="file" for="fileupload" class="form-control no-border">Select a file (.csv or .xls) to upload<br/></label>\
 </div>\
 <div class="col-md-6 col-lg-4 col-sm-12">\
 <input id="upload_button" type="file" class="col" name="file">\
