@@ -10,7 +10,6 @@ var app = new Vue({
         benchmark: {},
         dimensions: [],
         reports: [],
-        alg_name: '',
         available_algs: [],
         algs: [],
         alg_name: 'PROPOSAL',

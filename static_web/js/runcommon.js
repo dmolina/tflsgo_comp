@@ -55,7 +55,7 @@ The required format is indicated&nbsp;<a v-bind:href="example">here</a>.\
 </div>\
 <div class="form-group row">\
 <div class="col-md-3 col-lg-3 col-sm-12">\
-<input id="alg_name" name="alg_name" class="form-control up" placeholder="Proposal" v-uppercase="alg_name">\
+<input id="alg_name" name="alg_name" class="form-control up" placeholder="Proposal">\
 </div>\
 <div class="col-md-6 col-lg-5 col-sm-12">\
 <label id="file" for="fileupload" class="form-control no-border">Select a file (.csv or .xls) to upload<br/></label>\

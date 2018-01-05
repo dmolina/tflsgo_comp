@@ -1210,7 +1210,7 @@ The required format is indicated&nbsp;<a v-bind:href="example">here</a>.\
 </div>\
 <div class="form-group row">\
 <div class="col-md-3 col-lg-3 col-sm-12">\
-<input id="alg_name" name="alg_name" class="form-control up" placeholder="Proposal" v-uppercase="alg_name">\
+<input id="alg_name" name="alg_name" class="form-control up" placeholder="Proposal">\
 </div>\
 <div class="col-md-6 col-lg-5 col-sm-12">\
 <label id="file" for="fileupload" class="form-control no-border">Select a file (.csv or .xls) to upload<br/></label>\
@@ -1228,7 +1228,7 @@ return result;}
 var init_process=function(){console.log("init_process");$("i#refresh").removeClass("d-none");$("#submit_button").prop("disabled",true);}
 var finish_process=function(){console.log("finish_process");$("#submit_button").prop("disabled",false);$("i#refresh").addClass("d-none");}
 function addCode(code){var JS=document.createElement('script');JS.text=code;document.body.appendChild(JS);}
-var app=new Vue({el:'#app',data:{benchmark:{},dimensions:[],reports:[],alg_name:'',available_algs:[],algs:[],alg_name:'PROPOSAL',error:'',dimension:'',report_name:'',tables:{},figures:{},figures_js:'',figure_divs:{},mobile:false},mounted:function(){if(/Mobi/.test(navigator.userAgent)){this.mobile=true;}},methods:{enumerate:function(elements){var results=[];elements.forEach(function(e,ind){results.push([ind,e]);});return results;},onChangedBenchmark:function(bench){var self=this;self.dimensions=[];self.reports=[];self.available_algs=[];if(bench['id']){self.dimensions=bench['dimensions'];self.reports=bench['reports'];if(self.dimensions.length==1){self.dimension=self.dimensions[0];self.onChangedDimension();}
+var app=new Vue({el:'#app',data:{benchmark:{},dimensions:[],reports:[],available_algs:[],algs:[],alg_name:'PROPOSAL',error:'',dimension:'',report_name:'',tables:{},figures:{},figures_js:'',figure_divs:{},mobile:false},mounted:function(){if(/Mobi/.test(navigator.userAgent)){this.mobile=true;}},methods:{enumerate:function(elements){var results=[];elements.forEach(function(e,ind){results.push([ind,e]);});return results;},onChangedBenchmark:function(bench){var self=this;self.dimensions=[];self.reports=[];self.available_algs=[];if(bench['id']){self.dimensions=bench['dimensions'];self.reports=bench['reports'];if(self.dimensions.length==1){self.dimension=self.dimensions[0];self.onChangedDimension();}
 if(self.reports.length==1){self.report_name=self.reports[0].name;}}},onChangedDimension:function(){var self=this;$.ajax({url:'algs/'+self.benchmark['id']+'/'+self.dimension,method:'GET'}).done(function(data){self.available_algs=data['algs'];self.error=data['error'];});},appendFigures:function(){var self=this;div=document.getElementById('figures');div.innerHTML='<a href="" id="figures_link"></a>';for(fi in self.figure_divs){fig=self.figure_divs[fi];new_title=document.createElement("h2");new_title.append(document.createTextNode(fi));div.append(new_title);console.log(fig);div.innerHTML+=fig;}
 $('#figures_link').focus();eval(self.figures_js);$('figures img').addClass('img-fluid');},sendData:function(e){var self=this;var mobile=false;self.error='';init_process();$.ajax(make_ajax_info('compare',e)).done(function(data){self.error='';if(data['error']){self.error=data['error'];$("label#file").focus();}
 else{self.tables=data['tables'];self.figure_divs=data['divs'];self.figures_js=data['js'];self.appendFigures();}
