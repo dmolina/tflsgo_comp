@@ -113,7 +113,7 @@ If you want to compare existing results with your own proposal, set a Excel or
         <div class="form-group row">
     </template>
     <template v-if="reports.length > 1">
-             <div class="col-lg-3 col-md-4 col-sm-12">
+             <div class="col-lg-3 col-md-4 col-sm-6">
                  <label class="form-control no-border">Select the Report:</label>
              </div> 
              <div class="col-lg-5 col-md-4 col-sm-12">
@@ -122,11 +122,11 @@ If you want to compare existing results with your own proposal, set a Excel or
                  </select>
              </div>
     </template>
-    <div class="col-lg-2 col-sm-6">
+    <div class="col-lg-2 col-sm-3">
         <input type="hidden" name="report" :value="report_name">
         <input id="submit_button" type="submit" class="btn btn-primary" value="Compare">
     </div>
-    <div class="col-lg-2 col-sm-6">
+    <div class="col-lg-2 col-sm-3">
         <i id="refresh" class="d-none fa fa-spin fa-refresh fa-2x fa-fw"><span class="sr-only">Loading...</span></i>
     </div>
     </div>
