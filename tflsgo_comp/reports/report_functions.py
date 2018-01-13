@@ -26,16 +26,20 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     :param algs: algorithm list (sorted).
     """
     hv.extension('bokeh')
-    renderer = hv.renderer('bokeh')
+    renderer = hv.renderer('bokeh').instance(size=300)
+
+    mean = {col: 'mean' for col in df.columns if col.startswith('F')}
+    df = df.groupby(['alg', 'milestone']).agg(mean).reset_index()
+ 
 
     def formatter(num):
         return num.toExponential(2)
 
-    fig_names = []
+    fig_names = [
     figures = {}
     titles = {}
 
-    options_plot = dict({'logy': True, 'xticks': 4, 'show_legend': True, 'width': 600, 'height': 300})
+    options_plot = dict({'logy': True, 'xticks': 4, 'show_legend': True, 'sizing_mode': 'scale_both'})
     options_plot['xticks'] = [0] +accuracies
     print(options_plot['xticks'])
     hv.opts({'Curve': {'plot': options_plot},
