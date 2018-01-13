@@ -31,6 +31,7 @@ def copy(directory):
 
     local('rm -Rf {}/__pycache__'.format(directory))
     local('rm -Rf __pycache__')
+    local('rm -Rf {}/static/.webassets-cache/*')
     print("Copied {} -> git".format(directory))
 
 
