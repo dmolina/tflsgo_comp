@@ -6,6 +6,8 @@ CEC'2013 benchmark.
 import numpy as np
 import pandas as pd
 
+from dfply import *
+
 import holoviews as hv
 
 from .report_utils import get_plot_bar
@@ -72,6 +74,20 @@ def get_plot_by_milestone(df, mil):
     table = df[df['milestone'] == mil]
     return get_plot_barh(table, "Accuracy: {:2.1E}".format(mil))
 
+def cec2013_normalize(df, dimension):
+    milestones = [int(1.2e5), int(6e5), int(3e6)]
+    dim_df = df >> mask(X.dimension == dimension) >> drop(X.id, X.dimension)
+    # Filter the milestone
+    dim_df = dim_df[dim_df['milestone'].isin(milestones)]
+    table_g = dim_df
+
+    table_g['milestone'] = table_g['milestone'].astype(int)
+    mean = {col: 'mean' for col in table_g.columns if col.startswith('F')}
+    table_g = table_g.groupby(['alg', 'milestone']).agg(mean).reset_index()
+    print("After normalize")
+    print(table_g)
+    return table_g
+
 
 def create_tables(df, categories, accuracies, dimension=1000):
     """
@@ -86,18 +102,15 @@ def create_tables(df, categories, accuracies, dimension=1000):
     :param categories: categories to compare (sorted).
     :param algs: Pandas.
     """
-    # Store all figures here
-    dim_df = df[df['dimension'] == dimension]
-    dim_df.columns = [changecol(col) for col in dim_df.columns]
-    table_g = dim_df
-    table_g['milestone'] = table_g['milestone'].astype(int)
+    table_g = cec2013_normalize(df, dimension)
+    table_g.columns = [changecol(col) for col in table_g.columns]
     titles_idx = table_g['milestone'].unique().tolist()
     titles_idx.sort()
     tables = {}
     titles = {}
 
     for mil, table in table_g.groupby(['milestone']):
-        table = table.transpose().drop('dimension').drop('milestone').drop('id')
+        table = table.transpose().drop('milestone')
         table.columns = table.loc['alg']
         table.drop('alg', inplace=True)
         table.sort_index(inplace=True)
@@ -145,6 +158,10 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     :param algs: algorithm list (sorted).
     """
     num_cols = 3
+    dim_df = cec2013_normalize(df, dimension)
+    milestones = dim_df['milestone'].unique().tolist()
+    milestones.sort()
+    print(milestones)
 
     if mobile:
         num_cols = 1
@@ -154,10 +171,9 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     options = "Bars [xrotation=90]"
 
     total_figs = {}
-    dim_df = df[df['dimension'] == dimension]
     fig_names = []
 
-    num_rows, num_columns = df.shape
+    num_rows, num_columns = dim_df.shape
     num_functions = num_columns-3
     assert(num_functions > 0)
     # append all data in a pivot table
@@ -173,8 +189,8 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
         cat_figs = []
         accuracies.sort()
 
-        for milestone in accuracies:
-            current_df = dim_df[dim_df['milestone'] == milestone]
+        for milestone in milestones:
+            current_df = dim_df >> mask(X.milestone == milestone)
 
             if not current_df.empty:
                 # Remove field milestone and index by alg
@@ -195,9 +211,6 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
 
     cat_global = []
 
-    milestones = df['milestone'].unique()
-    total_pivot_df['milestone'] = total_pivot_df['milestone'].astype(int)
-    milestones.sort()
     plot_dyn = {}
 
     for mil in milestones:
