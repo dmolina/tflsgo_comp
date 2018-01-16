@@ -225,7 +225,7 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     fig_names.extend([cat.name for cat in categories])
     fig_names.append('All')
 
-    return figure_json(fig_names, total_figs, type='bokeh')
+    return figure_json(fig_names, total_figs)
 
     final = hv.NdLayout(plot_dyn, kdims='milestone')
     total_figs['Final'] = renderer.get_plot(final).state
@@ -236,7 +236,7 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     total_figs['Final2'] = plot_bokeh
     fig_names.append('Final2')
 
-    return figure_json(fig_names, total_figs, type='bokeh')
+    return figure_json(fig_names, total_figs)
 
  
 def get_f1_score(position):

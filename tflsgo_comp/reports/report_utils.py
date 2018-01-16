@@ -4,26 +4,22 @@ import holoviews as hv
 hv.extension('bokeh')
 
 
-def figure_json(fig_names, plots, type='bokeh'):
+def figure_json(fig_names, plots, libcharts='hv'):
     """Make the figure visualize with the json.
 
     :param fig_names: name of the figs
     :param plots: plots to visualize
-    :param type: type of plot library (bokeh and holoviews are only supported)
+    :param libcharts: type of plot library (hv is currently only supported)
     :returns: dictionary of type
     :rtype: {'error': ...,'plots': [{'title': .., 'js': ..,  'tags': ..}, ..]}
     """
     result = dict()
     error = ''
+    script, divs = components(plots, wrap_script=False)
+    result['js'] = script
+    result['divs'] = divs
 
-    if type == 'bokeh' or 'holoviews':
-        script, divs = components(plots, wrap_script=False)
-        result['js'] = script
-        result['divs'] = divs
-    else:
-        error = 'type \'{}\' not known'.format(type)
-
-    result.update({'error': error, 'type': type})
+    result.update({'error': error, 'type': 'hv'})
     return result
 
 
