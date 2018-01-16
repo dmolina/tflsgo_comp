@@ -84,8 +84,6 @@ def cec2013_normalize(df, dimension):
     table_g['milestone'] = table_g['milestone'].astype(int)
     mean = {col: 'mean' for col in table_g.columns if col.startswith('F')}
     table_g = table_g.groupby(['alg', 'milestone']).agg(mean).reset_index()
-    print("After normalize")
-    print(table_g)
     return table_g
 
 
@@ -161,7 +159,6 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     dim_df = cec2013_normalize(df, dimension)
     milestones = dim_df['milestone'].unique().tolist()
     milestones.sort()
-    print(milestones)
 
     if mobile:
         num_cols = 1
@@ -230,7 +227,7 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     final = hv.NdLayout(plot_dyn, kdims='milestone')
     total_figs['Final'] = renderer.get_plot(final).state
     fig_names.append('Final')
-    plot_bokeh = renderer.get_plot(hv.HoloMap(final)).state
+    plot_bokeh = renderer.get_plot(hv.HoloMap(plot_dyn)).state
     setattr(plot_bokeh, 'plot_width', 500)
     setattr(plot_bokeh, 'plot_height', 300)
     total_figs['Final2'] = plot_bokeh
