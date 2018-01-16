@@ -64,7 +64,7 @@ var app = new Vue({
                     self.error = data['error'];
             });
         },
-        appendFigures: function() {
+        appendFiguresHv: function() {
             var self = this;
             div = document.getElementById('figures');
             // Empty the div
@@ -77,6 +77,23 @@ var app = new Vue({
                 div.append(new_title);
                 console.log(fig);
                 div.innerHTML += fig;
+            }
+            $('#figures_link').focus();
+            eval(self.figures_js);
+            $('figures img').addClass('img-fluid');
+        },
+        appendFiguresHighcharts: function(plots) {
+            var self = this;
+            div = document.getElementById('figures');
+            // Empty the div
+            div.innerHTML = '';
+            var num = plots.length;
+
+            // TODO: Cambiar
+            for (var i = 1; i <= num; i++) {
+                new_div = document.createElement("div");
+                new_div.id = 'figures' +i;
+                div.append(new_div);
             }
             $('#figures_link').focus();
             eval(self.figures_js);
@@ -96,10 +113,32 @@ var app = new Vue({
                     $("label#file").focus();
                 }
                 else {
+                    self.error = '';
                     self.tables = data['tables'];
-                    self.figure_divs = data['divs'];
-                    self.figures_js = data['js'];
-                    self.appendFigures();
+                    charts = data['type'];
+                    console.log(charts);
+                    console.log(charts);
+
+                    if (charts == 'hv') {
+                        self.figure_divs = data['divs'];
+                        self.figures_js = data['js'];
+                        self.appendFiguresHv();
+                    }
+                    else if (charts == 'highcharts') {
+                        figures = data['figures'];
+                        console.log(figures);
+                        self.appendFiguresHighcharts(figures);
+                        var num = figures.length;
+
+                        for (var i = 0; i < num; i++) {
+                            console.log(figures[i]);
+                            var src = "new Highcharts.Chart(" +figures[i] +");";
+                            eval(src);
+                        }
+                    }
+                    else {
+                        self.error = "chart type '" +charts +"' unknown";
+                    }
                 }
                 finish_process();
             })

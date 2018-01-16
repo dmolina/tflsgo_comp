@@ -6,10 +6,10 @@ hv.extension('bokeh')
 
 
 def load_charts_library(lib='hv'):
-    libs = ['hv']
+    libs = ['hv', 'hc']
 
     if lib not in libs:
-        raise ValueError("Library '{}' unknown".format(hv))
+        raise ValueError("Library '{}' unknown".format(lib))
 
     lib_name = "reports.lib_{}".format(lib)
     library = importlib.import_module(lib_name, __name__)
