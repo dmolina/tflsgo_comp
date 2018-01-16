@@ -2,17 +2,14 @@
 This file contains the functions used to show figures of convergence for the
 benchmark, using the milestones as references.
 """
-import holoviews as hv
-from .report_utils import figure_json
-
-from bokeh.models.formatters import PrintfTickFormatter
+from .report_utils import figure_json, load_charts_library
 
 
 def create_tables(df, categories, accuracies, dimension=1000):
     return [], {}, {}
 
 
-def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
+def create_figures(df, categories, accuracies, dimension=1000, mobile=False, libcharts='hv'):
     """
     Create convergence figures.
 
@@ -25,44 +22,22 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
     :param categories: categories to compare (sorted).
     :param algs: algorithm list (sorted).
     """
-    hv.extension('bokeh')
-    renderer = hv.renderer('bokeh').instance(size=300)
-
+    libplot = load_charts_library(libcharts)
     mean = {col: 'mean' for col in df.columns if col.startswith('F')}
     df = df.groupby(['alg', 'milestone']).agg(mean).reset_index()
- 
 
-    def formatter(num):
-        return num.toExponential(2)
+    xticks = [0] + accuracies
+    # Get the functions to visualize
+    funs_str = [col for col in df.columns if col.startswith('F')]
 
-    fig_names = [
-    figures = {}
-    titles = {}
+    def fun_to_int(fun):
+        return int(fun[1:])
 
-    options_plot = dict({'logy': True, 'xticks': 4, 'show_legend': True, 'sizing_mode': 'scale_both'})
-    options_plot['xticks'] = [0] +accuracies
-    print(options_plot['xticks'])
-    hv.opts({'Curve': {'plot': options_plot},
-             'NdOverlay': {'plot': {'legend_position': 'right'}}})
+    plot = libplot.plot(df, x='milestone', xaxis='Evaluations', xticks=xticks,
+                        y='mean', yaxis='Error', logy=True, show_legend=True,
+                        hue='alg', groupby=funs_str,
+                        groupby_transform=fun_to_int, group_label='Function',
+                        kind='line', size=200)
 
-    def figure_conv(df, alg, function):
-        fun = "F{}".format(function)
-        milestone = hv.Dimension('milestone', label='Evaluation', value_format=formatter)
-        curve = hv.Curve(df[df['alg'] == alg], milestone, fun)
-        return curve
-
-    # Get the functions
-    funs = [col for col in df.columns if col.startswith('F')]
-    funs = [int(fun[1:]) for fun in funs]
-    curves = {(alg, fun): figure_conv(df, alg, function=fun) for alg in
-              df['alg'].unique().tolist() for fun in funs}
-    kdims = [hv.Dimension('alg', label='Algorithm'),
-             hv.Dimension('function', label='Function')]
-    holomap = hv.HoloMap(curves, kdims=kdims)
-    # holomap  = holomap.options({'show_legend': True})
-    hv.output("size=130")
-    plot = holomap.overlay('Algorithm').layout('Function').cols(1)
-    # plot[2] = plot[2].opts("Curve [show_legend=True]")
-    figures['Convergence Functions'] = renderer.get_plot(plot).state
-    titles = ['test']
-    return figure_json(titles, figures)
+    figures = {'Convergence Functions': plot}
+    return libplot.to_json(figures)

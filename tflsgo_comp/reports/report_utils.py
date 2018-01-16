@@ -1,7 +1,19 @@
 from bokeh.embed import components
+import importlib
 
 import holoviews as hv
 hv.extension('bokeh')
+
+
+def load_charts_library(lib='hv'):
+    libs = ['hv']
+
+    if lib not in libs:
+        raise ValueError("Library '{}' unknown".format(hv))
+
+    lib_name = "reports.lib_{}".format(lib)
+    library = importlib.import_module(lib_name, __name__)
+    return library
 
 
 def figure_json(fig_names, plots, libcharts='hv'):
