@@ -14,7 +14,7 @@ other algorithms.
 
 There is a online demo at [https://tflsgo.herokuapp.com/](https://tflsgo.herokuapp.com/).
 
-[![Usage of benchmarks website comparison](https://i.ytimg.com/vi/Tcb5pscM-bc/hqdefault.jpg)(https://www.youtube.com/watch?v=Tcb5pscM-bc)]
+[![Usage of benchmarks website comparison](https://i.ytimg.com/vi/Tcb5pscM-bc/hqdefault.jpg)](https://www.youtube.com/watch?v=Tcb5pscM-bc)]
 
 
 ## Structure
