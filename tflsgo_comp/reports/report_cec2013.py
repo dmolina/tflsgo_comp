@@ -142,7 +142,7 @@ def get_plot_barh(df, title):
     return bar.opts(options)
 
 
-def create_figures(df, categories, accuracies, dimension=1000, mobile=False):
+def create_figures(df, categories, accuracies, dimension=1000, mobile=False, libcharts='hv'):
     """
     Create graphics from the dataframe with the data.
 
