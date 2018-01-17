@@ -37,7 +37,7 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False, lib
                         y='mean', yaxis='Error', logy=True, show_legend=True,
                         hue='alg', groupby=funs_str,
                         groupby_transform=fun_to_int, group_label='Function',
-                        kind='line', size=200)
+                        kind='line', size=200, scientific_format=True)
 
     figures = {'Convergence Functions': plot}
     return libplot.to_json(figures)
