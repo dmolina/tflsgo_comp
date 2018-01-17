@@ -254,11 +254,9 @@ class Compare(Resource):
             dimension = args['dimension']
             tables_idx, tables_titles, tables_df = report_module.create_tables(data, categories, milestones, dimension)
             tables = {'idx': tables_idx, 'titles': tables_titles, 'tables': tables_df}
-            figures_json = report_module.create_figures(data, categories, milestones, dimension, mobile=args['mobile'])
-            error = figures_json['error']
-            divs = figures_json['divs']
-            js = figures_json['js']
-            result.update({'tables': tables, 'js': js, 'divs': divs})
+            figures_json = report_module.create_figures(data, categories, milestones, dimension, mobile=args['mobile'], libcharts='hc')
+            result.update({'tables': tables})
+            result.update(figures_json)
 
         result.update({'error': error})
         return result
