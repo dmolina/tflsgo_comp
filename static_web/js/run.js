@@ -115,7 +115,6 @@ var app = new Vue({
                     self.error = '';
                     self.tables = data['tables'];
                     charts = data['type'];
-
                     if (charts == 'hv') {
                         self.figure_divs = data['divs'];
                         self.figures_js = data['js'];

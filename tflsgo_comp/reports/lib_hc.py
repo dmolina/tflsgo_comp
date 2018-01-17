@@ -49,7 +49,8 @@ def is_set_title():
 
 def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
          show_legend=True, groupby=None, group_label='',
-         groupby_transform=None, hue=None, cols=1, kind='line', size=None, scientific_format=False):
+         groupby_transform=None, hue=None, cols=1, kind='line', size=None,
+         scientific_format=False):
     params = dict(figsize=size, zoom="xy", logy=logy)
 
     if xticks:
