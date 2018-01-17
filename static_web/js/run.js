@@ -75,7 +75,6 @@ var app = new Vue({
                 new_title = document.createElement("h2");
                 new_title.append(document.createTextNode(fi));
                 div.append(new_title);
-                console.log(fig);
                 div.innerHTML += fig;
             }
             $('#figures_link').focus();
@@ -116,8 +115,6 @@ var app = new Vue({
                     self.error = '';
                     self.tables = data['tables'];
                     charts = data['type'];
-                    console.log(charts);
-                    console.log(charts);
 
                     if (charts == 'hv') {
                         self.figure_divs = data['divs'];
@@ -126,7 +123,6 @@ var app = new Vue({
                     }
                     else if (charts == 'highcharts') {
                         figures = data['figures'];
-                        console.log(figures);
                         self.appendFiguresHighcharts(figures);
                         var num = figures.length;
 

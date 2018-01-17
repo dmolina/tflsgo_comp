@@ -51,7 +51,6 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
             group_df = plot_df[group]
             group_df.index.names = [xaxis]
             plot = serialize(group_df, output_type='json', **params, render_to='figures{}'.format(i+1))
-            print(plot)
             plots.append(plot)
 
         return plots

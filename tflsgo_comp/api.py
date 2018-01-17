@@ -185,7 +185,6 @@ class Delete(Resource):
         token = args['token']
         algs = args['algs_str'].split(',')
         error = ''
-        print(algs)
 
         user = validate_by_token(app.config['SECRET_KEY'], token)
 
