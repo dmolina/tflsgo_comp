@@ -12,7 +12,6 @@ click==6.7
 cryptography==2.1.4
 cssmin==0.2.0
 cycler==0.10.0
-dfply==0.3.1
 doi2bib==0.3.0
 Fabric==1.14.0
 Fabric3==1.13.1.post1

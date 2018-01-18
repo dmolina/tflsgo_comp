@@ -6,7 +6,6 @@ CEC'2013 benchmark.
 import numpy as np
 import pandas as pd
 
-from dfply import *
 
 import holoviews as hv
 
@@ -76,7 +75,7 @@ def get_plot_by_milestone(df, mil):
 
 def cec2013_normalize(df, dimension):
     milestones = [int(1.2e5), int(6e5), int(3e6)]
-    dim_df = df >> mask(X.dimension == dimension) >> drop(X.id, X.dimension)
+    dim_df = df[df['dimension'] == dimension].drop('dimension', 1)
     # Filter the milestone
     dim_df = dim_df[dim_df['milestone'].isin(milestones)]
     table_g = dim_df
