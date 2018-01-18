@@ -50,7 +50,7 @@ def normalize_data(df, algname):
         df['alg'] = algname
 
     # Sorted columns
-    cols = ['alg', 'milestone']+functions
+    cols = ['alg', 'milestone', 'dimension']+functions
     return df[cols]
 
 
