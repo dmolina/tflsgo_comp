@@ -332,7 +332,7 @@ class Store(Resource):
         """
         args = get_options(['token', 'file', 'benchmark_id', 'alg_name'])
         checks = ['token', 'benchmark_id']
-        alg_name = args['alg_name']
+        alg_name = args['alg_name'].upper()
         bench = None
         error = ''
 
