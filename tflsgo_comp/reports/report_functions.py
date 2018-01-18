@@ -2,13 +2,14 @@
 This file contains the functions used to show figures of convergence for the
 benchmark, using the milestones as references.
 """
-from .report_utils import figure_json, load_charts_library
+
 
 def create_tables(df, categories, accuracies, dimension=1000):
     return [], {}, {}
 
 
-def create_figures(df, categories, accuracies, dimension=1000, mobile=False, libcharts='hv'):
+def create_figures(df, categories, accuracies, libplot, dimension=1000,
+                   mobile=False):
     """
     Create convergence figures.
 
@@ -21,7 +22,6 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False, lib
     :param categories: categories to compare (sorted).
     :param algs: algorithm list (sorted).
     """
-    libplot = load_charts_library(libcharts)
     mean = {col: 'mean' for col in df.columns if col.startswith('F')}
     df = df.groupby(['alg', 'milestone']).agg(mean).reset_index()
 

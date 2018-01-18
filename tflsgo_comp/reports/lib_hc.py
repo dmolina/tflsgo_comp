@@ -44,9 +44,6 @@ def additional_options(chart_dict, scientific_format):
     return str
 
 
-def is_set_title():
-    return False
-
 def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
          show_legend=True, groupby=None, group_label='',
          groupby_transform=None, hue=None, cols=1, kind='line', size=None,
@@ -68,14 +65,6 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
 
     params = dict(show_legend=show_legend, logy=logy)
 
-    def changeXY(value):
-        if value == x:
-            return xaxis
-        elif value == y:
-            return yaxis
-        else:
-            return value
-
     if xticks:
         params.update({'xticks': xticks})
 
@@ -88,26 +77,83 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
         plot_df = df.pivot(index=x, columns=hue)
         plots = []
 
-        for i, group in enumerate(groupby):
-            group_df = plot_df[group] 
+        for group in groupby:
+            group_df = plot_df[group]
             group_df.index.names = [xaxis]
 
             if logy:
-                y_max = int(group_df.max(1).max())
+                # y_max = int(group_df.max(1).max())
                 y_min = int(group_df.min(1).min())
 
                 if y_min < 1e-40:
                     group_df = group_df.clip(lower=1e-40)
                     y_min = 1e-40
-                params.update(dict(ylim=[y_min,y_max]))
+                    # params.update(dict(ylim=[y_min,y_max]))
 
-            dst = 'figures{}'.format(i+1)
-            title = "{}: {:02d}".format(group_label, groupby_transform(group))
-            chart_options = serialize(group_df, title=title, output_type='dict', **params, render_to=dst)
+            title = "{}: {}".format(group_label, groupby_transform(group))
+            chart_options = serialize(group_df, title=title, 
+                                      output_type='dict', **params,
+                                      render_to=next_plot())
             plot = additional_options(chart_options, scientific_format)
             plots.append(plot)
 
         return plots
+
+
+def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
+             groupby_transform=None, rotation=False, size=None, title=None,
+             num_cols=3, scientific_format=False):
+    """Plot the dataframes as bar plots.
+
+    :param df: dataframe.
+    :param titles: dictionary that related the dimension with its name.
+    :param x: axis to show.
+    :param y: variable to show.
+    :param groupby: groupby parameter.
+    :param rotation: rotation.
+    :param size: size of image.
+    :returns: plots.
+    :rtype: plots
+    """
+    # import ipdb; ipdb.set_trace()
+    params = dict(zoom="xy", kind='bar', legend=False)
+
+    if size:
+        params.update(dict(figsize=size))
+
+    if not groupby_transform:
+        t = lambda x: str(x)
+    else:
+        t = groupby_transform
+
+    if groupby:
+        if not groupby_values:
+            groupby_values = df[groupby].unique().tolist()
+            groupby_values.sort()
+
+    if not groupby:
+        plot_df = df[[x, y]]
+        chart_options = serialize(plot_df, title=title, output_type='dict', **params, render_to=next_plot())
+        plot = additional_options(chart_options, scientific_format, label_display=True)
+        plots = [plot]
+    else:
+        plots = []
+
+        for group in groupby_values:
+            group_df = df[df[groupby] == group]
+            plot_df = group_df[[x, y]]
+            plot_df[y] = pd.to_numeric(plot_df[y])
+            plot_df.columns = [titles[v] for v in plot_df.columns]
+            title = t(group)
+            plot_df = plot_df.set_index(titles[x])
+
+            chart_options = serialize(plot_df, title=title, 
+                                      output_type='dict', **params, render_to=next_plot())
+            plot = additional_options(chart_options, scientific_format, label_display=True)
+            print(plot)
+            plots.append(plot)
+
+    return plots
 
 
 def to_json(plots):

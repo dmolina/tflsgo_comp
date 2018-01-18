@@ -13,7 +13,7 @@ from assets import gen_static
 from flask_compress import Compress
 
 # from flask_admin import Admin
-# from flask_admin.contrib.sqla import ModelView
+# from flask_admin.contrib.sql import ModelView
 
 from models import db, get_alg, get_alg_user, get_benchmarks, get_benchmark
 
@@ -27,7 +27,7 @@ from models import delete_alg,  write_proposal_data
 
 from readdata import concat_df, read_benchmark_data
 from utils import tmpfile, is_error_in_args
-
+from reports.report_utils import load_charts_library
 
 def get_options(list):
     parse = reqparse.RequestParser()
@@ -36,7 +36,7 @@ def get_options(list):
         if option in ['benchmark_id', 'dimension']:
             parse.add_argument(option, type=int, location='form',
                                required=True, help='{}_id is missing'.format(option))
-        elif option in ['token', 'alg_name', 'report', 'username', 'password']:
+        elif option in ['token', 'alg_name', 'report', 'username', 'password', 'libcharts']:
             parse.add_argument(option, type=str, location='form')
         elif option in ['algs_str']:
             parse.add_argument('algs_str', type=str, location='form')
@@ -211,8 +211,9 @@ class Compare(Resource):
         :returns: error: With a error, data: with data.
         :rtype: json
         """
-        args = get_options(['file', 'benchmark_id', 'algs', 'alg_name', 'report', 'dimension', 'mobile'])
+        args = get_options(['file', 'benchmark_id', 'algs', 'alg_name', 'report', 'dimension', 'mobile', 'libcharts'])
         error = is_error_in_args(args)
+        libcharts = args.get("libcharts", "hc")
         data = {}
         result = {}
         benchmark_id = args['benchmark_id']
@@ -252,9 +253,11 @@ class Compare(Resource):
             categories = sorted(bench['categories'], key=lambda cat: cat.position)
             milestones = bench['milestones_required']
             dimension = args['dimension']
+            libplot = load_charts_library(libcharts)
+            libplot.init()
             tables_idx, tables_titles, tables_df = report_module.create_tables(data, categories, milestones, dimension)
             tables = {'idx': tables_idx, 'titles': tables_titles, 'tables': tables_df}
-            figures_json = report_module.create_figures(data, categories, milestones, dimension, mobile=args['mobile'], libcharts='hc')
+            figures_json = report_module.create_figures(data, categories, milestones, libplot=libplot, dimension=dimension, mobile=args['mobile'])
             result.update({'tables': tables})
             result.update(figures_json)
 

@@ -50,7 +50,7 @@ var app = new Vue({
                     self.onChangedDimension();
                 }
                 if (self.reports.length==1) {
-                    self.report_name = self.reports[0].name;
+                    self.report_name = self.reports[0].description;
                 }
             }
         },
@@ -88,7 +88,6 @@ var app = new Vue({
             div.innerHTML = '';
             var num = plots.length;
 
-            // TODO: Cambiar
             for (var i = 1; i <= num; i++) {
                 new_div = document.createElement("div");
                 new_div.id = 'figures' +i;

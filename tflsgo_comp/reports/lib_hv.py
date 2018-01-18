@@ -6,22 +6,14 @@ import holoviews as hv
 from bokeh.embed import components
 import itertools
 
-hv.extension('bokeh')
-renderer = hv.renderer('bokeh')
+renderer = ""
 
-
-def init(size):
-    """Init the resource (with the size)
-
-    :param size: size (in width)
-    :returns: None
-    :rtype: None
-
+def init():
+    """Init the resource
     """
     global renderer
-
-    if size is not None:
-        renderer = renderer.instance(size=size)
+    hv.extension('bokeh')
+    renderer = hv.renderer('bokeh')
 
 
 def formatter(num):
@@ -57,14 +49,19 @@ def get_plot_function(type):
         return _plot_line
 
 
-def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
-         show_legend=True, groupby=None, group_label='',
-         groupby_transform=None, hue=None, cols=1, kind='line', size=None):
-    kinds = ['line']
+def setSize(size):
     global renderer
 
     if size:
         renderer = renderer.instance(size=size)
+
+
+def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
+         show_legend=True, groupby=None, group_label='',
+         groupby_transform=None, hue=None, cols=1, kind='line', size=None,
+         scientific_format=True):
+    kinds = ['line']
+    setSize(size)
 
     if kind not in kinds:
         kinds_str = ",".join(kinds)
