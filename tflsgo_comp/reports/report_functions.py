@@ -32,11 +32,12 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000,
     def fun_to_int(fun):
         return "{:02d}".format(int(fun[1:]))
 
-    plot = libplot.plot(df, x='milestone', xaxis='Evaluations', xticks=xticks,
+    plots = libplot.plot(df, x='milestone', xaxis='Evaluations', xticks=xticks,
                         y='mean', yaxis='Error', logy=True, show_legend=True,
                         hue='alg', groupby=funs_str,
                         groupby_transform=fun_to_int, group_label='Function',
                         kind='line', size=200, scientific_format=True)
 
-    figures = {'Convergence Functions': plot}
+
+    figures = {'Convergence Functions': plots}
     return libplot.to_json(figures)

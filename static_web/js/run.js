@@ -20,6 +20,7 @@ var app = new Vue({
         figures: {},
         figures_js: '',
         figure_divs: {},
+        libcharts: 'hc',
         mobile: false
     },
     mounted:  function() {
@@ -87,14 +88,36 @@ var app = new Vue({
             // Empty the div
             div.innerHTML = '';
             var num = plots.length;
+            var next_plot = 1;
 
-            for (var i = 1; i <= num; i++) {
-                new_div = document.createElement("div");
-                new_div.id = 'figures' +i;
-                div.append(new_div);
+            for (var plot_i = 0; plot_i < num; plot_i++) {
+                info_plot = plots[plot_i];
+                new_row = document.createElement("div");
+                new_row.className = "row";
+                title = info_plot['title'];
+
+                if (title) {
+                    new_title = document.createElement("h2");
+                    new_title.append(document.createTextNode(title));
+                    new_row.append(new_title);
+                    div.append(new_row);
+                    new_row = document.createElement("div");
+                    new_row.className = "row";
+                }
+
+                num_row = info_plot['num'];
+
+                for (var i = 1; i <= num_row; i++) {
+                    new_fig = document.createElement("div");
+                    new_fig.id = 'figures' +next_plot;
+                    next_plot += 1;
+                    new_fig.className = "col col-sd-12";
+                    new_row.append(new_fig);
+                }
+
+                div.append(new_row);
             }
             $('#figures_link').focus();
-            eval(self.figures_js);
             $('figures img').addClass('img-fluid');
         },
        sendData: function(e) {
@@ -104,13 +127,13 @@ var app = new Vue({
            init_process();
 
         $.ajax(make_ajax_info('compare', e)
-            ).done(function(data) {
+              ).done(function(data) {
                 self.error = '';
                 if (data['error']) {
                     self.error = data['error'];
                     $("label#file").focus();
                 }
-                else {
+                  else {
                     self.error = '';
                     self.tables = data['tables'];
                     charts = data['type'];
@@ -119,13 +142,13 @@ var app = new Vue({
                         self.figures_js = data['js'];
                         self.appendFiguresHv();
                     }
-                    else if (charts == 'highcharts') {
+                      else if (charts == 'highcharts') {
                         figures = data['figures'];
-                        self.appendFiguresHighcharts(figures);
+                        plots_info = data['figures_info'];
+                        self.appendFiguresHighcharts(plots_info);
                         var num = figures.length;
 
                         for (var i = 0; i < num; i++) {
-                            console.log(figures[i]);
                             var src = "new Highcharts.Chart(" +figures[i] +");";
                             eval(src);
                         }

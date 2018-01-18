@@ -10,6 +10,7 @@ import json
 
 num_plot = 0
 
+
 def init():
     global num_plot
     num_plot = 0
@@ -21,7 +22,8 @@ def next_plot():
     return "figures{}".format(num_plot)
 
 
-def additional_options(chart_dict, scientific_format=False, label_display=False):
+def additional_options(chart_dict, scientific_format=False,
+                       label_display=False):
     chart_dict.update()
 
     if scientific_format:
@@ -162,15 +164,44 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
             title = t(group)
             plot_df = plot_df.set_index(titles[x])
 
-            chart_options = serialize(plot_df, title=title, 
-                                      output_type='dict', **params, render_to=next_plot())
-            plot = additional_options(chart_options, scientific_format, label_display=True)
+            chart_options = serialize(plot_df, title=title, output_type='dict',
+                                      **params, render_to=next_plot())
+            plot = additional_options(chart_options, scientific_format,
+                                      label_display=True)
             plots.append(plot)
 
     return plots
 
 
-def to_json(plots):
+# From https://codereview.stackexchange.com/questions/178600/flatten-an-array-of-integers-in-python
+def flatten_list(array):
+    for element in array:
+        if isinstance(element, str):
+            yield element
+        elif isinstance(element, list):
+            yield from flatten_list(element)
+        else:
+            raise TypeError("Unsupported type ({})".format(
+                type(element).__name__))
+
+
+def is_lineal(plots):
+    """Detect if a list of plot is lineal.
+
+    :param plots: plots to observ.
+    :returns: True if it is lineal (like Convergence)
+    :rtype: False othercase.
+
+    """
+    if plots:
+        key_first = list(plots.keys())[0]
+        first = plots[key_first]
+        return type(first[0]) is str
+    else:
+        return False
+
+
+def to_json(plots, title=None):
     """Make the figure visualize with the json.
 
     :param fig_names: name of the figs
@@ -182,11 +213,28 @@ def to_json(plots):
     # import ipdb; ipdb.set_trace()
     result = dict()
     error = ''
+    plots_json = []
+    plots_js = []
+
+    # If it is not a double-array it is transformed as a double-array
+    lineal = is_lineal(plots)
+
+    if lineal:
+        for key, plots_seq in plots.items():
+            plots[key] = [[p] for p in plots_seq]
 
     if plots:
-        plots = list(plots.values())
-        plots = plots[0]
+        for title, plots_col in plots.items():
+            print("cols: ", len(plots_col))
 
-    result.update({'figures': plots})
+            for plots_row in plots_col:
+                print("rows: ", len(plots_row))
+                plots_json.append({'title': title, 'num': len(plots_row)})
+                title = ''
+                plots_js.extend(plots_row)
+
+    print(plots_json)
+    result.update({'figures_info': plots_json})
+    result.update({'figures': plots_js})
     result.update({'error': error, 'type': 'highcharts'})
     return result
