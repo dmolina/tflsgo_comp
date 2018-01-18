@@ -37,24 +37,25 @@ def additional_options(chart_dict, scientific_format=False, label_display=False)
                 xaxis = chart_dict[axis_name]
 
                 if type(xaxis) is list:
-                    print(xaxis)
                     xaxis = xaxis[0]
-                    print(xaxis)
 
                 label = xaxis.get('labels', dict())
-                print(label)
                 label['formatter'] = formatter
                 xaxis['labels'] = label
                 chart_dict[axis_name] = xaxis
-                print(chart_dict[axis_name])
 
         tooltip = chart_dict.get("tooltip", dict())
         tooltip['formatter'] = tooltip_sci_format_str
         chart_dict['tooltip'] = tooltip
 
+    if label_display:
+        plotOptions = chart_dict.get("plotOptions", dict())
+        plotOptions['line'] = dict(dataLabels=dict(enabled=highcharts.common.Formatter("true")))
+        chart_dict['plotOptions'] = plotOptions
+
     # print(chart_dict)
     str = json.dumps(chart_dict, cls=highcharts.highcharts.HighchartsEncoder)
-    print(str)
+    # print(str)
     return str
 
 
@@ -164,7 +165,6 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
             chart_options = serialize(plot_df, title=title, 
                                       output_type='dict', **params, render_to=next_plot())
             plot = additional_options(chart_options, scientific_format, label_display=True)
-            print(plot)
             plots.append(plot)
 
     return plots
@@ -182,6 +182,11 @@ def to_json(plots):
     # import ipdb; ipdb.set_trace()
     result = dict()
     error = ''
-    result.update({'figures': list(plots.values())[0]})
+
+    if plots:
+        plots = list(plots.values())
+        plots = plots[0]
+
+    result.update({'figures': plots})
     result.update({'error': error, 'type': 'highcharts'})
     return result
