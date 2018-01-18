@@ -4,7 +4,6 @@ benchmark, using the milestones as references.
 """
 from .report_utils import figure_json, load_charts_library
 
-
 def create_tables(df, categories, accuracies, dimension=1000):
     return [], {}, {}
 
@@ -31,7 +30,7 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False, lib
     funs_str = [col for col in df.columns if col.startswith('F')]
 
     def fun_to_int(fun):
-        return int(fun[1:])
+        return "{:02d}".format(int(fun[1:]))
 
     plot = libplot.plot(df, x='milestone', xaxis='Evaluations', xticks=xticks,
                         y='mean', yaxis='Error', logy=True, show_legend=True,
