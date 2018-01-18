@@ -240,9 +240,6 @@ Benchmark for the Large Scale Global Optimization competitions.
     db.session.add(Report(name="cec2013_classical", filename="report_cec2013",
                           description="Classic Benchmark for LSGO (F1 criterion)", benchmarks=[bench]))
 
-    db.session.add(Report(name="functions", filename="report_functions",
-                          description="Convergence Functions", benchmarks=[bench]))
-
     # Create milestone with required and optional
     milestones_required = np.array([1.2e5, 6e5, 3e6], dtype=np.int32)
     milestones_optional = np.linspace(3e5, 3e6, 10, dtype=np.int32)
@@ -282,11 +279,6 @@ Benchmark for the Real-Parameter Optimization competitions.
     db.session.add(Dimension(value=50, benchmark=bench))
     db.session.add(Dimension(value=100, benchmark=bench))
 
-    fun_report = Report.query.filter_by(name="functions").one()
-    print(fun_report)
-    fun_report.benchmarks.append(bench)
-    bench.reports.append(fun_report)
-
     # Create milestone with required and optional
     milestones = np.append(np.array([1, 2, 3,  5], dtype=np.int32),
                                np.arange(10, 110, 10, dtype=np.int32))
@@ -308,6 +300,27 @@ Benchmark for the Real-Parameter Optimization competitions.
         db.session.add(cat)
 
 
+def init_generic_reports(db):
+    """Add the generic reports to the database
+
+    :param db: database
+    :returns: None
+    :rtype: None
+    """
+    benchs = Benchmark.query.all()
+    reports = []
+
+    reports.append(Report(name="functions", filename="report_functions",
+                          description="Convergence Functions", benchmarks=benchs))
+
+    reports.append(Report(name="tables", filename="report_tables",
+                          description="Mean Comparison", benchmarks=benchs))
+
+    for report in reports:
+        db.session.add(report)
+
+
+
 def init_db(db):
     db.create_all()
 
@@ -316,6 +329,7 @@ def init_db(db):
 
     init_cec2013(db)
     init_cec2017(db)
+    init_generic_reports(db)
 
     # User add
     user = User(username='tflsgo@gmail.com')
