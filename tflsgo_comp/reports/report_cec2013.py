@@ -10,7 +10,10 @@ from .report_utils import figure_json
 
 import holoviews as hv
 
+from .report_utils import normalize_df
+
 from .report_utils import get_plot_bar
+from .report_utils import figure_json
 
 
 def _get_values_df(df, functions):
@@ -75,23 +78,6 @@ def get_plot_by_milestone(df, mil):
     return get_plot_barh(table, "Accuracy: {:2.1E}".format(mil))
 
 
-def cec2013_normalize(df, dimension):
-    milestones = [int(1.2e5), int(6e5), int(3e6)]
-    dim_df = df[df['dimension'] == dimension].drop('dimension', 1)
-
-    if 'id' in dim_df.columns:
-        dim_df = dim_df.drop('id', 1)
-
-    # Filter the milestone
-    dim_df = dim_df[dim_df['milestone'].isin(milestones)]
-    table_g = dim_df
-
-    table_g['milestone'] = table_g['milestone'].astype(int)
-    mean = {col: 'mean' for col in table_g.columns if col.startswith('F')}
-    table_g = table_g.groupby(['alg', 'milestone']).agg(mean).reset_index()
-    return table_g
-
-
 def create_tables(df, categories, accuracies, dimension=1000):
     """
     Create tables from the dataframe with the data, in format pandas.
@@ -105,7 +91,7 @@ def create_tables(df, categories, accuracies, dimension=1000):
     :param categories: categories to compare (sorted).
     :param algs: Pandas.
     """
-    table_g = cec2013_normalize(df, dimension)
+    table_g = normalize_df(df, dimension, accuracies)
     table_g.columns = [changecol(col) for col in table_g.columns]
     titles_idx = table_g['milestone'].unique().tolist()
     titles_idx.sort()
@@ -197,7 +183,7 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000, mobile=F
     """
     milestones = df['milestone'].unique().tolist()
     milestones.sort()
-    dim_df = cec2013_normalize(df, dimension)
+    dim_df = normalize_df(df, dimension, accuracies)
     values_df = _get_all_f1(dim_df, categories, milestones)
 
     titles = dict(alg='Algorithm', ranking='Points', milestone='Evaluations')

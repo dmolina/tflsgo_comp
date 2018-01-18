@@ -80,3 +80,21 @@ def filter_milestone(df, milestone_name):
     # Filter the milestone
     cat_df_mil = df[df['milestone'].astype(int) == milestone_value]
     return cat_df_mil
+
+
+def normalize_df(df, dimension, milestones):
+    dim_df = df[df['dimension'] == dimension].drop('dimension', 1)
+
+    if 'id' in dim_df.columns:
+        dim_df = dim_df.drop('id', 1)
+
+    # Filter the milestone
+    dim_df = dim_df[dim_df['milestone'].isin(milestones)]
+    table_g = dim_df
+
+    table_g['milestone'] = table_g['milestone'].astype(int)
+    mean = {col: 'mean' for col in table_g.columns if col.startswith('F')}
+    table_g = table_g.groupby(['alg', 'milestone']).agg(mean).reset_index()
+    return table_g
+
+
