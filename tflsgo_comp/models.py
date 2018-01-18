@@ -123,7 +123,7 @@ class CategoryFunction(db.Model):
      - functions: list of functions, separated by commas.
      """
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), unique=True, nullable=False, index=True)
+    name = db.Column(db.String(30), nullable=False, index=True)
     functions_str = db.Column(db.String(80), nullable=False)
     position = db.Column(db.Integer, nullable=False)
     benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
@@ -179,12 +179,59 @@ class CEC2013Data(db.Model):
         return self.name
 
 
-def init_db(db):
-    db.create_all()
+class CEC2017Data(db.Model):
+    """
+    Table that stores for each algorithm
+    """
+    __tablename__ = "cec2017"
+    id = db.Column(db.Integer, primary_key=True)
+    alg = db.Column(db.String(20), nullable=False, index=True)
+    milestone = db.Column(db.String(5), nullable=False)
+    dimension = db.Column(db.Integer, default=1000)
 
-    if Benchmark.query.all():
-        return
+    F1 = db.Column(db.Float, nullable=False)
+    F2 = db.Column(db.Float, nullable=False)
+    F3 = db.Column(db.Float, nullable=False)
+    F4 = db.Column(db.Float, nullable=False)
+    F5 = db.Column(db.Float, nullable=False)
+    F6 = db.Column(db.Float, nullable=False)
+    F7 = db.Column(db.Float, nullable=False)
+    F8 = db.Column(db.Float, nullable=False)
+    F9 = db.Column(db.Float, nullable=False)
+    F10 = db.Column(db.Float, nullable=False)
+    F11 = db.Column(db.Float, nullable=False)
+    F12 = db.Column(db.Float, nullable=False)
+    F13 = db.Column(db.Float, nullable=False)
+    F14 = db.Column(db.Float, nullable=False)
+    F15 = db.Column(db.Float, nullable=False)
+    F16 = db.Column(db.Float, nullable=False)
+    F17 = db.Column(db.Float, nullable=False)
+    F18 = db.Column(db.Float, nullable=False)
+    F19 = db.Column(db.Float, nullable=False)
+    F20 = db.Column(db.Float, nullable=False)
+    F21 = db.Column(db.Float, nullable=False)
+    F22 = db.Column(db.Float, nullable=False)
+    F23 = db.Column(db.Float, nullable=False)
+    F24 = db.Column(db.Float, nullable=False)
+    F25 = db.Column(db.Float, nullable=False)
+    F26 = db.Column(db.Float, nullable=False)
+    F27 = db.Column(db.Float, nullable=False)
+    F28 = db.Column(db.Float, nullable=False)
+    F29 = db.Column(db.Float, nullable=False)
+    F30 = db.Column(db.Float, nullable=False)
 
+    # Add the constraint in a loop
+    __table_args__ = tuple([db.CheckConstraint('F{} >= 0'.format(f),
+                                               name='value_{}_must_be_positive'.format(f)) for f in
+                            range(1, 16)] + [db.CheckConstraint(dimension > 0,
+                                                                name='dimension_must_be_positive')])
+
+    def __repr__(self):
+        return self.name
+
+
+
+def init_cec2013(db):
     bench = Benchmark(name="CEC2013LSGO", title="CEC'2013 Large Scale Global Optimization", nfuns=15, description="""
 Benchmark for the Large Scale Global Optimization competitions.
         """, data_table="cec2013lsgo", example="example_cec2013")
@@ -223,6 +270,52 @@ Benchmark for the Large Scale Global Optimization competitions.
     for i, cat in enumerate(categories):
         cat = CategoryFunction(name=cat['name'], functions_str=cat['functions'], position=i+1, benchmark=bench)
         db.session.add(cat)
+
+
+def init_cec2017(db):
+    bench = Benchmark(name="CEC2017", title="CEC'2017 Real-Parameter Optimization", nfuns=30, description="""
+Benchmark for the Real-Parameter Optimization competitions.
+        """, data_table="cec2017", example="example_cec2017")
+    db.session.add(bench)
+    db.session.add(Dimension(value=10, benchmark=bench))
+    db.session.add(Dimension(value=30, benchmark=bench))
+    db.session.add(Dimension(value=50, benchmark=bench))
+    db.session.add(Dimension(value=100, benchmark=bench))
+
+    fun_report = Report.query.filter_by(name="functions").one()
+    print(fun_report)
+    fun_report.benchmarks.append(bench)
+    bench.reports.append(fun_report)
+
+    # Create milestone with required and optional
+    milestones = np.append(np.array([1, 2, 3,  5], dtype=np.int32),
+                               np.arange(10, 110, 10, dtype=np.int32))
+
+    for mil in milestones:
+        mil_str = "{}%".format(mil)
+        db.session.add(Milestone(name=mil_str, value=int(mil), required=True,
+                                 benchmark=bench))
+
+    categories = [
+        {'name': 'Unimodal', 'functions': '1,2,3'},
+        {'name': 'Multimodal', 'functions': '4,5,6,7,8,9,10'},
+        {'name': 'Hybrid Functions', 'functions': '11,12,13,14,15,16,17,18,19,20'},
+        {'name': 'Compositions Functions', 'functions': '21,22,23,24,25,26,27,28,29,30'},
+        ]
+
+    for i, cat in enumerate(categories):
+        cat = CategoryFunction(name=cat['name'], functions_str=cat['functions'], position=i+1, benchmark=bench)
+        db.session.add(cat)
+
+
+def init_db(db):
+    db.create_all()
+
+    if Benchmark.query.all():
+        return
+
+    init_cec2013(db)
+    init_cec2017(db)
 
     # User add
     user = User(username='tflsgo@gmail.com')
