@@ -21,6 +21,7 @@ def next_plot():
     return "figures{}".format(num_plot)
 
 
+def additional_options(chart_dict, scientific_format=False, label_display=False):
     chart_dict.update()
 
     if scientific_format:

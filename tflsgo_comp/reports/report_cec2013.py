@@ -6,15 +6,16 @@ CEC'2013 benchmark.
 import numpy as np
 import pandas as pd
 
+from .report_utils import figure_json
 
 import holoviews as hv
 
 from .report_utils import get_plot_bar
-from .report_utils import figure_json
 
 
-def _get_values_df(data_df, functions):
+def _get_values_df(df, functions):
     # Obtain the rank
+    data_df = df.drop('milestone', 1).set_index('alg')
     rank_df = data_df.rank()
     # Change the rank position by the f1 value
     values_df = rank_df[functions].apply(get_f1_score)
@@ -73,9 +74,14 @@ def get_plot_by_milestone(df, mil):
     table = df[df['milestone'] == mil]
     return get_plot_barh(table, "Accuracy: {:2.1E}".format(mil))
 
+
 def cec2013_normalize(df, dimension):
     milestones = [int(1.2e5), int(6e5), int(3e6)]
     dim_df = df[df['dimension'] == dimension].drop('dimension', 1)
+
+    if 'id' in dim_df.columns:
+        dim_df = dim_df.drop('id', 1)
+
     # Filter the milestone
     dim_df = dim_df[dim_df['milestone'].isin(milestones)]
     table_g = dim_df
@@ -141,7 +147,42 @@ def get_plot_barh(df, title):
     return bar.opts(options)
 
 
-def create_figures(df, categories, accuracies, dimension=1000, mobile=False, libcharts='hv'):
+def _get_all_f1(df, categories, milestones):
+    num_rows, num_columns = df.shape
+    num_functions = num_columns-3
+    assert(num_functions > 0)
+    # append all data in a pivot table
+    total_pivot_df = pd.DataFrame(index=np.arange(0, num_rows*len(categories)),
+                                  columns=('category', 'milestone', 'alg',
+                                           'ranking'))
+
+    pivot_i = 0
+
+    for cat in categories:
+        # Filter only the function in the category
+        functions = ['F{}'.format(x) for x in cat.functions()]
+        milestones.sort()
+
+        # Create  total_pivot_df
+        for milestone in milestones:
+            current_df = df[df['milestone'] == milestone]
+
+            if not current_df.empty:
+                # Remove field milestone and index by alg
+                # current_df = current_df.drop('milestone', 1).set_index('alg')
+                # Add to total value
+                sum_df = _get_values_df(current_df, functions)
+                # Add extra information
+
+                for alg, rank in sum_df.values:
+                    new_ranking_row = [cat.name, milestone, alg, rank]
+                    total_pivot_df.loc[pivot_i] = new_ranking_row
+                    pivot_i += 1
+
+    return total_pivot_df
+
+
+def create_figures(df, categories, accuracies, libplot, dimension=1000, mobile=False):
     """
     Create graphics from the dataframe with the data.
 
@@ -154,67 +195,47 @@ def create_figures(df, categories, accuracies, dimension=1000, mobile=False, lib
     :param categories: categories to compare (sorted).
     :param algs: algorithm list (sorted).
     """
-    num_cols = 3
-    dim_df = cec2013_normalize(df, dimension)
-    milestones = dim_df['milestone'].unique().tolist()
+    milestones = df['milestone'].unique().tolist()
     milestones.sort()
+    dim_df = cec2013_normalize(df, dimension)
+    values_df = _get_all_f1(dim_df, categories, milestones)
+
+    titles = dict(alg='Algorithm', ranking='Points', milestone='Evaluations')
 
     if mobile:
         num_cols = 1
-
-    hv.extension('bokeh')
-    renderer = hv.renderer('bokeh')
-    options = "Bars [xrotation=90]"
+    else:
+        num_cols = 3
 
     total_figs = {}
     fig_names = []
 
-    num_rows, num_columns = dim_df.shape
-    num_functions = num_columns-3
-    assert(num_functions > 0)
-    # append all data in a pivot table
-    total_pivot_df = pd.DataFrame(index=np.arange(0, num_rows*len(categories)),
-                                  columns=('category', 'milestone', 'alg',
-                                           'ranking'))
-    pivot_i = 0
+    # Plotting
+    cat_names = [cat.name for cat in categories]
 
-    for cat in categories:
-        cat_name = cat.name
-        # Filter only the function in the category
-        functions = ['F{}'.format(x) for x in cat.functions()]
-        cat_figs = []
-        accuracies.sort()
+    def formatter(value):
+        return "Accuracy: {:.3e}".format(value)
 
-        for milestone in milestones:
-            current_df = dim_df >> mask(X.milestone == milestone)
+    for cat in cat_names:
+        cat_df = values_df[values_df['category'] == cat]
+        plot = libplot.plot_bar(cat_df, titles=titles, x='alg', y='ranking',
+                                groupby='milestone',
+                                groupby_transform=formatter, rotation=True,
+                                size=None, num_cols=num_cols)
+        total_figs[cat] = plot
 
-            if not current_df.empty:
-                # Remove field milestone and index by alg
-                current_df = current_df.drop('milestone', 1).set_index('alg')
-                # Add to total value
-                sum_df = _get_values_df(current_df, functions)
-                title = "Accuracy: {:2.1E}".format(milestone)
-                plot = get_plot_bar(sum_df, title)
-                cat_figs.append(plot)
-                # Add extra information
-
-                for alg, rank in sum_df.values:
-                    new_ranking_row = [cat_name, milestone, alg, rank]
-                    total_pivot_df.loc[pivot_i] = new_ranking_row
-                    pivot_i += 1
-
-            total_figs[cat_name] = renderer.get_plot(hv.Layout(cat_figs).opts(options).cols(num_cols)).state
+    return libplot.to_json(total_figs)
+    renderer = ''
 
     cat_global = []
-
     plot_dyn = {}
 
     for mil in milestones:
-        plot = get_plot_by_milestone(total_pivot_df, mil)
+        plot = get_plot_by_milestone(values_df, mil)
         plot_dyn[mil] = plot
         cat_global.append(plot)
 
-    plots = hv.Layout(cat_global).opts(options)
+    plots = hv.Layout(cat_global).opts("Bar [rotation=90]")
     # legend_opts = {'NdOverlay': dict(show_legend=True, legend_position='right')}
     # plots.Bars.III = plots.Bars.III(plot=legend_opts)
     total_figs['All'] = renderer.get_plot(plots.cols(num_cols)).state

@@ -126,3 +126,61 @@ def to_json(plots):
     result.update({'error': '', 'type': 'hv'})
     return result
 
+
+def get_renderer():
+    return renderer
+
+def plot_bar(df, titles, x, y, groupby=None, groupby_values=None, groupby_transform=None,
+             rotation=False, size=None, title=None, num_cols=3):
+    """Plot the dataframes as bar plots.
+
+    :param df: dataframe.
+    :param titles: dictionary that related the dimension with its name.
+    :param x: axis to show.
+    :param y: variable to show.
+    :param groupby: groupby parameter.
+    :param rotation: rotation.
+    :param size: size of image.
+    :returns: plots.
+    :rtype: 
+    """
+    setSize(size)
+
+    if rotation:
+        options = "Bars [rotation=90]"
+    else:
+        options = ""
+
+    if not groupby_transform:
+        t = lambda x: str(x)
+    else:
+        t = groupby_transform
+
+
+    if groupby:
+        if not groupby_values:
+            groupby_values = df[groupby].unique().tolist()
+            groupby_values.sort()
+
+    # Plot the bar
+    fields = [x, y, groupby]
+    data_df = df[fields].sort_values([y])
+    kdims = [(name, titles[name]) for name in [x,y]]
+
+    if not groupby:
+        data = [tuple(row) for row in data_df.values]
+        bar = hv.Bars(data, kdims[0], kdims[1], label=title)
+        plots = [bar.opts(options)]
+    else:
+        plots = []
+
+        for group in groupby_values:
+            group_df = data_df[data_df[groupby] == group]
+            data = [tuple(row) for row in group_df.values]
+            title_plot = t(group)
+            bar = hv.Bars(data, kdims[0], kdims[1], label=title_plot)
+            plot = bar.opts(options)
+            plots.append(plot)
+
+        plot_layout = hv.Layout(plots).opts(options).cols(num_cols)
+        return renderer.get_plot(plot_layout).state
