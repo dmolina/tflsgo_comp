@@ -3,11 +3,24 @@ This file contains the wrapper for the plot API using the HighCharts
 libraries. https://www.highcharts.com/products/highcharts/
 It is free for non-commercial usage
 """
+import pandas as pd
 from pandas_highcharts.core import serialize
 from highcharts import highcharts
 import json
 
-def additional_options(chart_dict, scientific_format):
+num_plot = 0
+
+def init():
+    global num_plot
+    num_plot = 0
+
+
+def next_plot():
+    global num_plot
+    num_plot += 1
+    return "figures{}".format(num_plot)
+
+
     chart_dict.update()
 
     if scientific_format:
