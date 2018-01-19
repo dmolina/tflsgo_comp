@@ -150,7 +150,7 @@ class AlgsUsers(Resource):
     """
     Rest resource to receive the list of algorithm for a benchmark.
     """
-    @cache.cached(timeout=30)
+    # @cache.cached(timeout=30)
     def post(self):
         """
         Return the algorithms available from the indicated benchmark.
