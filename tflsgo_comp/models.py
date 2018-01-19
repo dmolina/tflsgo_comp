@@ -418,8 +418,15 @@ def get_alg(bench_id, dimension):
 
     tablename, = tablenames[0]
     data = get_class_by_tablename(tablename)
-    result = db.session.query(data.alg).distinct().filter_by(dimension=dimension).all()
 
+    bench = get_benchmark(bench_id)
+    query = db.session.query(data.alg).distinct()
+
+    #  Filter if there is more than one dimension
+    if (len(bench['dimensions']) > 1):
+        query = query.filter_by(dimension=dimension)
+
+    result = query.all()
     algs = [res[0] for res in result]
 
     return {'error': '', 'algs': algs}
@@ -441,16 +448,20 @@ def read_data_alg(benchmark_id, algs):
     :param algs: alg
     :return: tuple (data, error)
     """
-    bench = db.session.query(Benchmark).filter_by(id=benchmark_id).all()
+    bench = get_benchmark(benchmark_id)
     error = ''
     data = ''
 
     if not bench:
         error = 'id \'{}\' is not a known benchmark'.format(benchmark_id)
     else:
-        df = read_df(bench[0].data_table)
+        dimensions = bench['dimensions']
+        df = read_df(bench['data_table'])
         df['milestone'] = df['milestone'].astype(float).astype(int)
         data = df[df['alg'].isin(algs)]
+
+        if len(dimensions)==1:
+            data['dimension'] = dimensions[0]
 
     return data, error
 
@@ -560,7 +571,6 @@ def write_proposal_data(df, user, benchmark):
     data_table = benchmark['data_table']
     # Detect there is not previous
     existing_df = read_df(data_table)
-    print(existing_df.head())
     repeated = existing_df[existing_df['alg'].isin(algs)]['alg'].unique().tolist()
 
     if repeated:
@@ -614,7 +624,6 @@ def delete_alg(algs_to_delete, user, benchmark_id):
     else:
         data = get_class_by_tablename(tablename)
         q_delete_data = db.session.query(data.id).filter(data.alg.in_(algs_to_delete))
-        pprint(q_delete_data.all())
         q_delete_data.delete(synchronize_session=False)
 
     if error:
