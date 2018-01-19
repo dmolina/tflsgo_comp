@@ -235,15 +235,12 @@ def to_json(plots, title=None):
 
     if plots:
         for title, plots_col in plots.items():
-            print("cols: ", len(plots_col))
 
             for plots_row in plots_col:
-                print("rows: ", len(plots_row))
                 plots_json.append({'title': title, 'num': len(plots_row)})
                 title = ''
                 plots_js.extend(plots_row)
 
-    print(plots_json)
     result.update({'figures_info': plots_json})
     result.update({'figures': plots_js})
     result.update({'error': error, 'type': 'highcharts'})

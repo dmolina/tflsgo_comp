@@ -136,12 +136,12 @@ var process_fail = function(data) {
 var init_process = function() {
     console.log("init_process");
     $("i#refresh").removeClass("d-none");
-    $("#submit_button").prop("disabled", true);
+//    $("#submit_button").prop("disabled", true);
 }
 
 var finish_process = function() {
     console.log("finish_process");
-    $("#submit_button").prop("disabled", false);
     $("i#refresh").addClass("d-none");
+    $("#submit_button").prop("disabled", false);
 }
 
