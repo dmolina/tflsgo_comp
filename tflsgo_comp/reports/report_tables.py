@@ -48,6 +48,7 @@ def create_tables(df, categories, accuracies, dimension=1000):
     titles_idx.sort()
     tables = {}
     titles = {}
+    max_mil = table_g['milestone'].max()
 
     for mil, table in table_g.groupby(['milestone']):
         table = table.transpose().drop('milestone')
@@ -60,7 +61,11 @@ def create_tables(df, categories, accuracies, dimension=1000):
         table.columns.names = ['Functions']
         style = table.style.apply(highlight_max, axis=1).format(format_e(table))
         tables[mil] = style.render()
-        titles[mil] = "Accuracy: {:2.1e}".format(mil)
+
+        if max_mil == 100:
+            titles[mil] = "Evaluations: {:d}%".format(mil)
+        else:
+            titles[mil] = "Accuracy: {:2.1e}".format(mil)
 
     return titles_idx, titles, tables
 

@@ -23,12 +23,17 @@ def next_plot():
 
 
 def additional_options(chart_dict, scientific_format=False,
-                       label_display=False):
+                       label_display=False, isRatio=False):
     chart_dict.update()
 
     if scientific_format:
         ayis_sci_format_str = highcharts.common.Formatter("function() { if (this.value < 1e-40) {return '0.0';}; return this.value.toExponential(2);}")
-        axis_sci_format_str = highcharts.common.Formatter("function() { return this.value.toExponential(2);}")
+
+        if isRatio:
+            axis_sci_format_str = highcharts.common.Formatter("function() { return this.value.toFixed(0)+'%';}")
+        else:
+            axis_sci_format_str = highcharts.common.Formatter("function() { return this.value.toExponential(2);}")
+
         axis_format = [axis_sci_format_str, ayis_sci_format_str]
         tooltip_sci_format_str = highcharts.common.Formatter("function() {return this.y.toExponential(2);}")
 
@@ -66,6 +71,7 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
          groupby_transform=None, hue=None, cols=1, kind='line', size=None,
          scientific_format=False):
     params = dict(figsize=size, zoom="xy", logy=logy)
+    isRatio = df[x].max() == 100
 
     if xticks:
         params.update(dict(xticks=xticks))
@@ -79,6 +85,9 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
 
     if yaxis is None:
         yaxis = y.title()
+
+    if isRatio:
+        xaxis = '{} (%)'.format(xaxis)
 
     params = dict(show_legend=show_legend, logy=logy)
 
@@ -108,10 +117,11 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
                     # params.update(dict(ylim=[y_min,y_max]))
 
             title = "{}: {}".format(group_label, groupby_transform(group))
-            chart_options = serialize(group_df, title=title, 
+            chart_options = serialize(group_df, title=title,
                                       output_type='dict', **params,
                                       render_to=next_plot())
-            plot = additional_options(chart_options, scientific_format)
+            plot = additional_options(chart_options, scientific_format=True,
+                                      isRatio=isRatio, label_display=False)
             plots.append(plot)
 
         return plots
