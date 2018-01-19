@@ -86,7 +86,8 @@
             <!-- dimension -->
             <input type="hidden" v-bind:value="dimension" name="dimension"/>
     </p>
-    <h2>Algorithms to compare</h2>
+    <template v-if="dimension">
+        <h2>Algorithms to compare</h2>
     <!-- algs with the list of algorithms to compare -->
     <template v-if="available_algs.length > 0">
         <template v-for="alg in available_algs">

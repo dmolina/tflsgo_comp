@@ -132,7 +132,7 @@ class Algs(Resource):
     """
     Rest resource to receive the list of algorithm for a benchmark.
     """
-    @cache.cached(timeout=10)
+    # @cache.cached(timeout=10)
     def get(self, benchmark_id, dimension):
         """
         Return the algorithms available from the indicated benchmark.

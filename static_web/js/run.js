@@ -50,6 +50,10 @@ var app = new Vue({
                     self.dimension = self.dimensions[0];
                     self.onChangedDimension();
                 }
+                else {
+                    self.dimension = '';
+                }
+
                 if (self.reports.length==1) {
                     self.report_name = self.reports[0].description;
                 }
