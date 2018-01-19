@@ -50,7 +50,7 @@ class Benchmark(db.Model):
     # table name
     data_table = db.Column(db.String(20), unique=True,  nullable=False)
     # Number of example data
-    example = db.Column(db.String(20), unique=True, nullable=False)
+    example = db.Column(db.String(20), unique=False, nullable=False)
     # many to many Benchmark<->Report
     reports = db.relationship('Report', secondary=bench_report,
                               back_populates='benchmarks')
@@ -67,7 +67,7 @@ class Dimension(db.Model):
     """Number of dimensions possible for the relative benchmark."""
     __tablename__ = "dimension"
     id = db.Column(db.Integer, primary_key=True)
-    value = db.Column(db.Integer, nullable=False, unique=True, index=True)
+    value = db.Column(db.Integer, nullable=False, index=True)
     benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
                              nullable=False)
     benchmark = db.relationship("Benchmark", lazy="joined", cascade='all,delete',
@@ -100,8 +100,8 @@ class Milestone(db.Model):
     """Number of dimensions possible for the relative benchmark."""
     __tablename__ = "milestone"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(10), nullable=False, unique=True)
-    value = db.Column(db.Integer, nullable=False, unique=True)
+    name = db.Column(db.String(10), nullable=False)
+    value = db.Column(db.Integer, nullable=False, unique=False)
     required = db.Column(db.Boolean, default=True)
     benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
                              nullable=False)
@@ -503,13 +503,17 @@ class User(db.Model):
 
 class Algorithm(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), unique=True, nullable=False, index=True)
+    name = db.Column(db.String(20), nullable=False, index=True)
     benchmark_id = db.Column(db.Integer, db.ForeignKey("benchmark.id"),
                              nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     benchmark = db.relationship("Benchmark", cascade='all,delete')
     user = db.relationship("User", cascade='all,delete',
                            backref=db.backref("algorithms", uselist=True))
+
+    __table_args__ = (
+        db.UniqueConstraint('name', 'benchmark_id', name='alg_must_be_unique'),
+    )
 
 
 def validate_user(username, password):
@@ -556,6 +560,7 @@ def write_proposal_data(df, user, benchmark):
     data_table = benchmark['data_table']
     # Detect there is not previous
     existing_df = read_df(data_table)
+    print(existing_df.head())
     repeated = existing_df[existing_df['alg'].isin(algs)]['alg'].unique().tolist()
 
     if repeated:
