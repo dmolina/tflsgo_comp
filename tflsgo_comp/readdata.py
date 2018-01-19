@@ -4,8 +4,7 @@ from os.path import splitext
 import pandas as pd
 
 
-
-def read_results_from_file(algname, fullname):
+def read_results_from_file(algname, fullname, dimension=None):
     """
     Read the results of an algorithm using pandas library.
 
@@ -23,11 +22,11 @@ def read_results_from_file(algname, fullname):
     else:
         error = 'Format of file \'{}\' not valide (.xls or .csv)'.format(fullname)
 
-    data_norm = normalize_data(data, algname)
+    data_norm = normalize_data(data, algname, dimension)
     return data_norm, error
 
 
-def normalize_data(df, algname):
+def normalize_data(df, algname, dimension):
     """
     Generate normalize_data.
 
@@ -50,6 +49,9 @@ def normalize_data(df, algname):
         df['alg'] = algname
 
     # Sorted columns
+    if 'dimension' not in df:
+        df.loc[:,'dimension'] = dimension
+
     cols = ['alg', 'milestone', 'dimension']+functions
     return df[cols]
 
@@ -162,14 +164,21 @@ def empty_data():
 
 
 def read_benchmark_data(alg_name, fullname, benchmark):
+
+    dimensions = benchmark['dimensions']
+
+    if len(dimensions) == 1:
+        dimension = dimensions[0]
+    else:
+        dimension = None
+
     data_local, error = read_results_from_file(alg_name, fullname)
 
     data_local['milestone'] = data_local['milestone'].astype(float).astype(int)
     data_local.columns = [col.replace('F0', 'F') for col in data_local.columns]
-    dimensions = benchmark['dimensions']
 
-    if (len(dimensions) == 1) and 'dimension' not in data_local:
-        data_local['dimension'] = dimensions[0]
+    if dimension and 'dimension' not in data_local:
+        data_local['dimension'] = dimension
 
     if 'alg' not in data_local:
         data_local['alg'] = alg_name

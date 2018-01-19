@@ -8,7 +8,7 @@ def create_tables(df, categories, accuracies, dimension=1000):
     return [], {}, {}
 
 
-def create_figures(df, categories, accuracies, libplot, dimension=1000,
+def create_figures(df, categories, accuracies, libplot, dimension,
                    mobile=False):
     """
     Create convergence figures.
@@ -23,7 +23,8 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000,
     :param algs: algorithm list (sorted).
     """
     mean = {col: 'mean' for col in df.columns if col.startswith('F')}
-    df = df.groupby(['alg', 'milestone']).agg(mean).reset_index()
+    dim_df = df[df['dimension']==dimension]
+    df = dim_df.groupby(['alg', 'milestone']).agg(mean).reset_index()
 
     xticks = [0] + accuracies
     # Get the functions to visualize
@@ -39,5 +40,5 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000,
                         kind='line', size=200, scientific_format=True)
 
 
-    figures = {'Convergence Functions': plots}
+    figures = {'Convergence Functions with dimension {}'.format(dimension): plots}
     return libplot.to_json(figures)
