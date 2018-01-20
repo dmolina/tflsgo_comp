@@ -23,7 +23,7 @@ def next_plot():
 
 
 def additional_options(chart_dict, scientific_format=False,
-                       label_display=False, isRatio=False):
+                       label_display=False, isRatio=False, stacked=False):
     chart_dict.update()
 
     if scientific_format:
@@ -60,6 +60,12 @@ def additional_options(chart_dict, scientific_format=False,
         plotOptions['line'] = dict(dataLabels=dict(enabled=highcharts.common.Formatter("true")))
         chart_dict['plotOptions'] = plotOptions
 
+    if stacked:
+        plotOptions = chart_dict.get("plotOptions", dict())
+        plotOptions['series'] = dict(stacking='normal')
+        chart_dict['plotOptions'] = plotOptions
+
+
     # print(chart_dict)
     str = json.dumps(chart_dict, cls=highcharts.highcharts.HighchartsEncoder)
     # print(str)
@@ -70,7 +76,7 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
          show_legend=True, groupby=None, group_label='',
          groupby_transform=None, hue=None, cols=1, kind='line', size=None,
          scientific_format=False):
-    params = dict(figsize=size, zoom="xy", logy=logy)
+    params = dict(zoom="xy", logy=logy)
     isRatio = df[x].max() == 100
 
     if xticks:
@@ -129,7 +135,8 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
 
 def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
              groupby_transform=None, rotation=False, size=None, title=None,
-             num_cols=3, scientific_format=False):
+             hue = None, hue_values = [],
+             num_cols=3, scientific_format=False, stacked=False, label_display=None):
     """Plot the dataframes as bar plots.
 
     :param df: dataframe.
@@ -145,13 +152,15 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
     # import ipdb; ipdb.set_trace()
     params = dict(zoom="xy", kind='bar', legend=False)
 
-    if size:
-        params.update(dict(figsize=size))
-
     if not groupby_transform:
         t = lambda x: str(x)
     else:
         t = groupby_transform
+
+    if hue:
+        fields = [x, y, hue]
+    else:
+        fields = [x, y]
 
     if groupby:
         if not groupby_values:
@@ -159,40 +168,46 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
             groupby_values.sort()
 
     if not groupby:
-        plot_df = df[[x, y]]
+        plot_df = df[fields]
         chart_options = serialize(plot_df, title=title, output_type='dict', **params, render_to=next_plot())
-        plot = additional_options(chart_options, scientific_format, label_display=True)
+        plot = additional_options(chart_options, scientific_format, label_display=label_display)
         plots = [plot]
     else:
         plots = []
 
         for group in groupby_values:
             group_df = df[df[groupby] == group]
-            plot_df = group_df[[x, y]]
-            plot_df[y] = pd.to_numeric(plot_df[y])
-            plot_df.columns = [titles[v] for v in plot_df.columns]
+            plot_df = group_df[fields]
+            plot_df.loc[:,y] = pd.to_numeric(plot_df.loc[:, y])
             title = t(group)
-            plot_df = plot_df.set_index(titles[x])
+
+            if not hue:
+                plot_df.columns = [titles[v] for v in plot_df.columns]
+                plot_df = plot_df.set_index(titles[x])
+            else:
+                plot_df = plot_df.pivot(index=x, columns=hue).loc[:, y]
+                plot_df.index.names = [titles[v] for v in plot_df.index.names]
 
             chart_options = serialize(plot_df, title=title, output_type='dict',
                                       **params, render_to=next_plot())
             plot = additional_options(chart_options, scientific_format,
-                                      label_display=True)
+                                      label_display=True, stacked=stacked)
             plots.append(plot)
 
     return plots
 
 
-# From https://codereview.stackexchange.com/questions/178600/flatten-an-array-of-integers-in-python
-def flatten_list(array):
-    for element in array:
-        if isinstance(element, str):
-            yield element
-        elif isinstance(element, list):
-            yield from flatten_list(element)
-        else:
-            raise TypeError("Unsupported type ({})".format(
-                type(element).__name__))
+def plot_bar_stack(df, *, x, y, titles, groupby, groupby_values,
+                   groupby_transform, rotation, hue=None, hue_values=[], size,
+                   num_cols=1, **options):
+    # import ipdb; ipdb.set_trace()a
+    return plot_bar(df, x=x, y=y, titles=titles, groupby=groupby,
+                    groupby_values=groupby_values,
+                    groupby_transform=groupby_transform, rotation=rotation, size=size,
+                    num_cols=1, hue=hue, hue_values=[], stacked=True, label_display=True)
+    params = dict(zoom="xy", kind='bar', legend=False)
+
+    return []
 
 
 def is_lineal(plots):
@@ -245,3 +260,5 @@ def to_json(plots, title=None):
     result.update({'figures': plots_js})
     result.update({'error': error, 'type': 'highcharts'})
     return result
+
+

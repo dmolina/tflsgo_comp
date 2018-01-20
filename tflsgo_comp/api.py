@@ -213,7 +213,7 @@ class Compare(Resource):
         """
         args = get_options(['file', 'benchmark_id', 'algs', 'alg_name', 'report', 'dimension', 'mobile', 'libcharts'])
         error = is_error_in_args(args)
-        libcharts = args.get("libcharts", "hc")
+        libcharts = args['libcharts']
         data = {}
         result = {}
         benchmark_id = args['benchmark_id']
