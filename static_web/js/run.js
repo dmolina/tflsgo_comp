@@ -79,6 +79,7 @@ var app = new Vue({
                 fig = self.figure_divs[fi];
                 new_title = document.createElement("h2");
                 new_title.append(document.createTextNode(fi));
+                new_title.className = "center";
                 div.append(new_title);
                 div.innerHTML += fig;
             }
@@ -103,6 +104,7 @@ var app = new Vue({
                 if (title) {
                     new_title = document.createElement("h2");
                     new_title.append(document.createTextNode(title));
+                    new_title.className = "center";
                     new_row.append(new_title);
                     div.append(new_row);
                     new_row = document.createElement("div");

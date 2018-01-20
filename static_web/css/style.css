@@ -39,3 +39,8 @@ input.up {
 .bk-root { height: auto;
            width: auto;
          }
+
+.center {
+    width: 100%;
+    text-align: center;
+}
