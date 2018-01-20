@@ -29,48 +29,8 @@ def _get_values_df(df, functions):
     return sum_df
 
 
-def plot_global(df):
-    df['ranking'] = df['ranking'].astype(int)
-    milestones = df['milestone'].unique()
-    plots = []
-
-    for milestone in milestones:
-        m_df = df[df['milestone'] == milestone]
-        category = df['category'].unique()
-        total = pd.pivot_table(m_df, values='ranking', index=['alg'],
-                               columns=['category']).reset_index()
-        plot = get_plot_barh(total, category, "Probando de nuevo con leyenda")
-        plots.append(plot)
-
-    return hv.Layout(plots).cols(3)
-
-
-def get_plot_by_milestone(df, mil):
-    table = df[df['milestone'] == mil]
-    return get_plot_barh(table, "Accuracy: {:2.1E}".format(mil))
-
-
 def create_tables(df, categories, accuracies, dimension=1000):
     return [], {}, {}
-
-
-def get_plot_barh(df, title):
-    """Return a bar plot with the data and the title
-
-    :param data_df: dataframe with the data.
-    :param title: title for the plot.
-    :returns: A plot (bokeh plot).
-    :rtype: bokeh plot.
-    """
-    # Prepare to visualize
-    kdims = [('alg', 'Algorithm'), ('category', 'Category'), ('ranking', 'Ranking')]
-    # Plot the bar
-    fields = ['alg', 'category', 'ranking']
-    data_df = df[fields].sort_values(['alg'])
-    data = [tuple(row) for row in data_df.values]
-    options = "Bars [tools=['hover'] stack_index=1 color_index=1 show_legend=False xrotation=90]"
-    bar = hv.Bars(data, kdims[:2], kdims[2], label=title)
-    return bar.opts(options)
 
 
 def _get_all_f1(df, categories, milestones):
@@ -126,7 +86,8 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000, mobile=F
     dim_df = normalize_df(df, dimension, accuracies)
     values_df = _get_all_f1(dim_df, categories, milestones)
 
-    titles = dict(alg='Algorithm', ranking='Points', milestone='Evaluations')
+    titles = dict(alg='Algorithm', ranking='Points', milestone='Evaluations',
+                  category='Categories')
 
     if mobile:
         num_cols = 1
@@ -150,37 +111,17 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000, mobile=F
                                 size=None, num_cols=num_cols)
         total_figs[cat] = plot
 
+    plot_stacked = libplot.plot_bar_stack(values_df, titles=titles, x='alg',
+                                          y='ranking', groupby='milestone',
+                                          groupby_values=milestones,
+                                          groupby_transform=formatter,
+                                          rotation=True, hue='category',
+                                          hue_values=cat_names, size=100,
+                                          num_cols=num_cols)
+
+    total_figs['All'] = plot_stacked
+
     return libplot.to_json(total_figs)
-    renderer = ''
-
-    cat_global = []
-    plot_dyn = {}
-
-    for mil in milestones:
-        plot = get_plot_by_milestone(values_df, mil)
-        plot_dyn[mil] = plot
-        cat_global.append(plot)
-
-    plots = hv.Layout(cat_global).opts("Bar [rotation=90]")
-    # legend_opts = {'NdOverlay': dict(show_legend=True, legend_position='right')}
-    # plots.Bars.III = plots.Bars.III(plot=legend_opts)
-    total_figs['All'] = renderer.get_plot(plots.cols(num_cols)).state
-    fig_names.extend([cat.name for cat in categories])
-    fig_names.append('All')
-
-    return figure_json(fig_names, total_figs)
-
-    final = hv.NdLayout(plot_dyn, kdims='milestone')
-    total_figs['Final'] = renderer.get_plot(final).state
-    fig_names.append('Final')
-    plot_bokeh = renderer.get_plot(hv.HoloMap(plot_dyn)).state
-    setattr(plot_bokeh, 'plot_width', 500)
-    setattr(plot_bokeh, 'plot_height', 300)
-    total_figs['Final2'] = plot_bokeh
-    fig_names.append('Final2')
-
-    return figure_json(fig_names, total_figs)
-
  
 def get_f1_score(position):
     """

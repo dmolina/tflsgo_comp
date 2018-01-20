@@ -8,6 +8,7 @@ import itertools
 
 renderer = ""
 
+
 def init():
     """Init the resource
     """
@@ -100,8 +101,8 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
         else:
             t = groupby_transform
 
-        plots = {(val_hue, t(group)): plot_elem(df[df[hue]==val_hue], y=group, label=val_hue,
-                                          **options_plot) for val_hue, group in comb}
+        plots = {(val_hue, t(group)): plot_elem(df[df[hue] == val_hue], y=group, label=val_hue,
+                                                **options_plot) for val_hue, group in comb}
 
         kdims = [hv.Dimension(elem, label=elem.title()) for elem in [hue, group_label]]
         holomap = hv.HoloMap(plots, kdims=kdims)
@@ -127,9 +128,6 @@ def to_json(plots):
     return result
 
 
-def get_renderer():
-    return renderer
-
 def plot_bar(df, titles, x, y, groupby=None, groupby_values=None, groupby_transform=None,
              rotation=False, size=None, title=None, num_cols=3):
     """Plot the dataframes as bar plots.
@@ -142,20 +140,21 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None, groupby_transf
     :param rotation: rotation.
     :param size: size of image.
     :returns: plots.
-    :rtype: 
+    :rtype: Plots.
     """
     setSize(size)
 
     if rotation:
-        options = "Bars [rotation=90]"
+        rotation_str = "rotation=90"
     else:
-        options = ""
+        rotation_str = ""
+
+    options = "Bars [tools=['hover'] {}]".format(rotation_str)
 
     if not groupby_transform:
         t = lambda x: str(x)
     else:
         t = groupby_transform
-
 
     if groupby:
         if not groupby_values:
@@ -165,7 +164,7 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None, groupby_transf
     # Plot the bar
     fields = [x, y, groupby]
     data_df = df[fields].sort_values([y])
-    kdims = [(name, titles[name]) for name in [x,y]]
+    kdims = [(name, titles[name]) for name in [x, y]]
 
     if not groupby:
         data = [tuple(row) for row in data_df.values]
@@ -183,4 +182,53 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None, groupby_transf
             plots.append(plot)
 
         plot_layout = hv.Layout(plots).opts(options).cols(num_cols)
+
         return renderer.get_plot(plot_layout).state
+
+
+def plot_bar_stack(df, *, x, y, titles, groupby, groupby_values,
+                   groupby_transform, rotation, hue=None, hue_values=[], size,
+                   num_cols=1, **options):
+    """Plot the dataframes as bar plots.
+
+    :param df: dataframe.
+    :param titles: dictionary that related the dimension with its name.
+    :param x: axis to show.
+    :param y: variable to show.
+    :param groupby: groupby parameter.
+    :param rotation: rotation.
+    :param size: size of image.
+    :returns: plots.
+    :rtype: plots
+    """
+    global renderer
+
+    setSize(size)
+
+    if rotation:
+        rotated_str = "rotation=90"
+    else:
+        rotated_str = ""
+
+    if hue is None:
+        raise ValueError("Error:  hue must be defined")
+
+    if not hue_values:
+        raise ValueError("Error: hue_value must have values")
+
+    plots_stack = []
+
+    for group in groupby_values:
+        filter_df = df[df[groupby] == group].drop(groupby, 1)
+        fields = [x, hue, y]
+        data_df = filter_df[fields]
+        kdims = [(value, titles[value]) for value in fields]
+        data = [tuple(row) for row in data_df.values]
+        title = groupby_transform(group)
+        plot_options = "Bars [tools=['hover'] color_index=1 stack_index=1 show_legend=False {}]".format(rotated_str)
+        bar = hv.Bars(data, kdims[:2],  kdims[2], label=title).opts(plot_options)
+        plots_stack.append(bar)
+
+    layout_options = "NdOverlay [show_legend=True, legend_position='right']"
+    plot_layout = hv.Layout(plots_stack).opts(layout_options).cols(num_cols)
+    return renderer.get_plot(plot_layout).state
