@@ -5,8 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 import importlib
 
-from pprint import pprint
-
 # For authentication
 import pandas
 import hashlib
@@ -461,7 +459,7 @@ def read_data_alg(benchmark_id, algs):
         data = df[df['alg'].isin(algs)]
 
         if len(dimensions)==1:
-            data['dimension'] = dimensions[0]
+            data.loc[:,'dimension'] = dimensions[0]
 
     return data, error
 
