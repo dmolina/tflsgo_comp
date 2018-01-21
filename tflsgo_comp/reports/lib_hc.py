@@ -133,6 +133,16 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
         return plots
 
 
+def sort_series(series, order):
+    new_series = []
+    dict_pos = {serie['name']: pos for pos, serie in enumerate(series)}
+
+    for elem in order[::-1]:
+        new_series.append(series[dict_pos[elem]])
+
+    return new_series
+
+
 def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
              groupby_transform=None, rotation=False, size=None, title=None,
              hue = None, hue_values = [],
@@ -150,7 +160,7 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
     :rtype: plots
     """
     # import ipdb; ipdb.set_trace()
-    params = dict(zoom="xy", kind='bar', legend=False)
+    params = dict(zoom="xy", kind='bar', legend=False, sort_columns=False)
 
     if not groupby_transform:
         t = lambda x: str(x)
@@ -190,6 +200,12 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
 
             chart_options = serialize(plot_df, title=title, output_type='dict',
                                       **params, render_to=next_plot())
+
+            if hue_values:
+                series = chart_options['series']
+                series = sort_series(series, hue_values)
+                chart_options['series'] = series
+
             plot = additional_options(chart_options, scientific_format,
                                       label_display=True, stacked=stacked)
             plots.append(plot)
@@ -204,7 +220,7 @@ def plot_bar_stack(df, *, x, y, titles, groupby, groupby_values,
     return plot_bar(df, x=x, y=y, titles=titles, groupby=groupby,
                     groupby_values=groupby_values,
                     groupby_transform=groupby_transform, rotation=rotation, size=size,
-                    num_cols=1, hue=hue, hue_values=[], stacked=True, label_display=True)
+                    num_cols=1, hue=hue, hue_values=hue_values, stacked=True, label_display=True)
     params = dict(zoom="xy", kind='bar', legend=False)
 
     return []
