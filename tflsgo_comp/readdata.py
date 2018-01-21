@@ -177,7 +177,7 @@ def read_benchmark_data(alg_name, fullname, benchmark):
     data_local['milestone'] = data_local['milestone'].astype(float).astype(int)
     data_local.columns = [col.replace('F0', 'F') for col in data_local.columns]
 
-    if dimension and 'dimension' not in data_local:
+    if dimension:
         data_local['dimension'] = dimension
 
     if 'alg' not in data_local:

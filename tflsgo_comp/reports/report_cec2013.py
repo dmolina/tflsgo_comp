@@ -82,6 +82,7 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000, mobile=F
     :param algs: algorithm list (sorted).
     """
     milestones = df['milestone'].unique().tolist()
+    milestones = accuracies
     milestones.sort()
     dim_df = normalize_df(df, dimension, accuracies)
     values_df = _get_all_f1(dim_df, categories, milestones)
