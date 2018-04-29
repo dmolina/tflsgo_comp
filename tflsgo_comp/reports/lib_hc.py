@@ -22,20 +22,28 @@ def next_plot():
     return "figures{}".format(num_plot)
 
 
-def additional_options(chart_dict, scientific_format=False,
-                       label_display=False, isRatio=False, stacked=False):
+def additional_options(chart_dict,
+                       scientific_format=False,
+                       label_display=False,
+                       isRatio=False,
+                       stacked=False):
     chart_dict.update()
 
     if scientific_format:
-        ayis_sci_format_str = highcharts.common.Formatter("function() { if (this.value < 1e-40) {return '0.0';}; return this.value.toExponential(2);}")
+        ayis_sci_format_str = highcharts.common.Formatter(
+            "function() { if (this.value < 1e-40) {return '0.0';}; return this.value.toExponential(2);}"
+        )
 
         if isRatio:
-            axis_sci_format_str = highcharts.common.Formatter("function() { return this.value.toFixed(0)+'%';}")
+            axis_sci_format_str = highcharts.common.Formatter(
+                "function() { return this.value.toFixed(0)+'%';}")
         else:
-            axis_sci_format_str = highcharts.common.Formatter("function() { return this.value.toExponential(2);}")
+            axis_sci_format_str = highcharts.common.Formatter(
+                "function() { return this.value.toExponential(2);}")
 
         axis_format = [axis_sci_format_str, ayis_sci_format_str]
-        tooltip_sci_format_str = highcharts.common.Formatter("function() {return this.y.toExponential(2);}")
+        tooltip_sci_format_str = highcharts.common.Formatter(
+            "function() {return this.y.toExponential(2);}")
 
         for axis_name, formatter in zip(["xAxis", "yAxis"], axis_format):
 
@@ -57,7 +65,8 @@ def additional_options(chart_dict, scientific_format=False,
 
     if label_display:
         plotOptions = chart_dict.get("plotOptions", dict())
-        plotOptions['line'] = dict(dataLabels=dict(enabled=highcharts.common.Formatter("true")))
+        plotOptions['line'] = dict(
+            dataLabels=dict(enabled=highcharts.common.Formatter("true")))
         chart_dict['plotOptions'] = plotOptions
 
     if stacked:
@@ -65,16 +74,28 @@ def additional_options(chart_dict, scientific_format=False,
         plotOptions['series'] = dict(stacking='normal')
         chart_dict['plotOptions'] = plotOptions
 
-
     # print(chart_dict)
     str = json.dumps(chart_dict, cls=highcharts.highcharts.HighchartsEncoder)
     # print(str)
     return str
 
 
-def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
-         show_legend=True, groupby=None, group_label='',
-         groupby_transform=None, hue=None, cols=1, kind='line', size=None,
+def plot(df,
+         x,
+         y,
+         label=None,
+         xticks=None,
+         xaxis=None,
+         yaxis=None,
+         logy=False,
+         show_legend=True,
+         groupby=None,
+         group_label='',
+         groupby_transform=None,
+         hue=None,
+         cols=1,
+         kind='line',
+         size=None,
          scientific_format=False):
     params = dict(zoom="xy", logy=logy)
     isRatio = df[x].max() == 100
@@ -123,11 +144,17 @@ def plot(df, x, y, label=None, xticks=None, xaxis=None, yaxis=None, logy=False,
                     # params.update(dict(ylim=[y_min,y_max]))
 
             title = "{}: {}".format(group_label, groupby_transform(group))
-            chart_options = serialize(group_df, title=title,
-                                      output_type='dict', **params,
-                                      render_to=next_plot())
-            plot = additional_options(chart_options, scientific_format=True,
-                                      isRatio=isRatio, label_display=False)
+            chart_options = serialize(
+                group_df,
+                title=title,
+                output_type='dict',
+                **params,
+                render_to=next_plot())
+            plot = additional_options(
+                chart_options,
+                scientific_format=True,
+                isRatio=isRatio,
+                label_display=False)
             plots.append(plot)
 
         return plots
@@ -143,10 +170,23 @@ def sort_series(series, order):
     return new_series
 
 
-def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
-             groupby_transform=None, rotation=False, size=None, title=None,
-             hue = None, hue_values = [],
-             num_cols=3, scientific_format=False, stacked=False, label_display=None):
+def plot_bar(df,
+             titles,
+             x,
+             y,
+             groupby=None,
+             groupby_values=None,
+             groupby_transform=None,
+             rotation=False,
+             size=None,
+             title=None,
+             legend=None,
+             hue=None,
+             hue_values=[],
+             num_cols=3,
+             scientific_format=False,
+             stacked=False,
+             label_display=None):
     """Plot the dataframes as bar plots.
 
     :param df: dataframe.
@@ -160,7 +200,7 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
     :rtype: plots
     """
     # import ipdb; ipdb.set_trace()
-    params = dict(zoom="xy", kind='bar', legend=False, sort_columns=False)
+    params = dict(zoom="xy", kind='bar', legend=legend, sort_columns=False)
 
     if not groupby_transform:
         t = lambda x: str(x)
@@ -179,8 +219,14 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
 
     if not groupby:
         plot_df = df[fields]
-        chart_options = serialize(plot_df, title=title, output_type='dict', **params, render_to=next_plot())
-        plot = additional_options(chart_options, scientific_format, label_display=label_display)
+        chart_options = serialize(
+            plot_df,
+            title=title,
+            output_type='dict',
+            **params,
+            render_to=next_plot())
+        plot = additional_options(
+            chart_options, scientific_format, label_display=label_display)
         plots = [plot]
     else:
         plots = []
@@ -188,7 +234,7 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
         for group in groupby_values:
             group_df = df[df[groupby] == group]
             plot_df = group_df[fields]
-            plot_df.loc[:,y] = pd.to_numeric(plot_df.loc[:, y])
+            plot_df.loc[:, y] = pd.to_numeric(plot_df.loc[:, y])
             title = t(group)
 
             if not hue:
@@ -198,30 +244,60 @@ def plot_bar(df, titles, x, y, groupby=None, groupby_values=None,
                 plot_df = plot_df.pivot(index=x, columns=hue).loc[:, y]
                 plot_df.index.names = [titles[v] for v in plot_df.index.names]
 
-            chart_options = serialize(plot_df, title=title, output_type='dict',
-                                      **params, render_to=next_plot())
+            chart_options = serialize(
+                plot_df,
+                title=title,
+                output_type='dict',
+                **params,
+                render_to=next_plot())
 
             if hue_values:
                 series = chart_options['series']
                 series = sort_series(series, hue_values)
                 chart_options['series'] = series
 
-            plot = additional_options(chart_options, scientific_format,
-                                      label_display=True, stacked=stacked)
+            plot = additional_options(
+                chart_options,
+                scientific_format,
+                label_display=True,
+                stacked=stacked)
             plots.append(plot)
 
     return plots
 
 
-def plot_bar_stack(df, *, x, y, titles, groupby, groupby_values,
-                   groupby_transform, rotation, hue=None, hue_values=[], size,
-                   num_cols=1, **options):
+def plot_bar_stack(df,
+                   *,
+                   x,
+                   y,
+                   titles,
+                   groupby,
+                   groupby_values,
+                   groupby_transform,
+                   rotation,
+                   hue=None,
+                   hue_values=[],
+                   size,
+                   num_cols=1,
+                   **options):
     # import ipdb; ipdb.set_trace()a
-    return plot_bar(df, x=x, y=y, titles=titles, groupby=groupby,
-                    groupby_values=groupby_values,
-                    groupby_transform=groupby_transform, rotation=rotation, size=size,
-                    num_cols=1, hue=hue, hue_values=hue_values, stacked=True, label_display=True)
-    params = dict(zoom="xy", kind='bar', legend=False)
+    return plot_bar(
+        df,
+        x=x,
+        y=y,
+        titles=titles,
+        groupby=groupby,
+        groupby_values=groupby_values,
+        groupby_transform=groupby_transform,
+        rotation=rotation,
+        size=size,
+        num_cols=1,
+        hue=hue,
+        hue_values=hue_values,
+        legend=True,
+        stacked=True,
+        label_display=True)
+    params = dict(zoom="xy", kind='bar', legend=True)
 
     return []
 
@@ -276,5 +352,3 @@ def to_json(plots, title=None):
     result.update({'figures': plots_js})
     result.update({'error': error, 'type': 'highcharts'})
     return result
-
-

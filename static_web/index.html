@@ -112,17 +112,7 @@ If you want to compare existing results with your own proposal, set a Excel or
         <label id="error">{{error}}</label>
     </div>
     <div class="form-group">
-            <div class="row">
-                <div class="col-md-4">
-                    <label class="form-control no-border">Select the graphical library:</label>
-                </div>
-                <div class="col-md-8">
-                <select v-model="libcharts" name="libcharts" class="form-control">li
-                    <option value="hv">Holoviews/Bokeh</option>
-                    <option value="hc">Highcharts</option>
-                </select>
-                </div>
-            </div>
+            <input name="libcharts" value="hc" type="hidden">
             <div class="row">
             <template v-if="reports.length == 1">
                     <div class="col-md-12">
@@ -160,11 +150,12 @@ If you want to compare existing results with your own proposal, set a Excel or
 </template>
 <div id="figures">
 </div>
-            </div>
+    </div>
         </div>
     </div>
  </div>
     </div>
+    </template>
  <script src="/static/js/index.js" charset="utf-8"></script>
 </body>
 </html>

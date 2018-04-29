@@ -35,12 +35,12 @@ def create_tables(df, categories, accuracies, dimension=1000):
 
 def _get_all_f1(df, categories, milestones):
     num_rows, num_columns = df.shape
-    num_functions = num_columns-3
-    assert(num_functions > 0)
+    num_functions = num_columns - 3
+    assert (num_functions > 0)
     # append all data in a pivot table
-    total_pivot_df = pd.DataFrame(index=np.arange(0, num_rows*len(categories)),
-                                  columns=('category', 'milestone', 'alg',
-                                           'ranking'))
+    total_pivot_df = pd.DataFrame(
+        index=np.arange(0, num_rows * len(categories)),
+        columns=('category', 'milestone', 'alg', 'ranking'))
 
     pivot_i = 0
 
@@ -68,7 +68,12 @@ def _get_all_f1(df, categories, milestones):
     return total_pivot_df
 
 
-def create_figures(df, categories, accuracies, libplot, dimension=1000, mobile=False):
+def create_figures(df,
+                   categories,
+                   accuracies,
+                   libplot,
+                   dimension=1000,
+                   mobile=False):
     """
     Create graphics from the dataframe with the data.
 
@@ -87,8 +92,11 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000, mobile=F
     dim_df = normalize_df(df, dimension, accuracies)
     values_df = _get_all_f1(dim_df, categories, milestones)
 
-    titles = dict(alg='Algorithm', ranking='Points', milestone='Evaluations',
-                  category='Categories')
+    titles = dict(
+        alg='Algorithm',
+        ranking='Points',
+        milestone='Evaluations',
+        category='Categories')
 
     if mobile:
         num_cols = 1
@@ -106,24 +114,38 @@ def create_figures(df, categories, accuracies, libplot, dimension=1000, mobile=F
 
     for cat in cat_names:
         cat_df = values_df[values_df['category'] == cat]
-        plot = libplot.plot_bar(cat_df, titles=titles, x='alg', y='ranking',
-                                groupby='milestone',
-                                groupby_transform=formatter, rotation=True,
-                                size=None, num_cols=num_cols)
+        plot = libplot.plot_bar(
+            cat_df,
+            titles=titles,
+            x='alg',
+            y='ranking',
+            groupby='milestone',
+            groupby_transform=formatter,
+            rotation=True,
+            size=None,
+            num_cols=num_cols)
         total_figs[cat] = plot
 
-    plot_stacked = libplot.plot_bar_stack(values_df, titles=titles, x='alg',
-                                          y='ranking', groupby='milestone',
-                                          groupby_values=milestones,
-                                          groupby_transform=formatter,
-                                          rotation=True, hue='category',
-                                          hue_values=cat_names, size=100,
-                                          num_cols=num_cols)
+    plot_stacked = libplot.plot_bar_stack(
+        values_df,
+        titles=titles,
+        x='alg',
+        y='ranking',
+        groupby='milestone',
+        groupby_values=milestones,
+        groupby_transform=formatter,
+        rotation=True,
+        hue='category',
+        hue_values=cat_names,
+        size=100,
+        label_display=True,
+        num_cols=num_cols)
 
     total_figs['All'] = plot_stacked
 
     return libplot.to_json(total_figs)
- 
+
+
 def get_f1_score(position):
     """
     Return a np.array with the scoring criterio by position from the Formula 1,
