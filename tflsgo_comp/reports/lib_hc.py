@@ -25,6 +25,8 @@ def next_plot():
 def additional_options(chart_dict,
                        scientific_format=False,
                        label_display=False,
+                       xlabel=None,
+                       ylabel=None,
                        isRatio=False,
                        stacked=False):
     chart_dict.update()
@@ -57,6 +59,12 @@ def additional_options(chart_dict,
                 label = xaxis.get('labels', dict())
                 label['formatter'] = formatter
                 xaxis['labels'] = label
+
+                if axis_name == 'xAxis' and xlabel != None:
+                    xaxis['title'] = {'text': xlabel}
+                elif axis_name == 'yAxis' and ylabel != None:
+                    xaxis['title'] = {'text': ylabel}
+
                 chart_dict[axis_name] = xaxis
 
         tooltip = chart_dict.get("tooltip", dict())
@@ -153,6 +161,7 @@ def plot(df,
             plot = additional_options(
                 chart_options,
                 scientific_format=True,
+                ylabel=yaxis,
                 isRatio=isRatio,
                 label_display=False)
             plots.append(plot)
