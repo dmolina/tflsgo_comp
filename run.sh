@@ -1,6 +1,4 @@
 #!/bin/bash
-cd static_web
-sudo python3 -m http.server 80 >/dev/null &
-cd ..
+source activate flaskenv
 cd tflsgo_comp
-python app.py
+python api.py
