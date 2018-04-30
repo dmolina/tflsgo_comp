@@ -37,6 +37,9 @@ def create_figures(df,
     def fun_to_int(fun):
         return "{:02d}".format(int(fun[1:]))
 
+    if df['milestone'].max() == 100:
+        xticks = [x for x in xticks if x == 1 or x >= 5]
+
     plots = libplot.plot(
         df,
         x='milestone',
