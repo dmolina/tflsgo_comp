@@ -63,7 +63,7 @@ def additional_options(chart_dict,
                 if axis_name == 'xAxis' and xlabel != None:
                     xaxis['title'] = {'text': xlabel}
                 elif axis_name == 'yAxis' and ylabel != None:
-                    xaxis['title'] = {'text': ylabel}
+                    xaxis['title'] = {'text': "{}".format(ylabel), 'x': -13}
 
                 chart_dict[axis_name] = xaxis
 
