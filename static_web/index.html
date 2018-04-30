@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Select your Benchmark</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="/static/js/index_lib.js" charset="utf-8"></script>
         <link rel="stylesheet" type="text/css" href="/static/css/index.css">
         <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -89,14 +90,12 @@
     <template v-if="dimension">
         <h2>Algorithms to compare</h2>
     <!-- algs with the list of algorithms to compare -->
-    <template v-if="available_algs.length > 0">
+        <template v-if="available_algs.length > 0">
+                <ul class="checkbox">
         <template v-for="alg in available_algs">
-            <p>
-            <ul class="checkbox">
                 <li><label><input type="checkbox" v-bind:value="alg" name="algs" v-model="algs" checked>{{alg | to_space}}</li></label>
-            </ul>
-            </p><br>
         </template>
+                </ul>
     </template>
     <template v-else>
         <p>
