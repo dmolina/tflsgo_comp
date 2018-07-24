@@ -1,4 +1,3 @@
-
 from os.path import splitext
 
 import pandas as pd
@@ -20,7 +19,8 @@ def read_results_from_file(algname, fullname, dimension=None):
     elif ext in ['.csv']:
         data = pd.read_csv(fullname)
     else:
-        error = 'Format of file \'{}\' not valide (.xls or .csv)'.format(fullname)
+        error = 'Format of file \'{}\' not valide (.xls or .csv)'.format(
+            fullname)
 
     data_norm = normalize_data(data, algname, dimension)
     return data_norm, error
@@ -35,6 +35,7 @@ def normalize_data(df, algname, dimension):
     :returns: normalizeddata frame
     :rtype: pandas.DataFrame
     """
+
     def lower_upper(column):
         if column.startswith("F") or column.startswith("f"):
             return column.upper()
@@ -50,9 +51,9 @@ def normalize_data(df, algname, dimension):
 
     # Sorted columns
     if 'dimension' not in df:
-        df.loc[:,'dimension'] = dimension
+        df.loc[:, 'dimension'] = dimension
 
-    cols = ['alg', 'milestone', 'dimension']+functions
+    cols = ['alg', 'milestone', 'dimension'] + functions
     return df[cols]
 
 
@@ -71,14 +72,15 @@ def error_in_data(df, nfuns, milestones_benchmark):
         return "missing column '{}'".format(milestone_str)
 
     # Check that all column are right
-    funs = ['F{}'.format(nfun) for nfun in range(1, nfuns+1)]
+    funs = ['F{}'.format(nfun) for nfun in range(1, nfuns + 1)]
 
     for fun in funs:
         if fun not in df.columns:
             return "function '{}' not found in {}".format(fun, df.columns)
 
     # Check not additional column
-    pending_columns = set(df.columns)-set(funs)-{'milestone', 'alg', 'dimension'}
+    pending_columns = set(
+        df.columns) - set(funs) - {'milestone', 'alg', 'dimension'}
 
     if pending_columns:
         return "columns '{}' are unknown".format(pending_columns)
@@ -105,19 +107,22 @@ def error_in_data(df, nfuns, milestones_benchmark):
 
     # Check all milestone
     milestones_data = df['milestone'].astype(float).astype(int).tolist()
-    milestones_benchmark = [int(float(mil_bench)) for mil_bench in milestones_benchmark]
+    milestones_benchmark = [
+        int(float(mil_bench)) for mil_bench in milestones_benchmark
+    ]
 
     # For each milestone check that exists
     for milestone in milestones_benchmark:
         if milestone not in milestones_data:
             return "milestone '{}' not found".format(milestone)
 
-    pending_milestones = set(milestones_benchmark)-set(milestones_data)
+    pending_milestones = set(milestones_benchmark) - set(milestones_data)
 
     if pending_milestones:
         return "milestone '{}' uknown".format(pending_milestones[0])
 
     return ""
+
 
 def get_mean(df):
     """
@@ -129,6 +134,7 @@ def get_mean(df):
     """
     data_mean = df.groupby('alg,milestone').mean()
     return data_mean.reset_index()
+
 
 def concat_df(df1, df2):
     """Concat two dataframes.
